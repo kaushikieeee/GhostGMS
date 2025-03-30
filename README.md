@@ -1,62 +1,65 @@
-# 🚀 GhostGMS - Ultimate GMS Optimization 
+# GhostGMS Module  
 
-**Maximize Battery Life | Minimize GMS Drain**
+## 📌 Overview  
+Ghost GMS is a **Magisk/Zygisk module** designed to **optimize device performance** by allowing users to **disable or enable specific Google services (GMS)** while also applying **kernel, animation, and logging tweaks** to improve efficiency.  
 
-GhostGMS is a Magisk module designed to **disable unnecessary Google Mobile Services (GMS) background processes**, reducing active drain to as low as **6-7%**, while maintaining essential functionality.
+The module now includes a **WebUI** for an **easy-to-use interface** where users can **toggle settings** and **apply optimizations seamlessly**.  
 
-Forked from RootArt's module.
-
----
-
-## ⚡ Features
-
-✅ **One-Tap Control** – Enable/Disable GMS services without a reboot  
-🗑 **Auto Clean** – Remove GMS-related junk files effortlessly  
-📉 **Optimized** – Fine-tuned to boost performance and efficiency  
-🚀 **Minimal Resource Usage** – No extra bloat, just pure optimization  
+> **Note:**  
+> Ghost GMS is compatible with most **stock ROMs**. However, on **Nothing OS** and **NothingMuch ROM**, users may see an **error stating that GMS was unable to disable**—but in reality, it has been **successfully disabled**.  
 
 ---
 
-## 🔧 Requirements
+## 🚀 Features  
 
-- **Magisk 27.0+ and KernelSU**  
-- **Custom ROMs (AOSP-based)** – *Not recommended for stock/GSI/ported ROMs*  
+### ✅ **Custom GMS Service Control**  
+- Users can **manually type** the GMS services they want to **enable/disable**.  
+- Alternatively, users can **use the predefined list** included in the module.  
+- Changes take effect after pressing the **Apply button** in the WebUI.  
 
----
+### 🌐 **WebUI for Easy Configuration**  
+- **Simple toggles** for enabling/disabling different optimizations.  
+- **Apply changes instantly** with the **Apply button**.  
+- **Logs system status** and displays whether **GMS services** are currently **active**.  
 
-## 💡 Usage
+### ⚡ **Performance Optimizations**  
+- **GMS Optimizations**:  
+  - Reduce background processes and restrict unnecessary services.  
+- **Kernel & System Tweaks**:  
+  - Optimize **animation speeds**.  
+  - Disable **unnecessary logging** to reduce resource usage.  
+  - Improve **power efficiency** and reduce **CPU wakeups**.  
 
-1️⃣ Flash the module in Magisk  
-2️⃣ Use the **Action Button** to toggle GMS services  
-3️⃣ Enjoy extended battery life & smoother performance  
-
----
-
-## 📌 How to Check GMS Status
-
-1. Try opening **Quick Share** from the QS Panel.  
-2. If it's not working, **GMS processes are disabled**.  
-3. If it's working, **GMS processes are enabled**.  
-
----
-
-## ❗ Important Notes
-
-- Remove all installed modules & tweaks related to **performance/CPU/Gaming** before flashing this module.
-- Using this on **stock/GSI/ported ROMs is not recommended** and may cause soft bricks.
-- If you face any issues, disable GMS via the action button and re-enable when needed.
+### 📊 **Logging and Debugging Panel**  
+- **View system logs** directly from the **WebUI**.  
+- **Check GMS status** and overall **system optimizations** in real time.  
 
 ---
 
-## 📜 License
+## 🛠️ How to Use  
 
-This module is open-source and welcomes contributions! Fork it, modify it, and optimize it further!
+1. **Install the module** via **Magisk/Zygisk**.  
+2. **Reboot your device** after installation.  
+3. **Open the WebUI** *(instructions provided in the module output after installation)*.  
+4. **Customize GMS optimizations**:  
+   - Enter specific **GMS services** to disable/enable **OR** use the built-in selection.  
+   - Toggle other **performance tweaks** (kernel, animation, logging optimizations).  
+5. **Press the Apply button** to finalize changes.  
+6. **Reboot again** to fully apply optimizations.  
 
 ---
 
-## 🔗 Contact & Support
+## 🔄 Compatibility  
+✅ **Works on most stock ROMs**.  
 
-Have questions? Want to contribute? Join the discussion:
+⚠️ **Nothing OS & NothingMuch ROM Users**:  
+- You may see an **error stating that GMS could not be disabled**.  
+- However, **GMS is actually disabled despite the error message**.  
 
-- 📢 **Telegram Support Group:** [Join Here](https://t.me/veloxineology)  
-- 📂 **GitHub Repository:** [View Source](https://github.com/veloxineology/GhostGMS)  
+---
+
+## 📜 Notes  
+- If you experience **issues**, check the **logs in the WebUI** for details.  
+- Logs are stored in:  
+  ```bash
+  /sdcard/gmscontrol_log
