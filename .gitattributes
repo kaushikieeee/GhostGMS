@@ -1,0 +1,8 @@
+# Mark JavaScript files in webroot as static assets
+webroot/*.js linguist-vendored=true
+webroot/*.js linguist-generated=true
+
+# Treat the repository as a Magisk module
+*.prop linguist-language=Shell
+*.sh linguist-language=Shell
+system/** linguist-language=Shell 
