@@ -13,8 +13,39 @@ jobs:
       - name: Get version from module.prop
         id: get_version
         run: |
+          if [ ! -f module.prop ]; then
+            echo "Error: module.prop not found"
+            exit 1
+          fi
           VERSION=$(grep 'version=' module.prop | cut -d'=' -f2)
+          if [ -z "$VERSION" ]; then
+            echo "Error: Could not extract version from module.prop"
+            exit 1
+          fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
+          
+      - name: Verify required files
+        run: |
+          REQUIRED_FILES=(
+            "module.prop"
+            "LICENSE"
+            "README.md"
+            "customize.sh"
+            "service.sh"
+            "gmslist.txt"
+            "misc_optimizations.prop"
+            "toast.apk"
+            "system"
+            "webroot"
+            "META-INF"
+          )
+          
+          for file in "${REQUIRED_FILES[@]}"; do
+            if [ ! -e "$file" ]; then
+              echo "Error: Required file/directory '$file' not found"
+              exit 1
+            fi
+          done
           
       - name: Create zip file
         run: |
@@ -44,6 +75,19 @@ jobs:
           cd release_temp
           zip -r ../GhostGMS-${{ steps.get_version.outputs.version }}.zip *
           cd ..
+          
+      - name: Verify zip file
+        run: |
+          if [ ! -f GhostGMS-${{ steps.get_version.outputs.version }}.zip ]; then
+            echo "Error: Zip file was not created"
+            exit 1
+          fi
+          
+          # Check if zip file is not empty
+          if [ ! -s GhostGMS-${{ steps.get_version.outputs.version }}.zip ]; then
+            echo "Error: Created zip file is empty"
+            exit 1
+          fi
           
       - name: Upload Release Asset
         uses: softprops/action-gh-release@v1
