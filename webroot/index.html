@@ -1,0 +1,38 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link href="/index.70db41ce.css" rel="stylesheet"><script type="module" src="/index.281e69f2.js"></script></head><body class="bg-gray-900 flex flex-col min-h-screen text-white"> <header class="backdrop-blur-md ml-3 mt-3 p-4 sticky top-0 z-50"> <h1 class="font-bold text-2xl">GMS Control Panel</h1> <span id="moduleVer" class="text-pink-400 text-sm"></span> </header> <main class="flex-grow pt-1"> <div class="p-6"> <div class="bg-gray-800 flex items-start justify-between mb-4 p-4 rounded-lg"> <div> <span id="serviceStatus" class="font-semibold text-xl">Loading</span> <span id="servicePID" class="block mt-2 text-gray-400 text-xs">One moment please...</span> </div> <img id="imgGhost" class="h-24 w-24"> </div> <div class="bg-gray-800 mb-4 p-4 rounded-lg"> <div class="flex items-center justify-between"> <h2 class="font-semibold mb-4 text-lg">Settings</h2> </div> <div class="flex items-center justify-between mb-3"> <label class="cursor-pointer inline-flex items-center w-full"> <p class="text-sm text-white">Optimize GMS Services</p> <div class="ml-auto"> <input type="checkbox" id="killLogdSwitch" class="peer sr-only"> <div class="after:absolute after:bg-white after:border after:border-gray-300 after:content-[''] after:h-5 after:left-[2px] after:rounded-full after:top-0.5 after:transition-all after:w-5 bg-gray-200 dark:bg-gray-700 dark:border-gray-600 h-6 peer-checked:after:border-white peer-checked:after:translate-x-full peer-checked:bg-blue-600 relative rounded-full w-11"></div> </div> </label> </div>
+<div class="flex items-center justify-between mb-3"> <label class="cursor-pointer inline-flex items-center w-full"> <p class="text-sm text-white">Other miscellaneous optimizations</p> <div class="ml-auto"> <input type="checkbox" id="miscOptSwitch" class="peer sr-only"> <div class="after:absolute after:bg-white after:border after:border-gray-300 after:content-[''] after:h-5 after:left-[2px] after:rounded-full after:top-0.5 after:transition-all after:w-5 bg-gray-200 dark:bg-gray-700 dark:border-gray-600 h-6 peer-checked:after:border-white peer-checked:after:translate-x-full peer-checked:bg-blue-600 relative rounded-full w-11"></div> </div> </label> </div>
+<!-- CPU governor settings removed -->
+<div class="flex items-center justify-between mb-3"> <p class="text-sm text-white">Edit GMS Services</p> <button id="editGmslistButton" class="bg-gray-700 hover:bg-gray-600 px-10 py-1 rounded-md text-sm text-white">Edit</button> </div> <div class="flex items-center justify-between mb-3"> <p class="text-sm text-white">Save Logs</p> <button id="saveLogsButton" class="bg-gray-700 hover:bg-gray-600 px-9 py-1 rounded-md text-sm text-white">Save</button> </div> <div class="flex items-center justify-between mb-3"> <p class="text-sm text-white">Reapply Settings</p> <button id="restartServiceButton" class="bg-gray-700 hover:bg-gray-600 px-7 py-1 rounded-md text-sm text-white border border-gray-600">Apply</button> </div>
+
+<!-- Action buttons section -->
+<div class="flex flex-col mt-6 gap-4">
+    <button id="applyButton" class="bg-green-600 hover:bg-green-500 px-7 py-3 rounded-md text-sm text-white font-bold border border-green-500 shadow-md hover:shadow-lg transition-all">Apply Settings</button>
+    <button id="disableAnythingButton" class="bg-red-700 hover:bg-red-600 px-7 py-3 rounded-md text-sm text-white border border-red-600 shadow-md hover:shadow-lg transition-all">Reset All Optimizations</button>
+</div>
+
+<!-- Output console -->
+<div class="mt-6 border border-gray-700 rounded-lg p-3 shadow-lg">
+    <div class="flex items-center justify-between mb-2">
+        <h3 class="text-sm font-semibold">Console Output</h3>
+        <button id="clearOutputButton" class="text-xs bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded text-gray-300 hover:text-white">Clear</button>
+    </div>
+    <div id="outputConsole" class="bg-gray-900 rounded p-3 h-36 overflow-y-auto text-xs font-mono border border-gray-800">
+        <div class="text-gray-400">Ready. Toggle options above and click Apply Settings.</div>
+    </div>
+</div>
+
+</div> </div> </main> 
+
+<!-- GMS Services edit modal with updated styling -->
+<div id="gmslistModal" class="bg-gray-900 bg-opacity-75 fixed hidden inset-0 items-center justify-center z-50"> 
+    <div class="bg-gray-800 max-w-md p-6 rounded-lg w-11/12 shadow-lg border border-gray-700"> 
+        <h3 class="font-semibold mb-2 text-lg">Edit GMS Services</h3> 
+        <p class="mb-4 text-slate-300 text-xs">GMS services listed here will be toggled on/off when using the Optimize GMS Services switch</p> 
+        <textarea id="gmslistInput" class="bg-gray-700 border-none outline-none p-2 resize-none rounded-md shadow-none text-sm text-white w-full" rows="16"></textarea> 
+        <div class="flex justify-end mt-4"> 
+            <button id="cancelButton" class="bg-gray-600 hover:bg-gray-500 mr-2 px-4 py-1 rounded-md text-sm text-white">Cancel</button> 
+            <button id="saveGmslistButton" class="bg-blue-600 hover:bg-blue-500 px-4 py-1 rounded-md text-sm text-white">Save</button> 
+        </div> 
+    </div> 
+</div>
+
+<footer class="mb-2 mt-auto py-3 text-center text-gray-600 text-xs"> <p>Made with love by Kaushik.</p> </footer> </body></html>
