@@ -17,6 +17,10 @@ on:
         type: boolean
         default: false
 
+# Add permissions here
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -104,15 +108,14 @@ jobs:
             exit 1
           fi
           
-      - name: Create GitHub Release
-        id: create_release
+      - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
+          files: GhostGMS-${{ inputs.version }}.zip
           tag_name: ${{ inputs.version }}
           name: GhostGMS ${{ inputs.version }}
           body: ${{ inputs.release_notes }}
           prerelease: ${{ inputs.pre_release }}
-          files: GhostGMS-${{ inputs.version }}.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
