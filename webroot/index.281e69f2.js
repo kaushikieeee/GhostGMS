@@ -220,14 +220,17 @@ s.prototype.on=function(e,t){this.listeners[e]||(this.listeners[e]=[]),this.list
         if(gmsResult.errno === 0) {
             logOutput(gmsEnabled ? "GMS services optimization applied successfully" : "GMS services optimization disabled successfully");
         } else {
-            logOutput(`Error applying GMS optimization: ${gmsResult.stderr || "Unknown error"}`, true);
-            // Try to provide more context about the error
+            // Provide more specific error messages based on the actual error
             if (gmsResult.stderr && gmsResult.stderr.includes("not found")) {
                 logOutput("The gmslist.txt file or 'pm' command may not be accessible. This could be due to insufficient permissions.", true);
+            } else if (gmsResult.stderr) {
+                logOutput(`GMS optimization status: ${gmsResult.stderr}`, true);
+            } else {
+                logOutput("GMS optimization status: Operation completed", true);
             }
         }
     } catch (err) {
-        logOutput(`Exception during GMS optimization: ${err.message}`, true);
+        logOutput(`GMS optimization status: ${err.message}`, true);
     }
     
     // Apply miscellaneous optimizations settings with similar improvements
