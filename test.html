@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GMS Control Panel Test Page</title>
+    <link rel="stylesheet" href="webroot/index.70db41ce.css">
+    <script src="webroot/index.281e69f2.js" defer></script>
+    <style>
+        /* Fix for test environment */
+        body {
+            background-color: #111827;
+            color: white;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div id="testOutput" class="p-5 bg-gray-800 m-5 rounded">
+        <h1 class="text-xl font-bold mb-2">GMS Control Panel Test Environment</h1>
+        <div class="text-sm mb-5">This page is for testing the GMS Control Panel UI functionality</div>
+        
+        <div class="flex space-x-2 mb-4">
+            <button id="runTests" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+                Run UI Tests
+            </button>
+            
+            <button id="testEditModal" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
+                Test GMS Editor
+            </button>
+            
+            <button id="testSaveGMS" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded">
+                Test Save GMS List
+            </button>
+        </div>
+        
+        <div class="mt-4 border-t border-gray-700 pt-4">
+            <h2 class="font-semibold mb-2">Test Results:</h2>
+            <div id="testResults" class="text-sm font-mono p-3 bg-gray-900 rounded overflow-auto h-64"></div>
+        </div>
+    </div>
+    
+    <!-- Needed for the javascript to work -->
+    <div class="mt-5 border border-gray-700 rounded-lg p-3 m-5">
+        <div class="flex items-center justify-between mb-2">
+            <h3 class="text-sm font-semibold">Console Output</h3>
+            <button id="clearOutputButton" class="text-xs text-gray-400 hover:text-white">Clear</button>
+        </div>
+        <div id="outputConsole" class="bg-gray-900 rounded p-3 h-32 overflow-y-auto text-xs font-mono">
+            <div class="text-gray-400">Ready. Toggle options above and click Apply Settings.</div>
+        </div>
+    </div>
+    
+    <!-- Add required elements for editing -->
+    <div id="gamelistModal" class="bg-gray-900 bg-opacity-75 fixed hidden inset-0 items-center justify-center z-50"> 
+        <div class="bg-gray-800 max-w-md p-6 rounded-lg w-11/12 shadow-lg border border-gray-700"> 
+            <h3 class="font-semibold mb-2 text-lg">Edit GMS Services</h3> 
+            <p class="mb-4 text-slate-300 text-xs">GMS services listed here will be toggled on/off when using the Optimize GMS Services switch</p> 
+            <textarea id="gamelistInput" class="bg-gray-700 border-none outline-none p-2 resize-none rounded-md shadow-none text-sm text-white w-full" rows="16"></textarea> 
+            <div class="flex justify-end mt-4"> 
+                <button id="cancelButton" class="bg-gray-600 hover:bg-gray-500 mr-2 px-4 py-1 rounded-md text-sm text-white">Cancel</button> 
+                <button id="saveGamelistButton" class="bg-blue-600 hover:bg-blue-500 px-4 py-1 rounded-md text-sm text-white">Save</button> 
+            </div> 
+        </div> 
+    </div>
+
+    <!-- Add status elements needed by the JS -->
+    <div style="display:none;">
+        <span id="moduleVer"></span>
+        <span id="serviceStatus"></span>
+        <span id="servicePID"></span>
+        <img id="imgGhost">
+        <input type="checkbox" id="killLogdSwitch">
+        <input type="checkbox" id="miscOptSwitch">
+        <button id="editGamelistButton">Edit</button>
+        <button id="saveLogsButton">Save</button>
+        <button id="applyButton">Apply</button>
+        <button id="disableAnythingButton">Reset</button>
+    </div>
+    
+    <script>
+        // Test script to validate UI components
+        document.addEventListener('DOMContentLoaded', () => {
+            const resultsArea = document.getElementById('testResults');
+            
+            function log(message, isError = false) {
+                const div = document.createElement('div');
+                div.className = isError ? 'text-red-500' : 'text-green-400';
+                div.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+                resultsArea.appendChild(div);
+            }
+            
+            document.getElementById('runTests').addEventListener('click', async () => {
+                log('Starting UI tests...');
+                
+                // Test 1: Check if the edit modal exists
+                const modal = document.getElementById('gamelistModal');
+                if (modal) {
+                    log('✅ Edit modal exists');
+                    
+                    // Test 2: Try to open the modal
+                    try {
+                        log('Attempting to open the modal...');
+                        if (typeof B === 'function') {
+                            await B();
+                            log('Modal open function called');
+                        } else {
+                            log('❌ Modal open function (B) not found', true);
+                        }
+                    } catch (err) {
+                        log(`❌ Error opening modal: ${err.message}`, true);
+                    }
+                } else {
+                    log('❌ Edit modal not found in DOM', true);
+                }
+                
+                // Test logOutput function
+                if (typeof logOutput === 'function') {
+                    log('✅ logOutput function exists');
+                    logOutput('Test message from test script');
+                } else {
+                    log('❌ logOutput function not available', true);
+                }
+                
+                log('Test complete');
+            });
+            
+            // Specific test for edit modal
+            document.getElementById('testEditModal').addEventListener('click', async () => {
+                log('Directly testing the GMS editor modal...');
+                try {
+                    const modal = document.getElementById('gamelistModal');
+                    const textarea = document.getElementById('gamelistInput');
+                    
+                    if (!modal || !textarea) {
+                        log('❌ Missing modal or textarea elements', true);
+                        return;
+                    }
+                    
+                    // Populate textarea with sample data
+                    textarea.value = 'com.google.android.gms\ncom.google.android.gms.ads.service.AdService\ncom.google.android.location.service.LocationService';
+                    
+                    // Show modal directly with Tailwind classes
+                    modal.classList.remove('hidden');
+                    modal.classList.add('flex');
+                    
+                    log('✅ Manually opened GMS editor modal');
+                    log('Check if the modal is visible on screen!');
+                    
+                    // Add event listener to the cancel button
+                    const cancelBtn = document.getElementById('cancelButton');
+                    if (cancelBtn) {
+                        cancelBtn.addEventListener('click', () => {
+                            log('Cancel button clicked');
+                            modal.classList.add('hidden');
+                            modal.classList.remove('flex');
+                        });
+                    }
+                } catch (err) {
+                    log(`❌ Error testing edit modal: ${err.message}`, true);
+                }
+            });
+            
+            // Specific test for save function
+            document.getElementById('testSaveGMS').addEventListener('click', async () => {
+                log('Testing GMS list save function...');
+                
+                try {
+                    if (typeof L === 'function') {
+                        // Make sure the textarea has some data
+                        const textarea = document.getElementById('gamelistInput');
+                        if (textarea) {
+                            textarea.value = 'com.google.android.gms\ncom.google.android.gms.example.service1\ncom.google.android.gms.example.service2';
+                        }
+                        
+                        // Call the save function
+                        await L();
+                        log('✅ Save function called successfully');
+                    } else {
+                        log('❌ Save function (L) not found', true);
+                    }
+                } catch (err) {
+                    log(`❌ Error in save function: ${err.message}`, true);
+                }
+            });
+        });
+    </script>
+</body>
+</html> 
