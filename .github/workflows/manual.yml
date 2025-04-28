@@ -1,0 +1,122 @@
+name: Manual Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., v2.1)'
+        required: true
+        type: string
+      release_notes:
+        description: 'Release notes (markdown format)'
+        required: true
+        type: string
+      pre_release:
+        description: 'Mark as pre-release?'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Verify version in module.prop
+        run: |
+          if [ ! -f module.prop ]; then
+            echo "Error: module.prop not found"
+            exit 1
+          fi
+          CURRENT_VERSION=$(grep 'version=' module.prop | cut -d'=' -f2)
+          if [ -z "$CURRENT_VERSION" ]; then
+            echo "Error: Could not extract version from module.prop"
+            exit 1
+          fi
+          if [ "$CURRENT_VERSION" != "${{ inputs.version }}" ]; then
+            echo "Error: Version in module.prop ($CURRENT_VERSION) doesn't match input version (${{ inputs.version }})"
+            exit 1
+          fi
+          
+      - name: Verify required files
+        run: |
+          REQUIRED_FILES=(
+            "module.prop"
+            "LICENSE"
+            "README.md"
+            "customize.sh"
+            "service.sh"
+            "gmslist.txt"
+            "misc_optimizations.prop"
+            "toast.apk"
+            "system"
+            "webroot"
+            "META-INF"
+          )
+          
+          for file in "${REQUIRED_FILES[@]}"; do
+            if [ ! -e "$file" ]; then
+              echo "Error: Required file/directory '$file' not found"
+              exit 1
+            fi
+          done
+          
+      - name: Create zip file
+        run: |
+          # Create a clean directory for the zip
+          mkdir -p release_temp
+          
+          # Copy all necessary files
+          cp module.prop release_temp/
+          cp LICENSE release_temp/
+          cp README.md release_temp/
+          cp customize.sh release_temp/
+          cp service.sh release_temp/
+          cp gmslist.txt release_temp/
+          cp misc_optimizations.prop release_temp/
+          cp toast.apk release_temp/
+          
+          # Copy system directory
+          cp -r system release_temp/
+          
+          # Copy webroot directory
+          cp -r webroot release_temp/
+          
+          # Copy META-INF directory
+          cp -r META-INF release_temp/
+          
+          # Create the zip file
+          cd release_temp
+          zip -r ../GhostGMS-${{ inputs.version }}.zip *
+          cd ..
+          
+      - name: Verify zip file
+        run: |
+          if [ ! -f GhostGMS-${{ inputs.version }}.zip ]; then
+            echo "Error: Zip file was not created"
+            exit 1
+          fi
+          
+          # Check if zip file is not empty
+          if [ ! -s GhostGMS-${{ inputs.version }}.zip ]; then
+            echo "Error: Created zip file is empty"
+            exit 1
+          fi
+          
+      - name: Create GitHub Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ inputs.version }}
+          name: GhostGMS ${{ inputs.version }}
+          body: ${{ inputs.release_notes }}
+          prerelease: ${{ inputs.pre_release }}
+          files: GhostGMS-${{ inputs.version }}.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Cleanup
+        run: |
+          rm -rf release_temp
+          rm GhostGMS-${{ inputs.version }}.zip
