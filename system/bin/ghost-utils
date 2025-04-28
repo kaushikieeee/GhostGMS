@@ -1,0 +1,702 @@
+#!/bin/sh
+
+# Detect if bash is available and use it for more advanced features
+if [ -f /system/bin/bash ]; then
+    SHELL="/system/bin/bash"
+elif [ -f /data/adb/magisk/busybox/bash ]; then
+    SHELL="/data/adb/magisk/busybox/bash"
+else
+    SHELL="/bin/sh"
+fi
+
+# Detect module path
+find_module_path() {
+    # Try to find the module directory
+    for module_dir in /data/adb/modules/ghost /data/adb/modules/GhostGMS; do
+        if [ -d "$module_dir" ]; then
+            echo "$module_dir"
+            return 0
+        fi
+    done
+    
+    # If not found, guess based on this script location
+    script_path=$(dirname "$0")
+    module_path=$(echo "$script_path" | sed 's|/system/bin||')
+    echo "$module_path"
+}
+
+MODULE_PATH=$(find_module_path)
+
+get_module_version() {
+	grep "version=" "$MODULE_PATH/module.prop" | awk -F'=' '{print $2}'
+}
+
+get_chipset() {
+	getprop "ro.board.platform"
+}
+
+get_kernel() {
+	uname -r
+}
+
+# Keep basic functionality for UI, but make them no-ops
+get_default_cpugov() {
+	echo "schedutil"
+}
+
+get_perf_cpugov() {
+	echo "performance"
+}
+
+get_powersave_cpugov() {
+	echo "powersave"
+}
+
+get_available_cpugov() {
+	echo "schedutil powersave performance"
+}
+
+set_default_cpugov() {
+	# No-op since we removed the scripts
+	echo "CPU governor settings disabled in simplified version"
+}
+
+set_perf_cpugov() {
+	# No-op since we removed the scripts
+	echo "CPU governor settings disabled in simplified version"
+}
+
+set_powersave_cpugov() {
+	# No-op since we removed the scripts
+	echo "CPU governor settings disabled in simplified version"
+}
+
+# Ensure data directory exists
+mkdir -p /data/ghost 2>/dev/null
+
+get_kill_logd() {
+	[ -f /data/ghost/kill_logd ] && cat /data/ghost/kill_logd || echo "0"
+}
+
+get_misc_opt() {
+	[ -f /data/ghost/misc_opt ] && cat /data/ghost/misc_opt || echo "0"
+}
+
+kill_logd() {
+	list_logger="
+logd
+traced
+statsd
+tcpdump
+cnss_diag
+subsystem_ramdump
+charge_logger
+wlan_logging
+"
+
+	for svc in $list_logger; do
+		if [ "$(get_kill_logd)" -eq 1 ]; then
+			stop $svc 2>/dev/null
+		else
+			start $svc 2>/dev/null
+		fi
+	done
+}
+
+# Function for disabling all optimizations
+disable_all_optimizations() {
+	# Ensure directory exists
+	mkdir -p /data/ghost 2>/dev/null
+	
+	# Reset state flags
+	echo 0 >/data/ghost/kill_logd
+	echo 0 >/data/ghost/misc_opt
+	
+	# Enable all GMS services
+	su -lp 2000 -c "cmd notification post -t 'GMS Control Panel' 'Tag$(date +%s)' \"Restoring all GMS Services and disabling optimizations\""
+	
+	# Start all logger services
+	list_logger="
+logd
+traced
+statsd
+tcpdump
+cnss_diag
+subsystem_ramdump
+charge_logger
+wlan_logging
+"
+	for svc in $list_logger; do
+		start $svc 2>/dev/null
+	done
+	
+	# Based on GMS Control Panel v2.0 - Enable all Google services
+	
+	# Enable the advertising and tracking capabilities of Google Play Services
+	pm enable "com.google.android.gms/com.google.android.gms.ads.identifier.service.AdvertisingIdNotificationService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.ads.identifier.service.AdvertisingIdService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.nearby.mediums.nearfieldcommunication.NfcAdvertisingService" >/dev/null 2>&1
+	
+	# Allow Google's data collection and analytics on your Android device
+	pm enable "com.google.android.gms/com.google.android.gms.analytics.AnalyticsService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.analytics.AnalyticsTaskService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.analytics.internal.PlayLogReportingService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.stats.eastworld.EastworldService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.stats.service.DropBoxEntryAddedService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.stats.PlatformStatsCollectorService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.common.stats.GmsCoreStatsService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.common.stats.StatsUploadService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.backup.stats.BackupStatsService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.checkin.CheckinApiService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.checkin.CheckinService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.tron.CollectionService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.common.config.PhenotypeCheckinService" >/dev/null 2>&1
+	
+	# Enable HardwareArProviderService
+	pm enable "com.google.android.gms/com.google.android.location.internal.server.HardwareArProviderService" >/dev/null 2>&1
+	
+	# Enable bug reporting functionality of gms
+	pm enable "com.google.android.gms/com.google.android.gms.feedback.FeedbackAsyncService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.feedback.LegacyBugReportService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.feedback.OfflineReportSendTaskService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.googlehelp.metrics.ReportBatchedMetricsGcmTaskService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.analytics.internal.PlayLogReportingService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.locationsharingreporter.service.reporting.periodic.PeriodicReporterMonitoringService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.location.reporting.service.ReportingAndroidService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.location.reporting.service.ReportingSyncService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.common.stats.net.NetworkReportService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.presencemanager.service.PresenceManagerPresenceReportService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.usagereporting.service.UsageReportingIntentService" >/dev/null 2>&1
+	
+	# Enable Google Cast services
+	pm enable "com.google.android.gms/com.google.android.gms.cast.media.CastMediaRoute2ProviderService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.cast.media.CastMediaRoute2ProviderService_Isolated" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.cast.media.CastMediaRoute2ProviderService_Persistent" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.cast.media.CastMediaRouteProviderService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.cast.media.CastMediaRouteProviderService_Isolated" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.cast.media.CastMediaRouteProviderService_Persistent" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.cast.media.CastRemoteDisplayProviderService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.cast.media.CastRemoteDisplayProviderService_Isolated" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.cast.media.CastRemoteDisplayProviderService_Persistent" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.cast.service.CastPersistentService_Persistent" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.cast.service.CastSocketMultiplexerLifeCycleService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.cast.service.CastSocketMultiplexerLifeCycleService_Isolated" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.cast.service.CastSocketMultiplexerLifeCycleService_Persistent" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.chimera.CastPersistentBoundBrokerService" >/dev/null 2>&1
+	
+	# Enable debugging services
+	pm enable "com.google.android.gms/com.google.android.gms.nearby.messages.debug.DebugPokeService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.clearcut.debug.ClearcutDebugDumpService" >/dev/null 2>&1
+	
+	# Enable component discovery services
+	pm enable "com.google.firebase.components.ComponentDiscoveryService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.nearby.discovery.service.DiscoveryService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.mlkit.common.internal.MlKitComponentDiscoveryService" >/dev/null 2>&1
+	
+	# Enable location and timezone services
+	pm enable "com.google.android.gms/com.google.android.gms.geotimezone.GeoTimeZoneService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.location.geocode.GeocodeService" >/dev/null 2>&1
+	
+	# Enable authentication related services
+	pm enable "com.google.android.gms/com.google.android.gms.chimera.GmsIntentOperationService_AuthAccountIsolated" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.chimera.GmsIntentOperationService_AuthAccountIsolate" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.chimera.PersistentApiService_AuthAccountIsolated" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.chimera.PersistentIntentOperationService_AuthAccountIsolated" >/dev/null 2>&1
+	
+	# Enable background update services
+	pm enable "com.google.android.gms/com.google.android.gms.auth.folsom.service.FolsomPublicKeyUpdateService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.fonts.update.UpdateSchedulerService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.icing.proxy.IcingInternalCorporaUpdateService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.instantapps.routing.DomainFilterUpdateService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.mobiledataplan.service.PeriodicUpdaterService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.phenotype.service.sync.PackageUpdateTaskService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.update.SystemUpdateGcmTaskService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.update.SystemUpdateService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.update.UpdateFromSdCardService" >/dev/null 2>&1
+	
+	# Enable wearable services
+	pm enable "com.google.android.gms/com.google.android.gms.backup.wear.BackupSettingsListenerService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.dck.service.DckWearableListenerService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.fitness.service.wearable.WearableSyncAccountService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.fitness.service.wearable.WearableSyncConfigService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.fitness.service.wearable.WearableSyncConnectionService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.fitness.service.wearable.WearableSyncMessageService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.fitness.wearables.WearableSyncService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.wearable.service.WearableControlService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.wearable.service.WearableService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.nearby.fastpair.service.WearableDataListenerService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.location.wearable.WearableLocationService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.location.fused.wearable.GmsWearableListenerService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.mdm.services.MdmPhoneWearableListenerService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.tapandpay.wear.WearProxyService" >/dev/null 2>&1
+	
+	# Enable Trust Agent services
+	pm enable "com.google.android.gms/com.google.android.gms.auth.trustagent.GoogleTrustAgent" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.trustagent.api.bridge.TrustAgentBridgeService" >/dev/null 2>&1
+	pm enable "com.google.android.gms/com.google.android.gms.trustagent.api.state.TrustAgentState" >/dev/null 2>&1
+	
+	# Find misc_optimizations.prop in multiple potential locations
+	PROP_FILE=""
+	for prop_path in "$MODULE_PATH/misc_optimizations.prop" /data/adb/modules/ghost/misc_optimizations.prop /data/adb/modules/GhostGMS/misc_optimizations.prop; do
+		if [ -f "$prop_path" ]; then
+			PROP_FILE="$prop_path"
+			break
+		fi
+	done
+	
+	# Force disable all miscellaneous optimizations by setting props to their defaults
+	# Most of these will reset on reboot anyway
+	if [ -n "$PROP_FILE" ]; then
+		# More shell-compatible property extraction using grep
+		grep -v '^#' "$PROP_FILE" | grep '=' | while IFS='=' read -r prop_name prop_value; do
+			# Skip empty lines
+			if [ -z "$prop_name" ]; then
+				continue
+			fi
+			
+			# Check if debug/log related property
+			if echo "$prop_name" | grep -q 'debug\|log'; then
+				setprop "$prop_name" "true" >/dev/null 2>&1
+			fi
+			
+			# Check if disable related property
+			if echo "$prop_name" | grep -q 'disable'; then
+				setprop "$prop_name" "false" >/dev/null 2>&1
+			fi
+		done
+	fi
+	
+	# Turn on kernel debugging again
+	echo 1 > /proc/sys/debug/exception-trace 2>/dev/null
+	echo 1 > /proc/sys/vm/oom_dump_tasks 2>/dev/null
+	echo "7 4 1 7" > /proc/sys/kernel/printk 2>/dev/null  # Reset to normal logging
+	echo "on" > /proc/sys/kernel/printk_devkmsg 2>/dev/null
+	
+	# Enable all packages from gmslist.txt
+	if [ -f /data/ghost/gmslist.txt ]; then
+		for pkg in $(cat /data/ghost/gmslist.txt | tr '|' '\n'); do
+			if echo "$pkg" | grep -q "com.google.android.gms\|com.android.vending"; then
+				pm enable "$pkg" >/dev/null 2>&1
+			fi
+		done
+	fi
+	
+	# Enable any other disabled Google-related packages
+	for pkg in $(pm list packages -d | grep -E 'com.google|com.android.vending' | cut -d: -f2); do
+		pm enable "$pkg" >/dev/null 2>&1
+	done
+	
+	su -lp 2000 -c "cmd notification post -S bigtext -t 'GMS Control Panel' 'Tag$(date +%s)' \"All optimizations have been disabled and Google services restored. A reboot is recommended for full effect.\""
+	
+	# Ensure log directory exists
+	mkdir -p /data/ghost 2>/dev/null
+	touch /data/ghost/ghost_log 2>/dev/null
+	echo "Successfully disabled all optimizations and restored all Google services" >> /data/ghost/ghost_log
+}
+
+# Function for managing miscellaneous optimizations
+set_misc_opt() {
+	# Ensure directory exists
+	mkdir -p /data/ghost 2>/dev/null
+	
+	echo $1 >/data/ghost/misc_opt
+	
+	if [ "$1" -eq 1 ]; then
+		# Apply miscellaneous optimizations when toggle is ON
+		su -lp 2000 -c "cmd notification post -t 'GMS Control Panel' 'Tag$(date +%s)' \"Applying miscellaneous system optimizations\""
+		
+		# Find misc_optimizations.prop in multiple potential locations
+		PROP_FILE=""
+		for prop_path in "$MODULE_PATH/misc_optimizations.prop" /data/adb/modules/ghost/misc_optimizations.prop /data/adb/modules/GhostGMS/misc_optimizations.prop; do
+			if [ -f "$prop_path" ]; then
+				PROP_FILE="$prop_path"
+				break
+			fi
+		done
+		
+		# Apply properties from misc_optimizations.prop
+		if [ -n "$PROP_FILE" ]; then
+			# More shell-compatible property extraction
+			grep -v '^#' "$PROP_FILE" | grep '=' | while IFS='=' read -r prop_name prop_value; do
+				# Skip empty lines
+				if [ -z "$prop_name" ] || [ -z "$prop_value" ]; then
+					continue
+				fi
+				
+				setprop "$prop_name" "$prop_value" >/dev/null 2>&1
+			done
+		fi
+	else
+		# Remove optimizations when toggle is OFF
+		su -lp 2000 -c "cmd notification post -t 'GMS Control Panel' 'Tag$(date +%s)' \"Disabling miscellaneous system optimizations\""
+		
+		# We cannot easily "undo" all the property settings
+		# Most will be reset on reboot, so we just notify the user
+		echo "Miscellaneous optimizations will be fully disabled on next reboot" > /dev/null
+	fi
+}
+
+# Enhanced function for GMS service optimization
+set_kill_logd() {
+	# Ensure directory exists
+	mkdir -p /data/ghost 2>/dev/null
+	
+	echo $1 >/data/ghost/kill_logd
+	
+	# Check if gmslist.txt exists, create it if not
+	if [ ! -f /data/ghost/gmslist.txt ]; then
+		echo "Warning: gmslist.txt not found, attempting to create it." > /dev/kmsg 2>/dev/null
+		
+		# Try to find gmslist.txt in multiple locations
+		local found_file=""
+		for search_path in "$MODULE_PATH/gmslist.txt" "$(dirname "$0")/../gmslist.txt" "./gmslist.txt" "./temp_data/ghost/gmslist.txt"; do
+			if [ -f "$search_path" ]; then
+				echo "Found gmslist.txt at $search_path, copying..." > /dev/kmsg 2>/dev/null
+				cp "$search_path" /data/ghost/ 2>/dev/null
+				found_file="$search_path"
+				break
+			fi
+		done
+		
+		# If we still don't have the file, create a minimal default one
+		if [ ! -f /data/ghost/gmslist.txt ]; then
+			echo "Creating default gmslist.txt" > /dev/kmsg 2>/dev/null
+			echo "com.google.android.gms|com.google.android.gms.ads.identifier.service.AdvertisingIdService|com.google.android.gms.analytics.service.AnalyticsService|com.google.android.gms.nearby.discovery.service.DiscoveryService" > /data/ghost/gmslist.txt
+		fi
+	fi
+	
+	# Check if file is readable
+	if [ ! -r /data/ghost/gmslist.txt ]; then
+		echo "Error: gmslist.txt is not readable" > /dev/kmsg 2>/dev/null
+		return 1
+	fi
+	
+	# Check if file is empty
+	if [ ! -s /data/ghost/gmslist.txt ]; then
+		echo "Warning: gmslist.txt is empty, adding default entries" > /dev/kmsg 2>/dev/null
+		echo "com.google.android.gms|com.google.android.gms.ads.identifier.service.AdvertisingIdService|com.google.android.gms.analytics.service.AnalyticsService|com.google.android.gms.nearby.discovery.service.DiscoveryService" > /data/ghost/gmslist.txt
+	fi
+	
+	# Optimize GMS Services by disabling/enabling services in gmslist.txt
+	if [ "$1" -eq 1 ]; then
+		# Disable GMS services (when toggle is ON)
+		su -lp 2000 -c "cmd notification post -t 'GMS Control Panel' 'Tag$(date +%s)' \"Optimizing GMS Services - Disabling unnecessary services\""
+		
+		# Get list of packages/services from gmslist.txt with error handling
+		if [ -f /data/ghost/gmslist.txt ]; then
+			# Log the number of entries for diagnosis
+			local entry_count=$(grep -v "^$" /data/ghost/gmslist.txt | tr '|' '\n' | wc -l)
+			echo "Processing $entry_count entries from gmslist.txt" > /dev/kmsg 2>/dev/null
+			
+			# Process each entry
+			for pkg in $(cat /data/ghost/gmslist.txt | tr '|' '\n' | grep -v "^$"); do
+				if echo "$pkg" | grep -q "com.google.android.gms\|com.android.vending"; then
+					# Check if package exists before disabling
+					if pm list packages | grep -q "$(echo "$pkg" | cut -d'/' -f1)"; then
+						# For component/service specific disables
+						if echo "$pkg" | grep -q "/"; then
+							pm disable "$pkg" >/dev/null 2>&1
+							echo "Disabling service: $pkg" > /dev/kmsg 2>/dev/null
+						else
+							# For whole package disables, only disable specific GMS packages not the main one
+							if [ "$pkg" != "com.google.android.gms" ]; then
+								pm disable "$pkg" >/dev/null 2>&1
+								echo "Disabling package: $pkg" > /dev/kmsg 2>/dev/null
+							fi
+						fi
+					else
+						echo "Package not found on device: $(echo "$pkg" | cut -d'/' -f1)" > /dev/kmsg 2>/dev/null
+					fi
+				fi
+			done
+		else
+			echo "Error: gmslist.txt not found during service disabling" > /dev/kmsg 2>/dev/null
+			return 1
+		fi
+	else
+		# Enable GMS services (when toggle is OFF)
+		su -lp 2000 -c "cmd notification post -t 'GMS Control Panel' 'Tag$(date +%s)' \"Restoring GMS Services - Enabling services\""
+		
+		# Get list of packages/services from gmslist.txt with error handling
+		if [ -f /data/ghost/gmslist.txt ]; then
+			for pkg in $(cat /data/ghost/gmslist.txt | tr '|' '\n' | grep -v "^$"); do
+				if echo "$pkg" | grep -q "com.google.android.gms\|com.android.vending"; then
+					# Check if package exists before enabling
+					if pm list packages | grep -q "$(echo "$pkg" | cut -d'/' -f1)"; then
+						pm enable "$pkg" >/dev/null 2>&1
+						echo "Enabling: $pkg" > /dev/kmsg 2>/dev/null
+					else
+						echo "Package not found on device: $(echo "$pkg" | cut -d'/' -f1)" > /dev/kmsg 2>/dev/null
+					fi
+				fi
+			done
+		else
+			echo "Error: gmslist.txt not found during service enabling" > /dev/kmsg 2>/dev/null
+			return 1
+		fi
+	fi
+	
+	# Log success
+	echo "GMS services optimization setting applied successfully: $1" > /dev/kmsg 2>/dev/null
+	
+	# Keep original kill_logd functionality for logging services
+	kill_logd
+}
+
+get_gmslist() {
+	# Search for gmslist.txt in multiple locations
+	local gmslist_file=""
+	
+	# Check all possible locations
+	for path in \
+		"/data/ghost/gmslist.txt" \
+		"$MODULE_PATH/gmslist.txt" \
+		"$(dirname "$0")/../gmslist.txt" \
+		"./gmslist.txt" \
+		"./temp_data/ghost/gmslist.txt"; do
+		if [ -f "$path" ]; then
+			gmslist_file="$path"
+			break
+		fi
+	done
+	
+	# If found, output content
+	if [ -n "$gmslist_file" ]; then
+		cat "$gmslist_file"
+		return 0
+	fi
+	
+	# If not found, create a default one in the first writable directory
+	for dir in "/data/ghost" "$MODULE_PATH" "./temp_data/ghost" "./"; do
+		if [ -d "$dir" ] && [ -w "$dir" ]; then
+			echo "com.google.android.gms|com.google.android.gms.ads.identifier.service.AdvertisingIdService|com.google.android.gms.analytics.service.AnalyticsService|com.google.android.gms.nearby.discovery.service.DiscoveryService" > "$dir/gmslist.txt"
+			cat "$dir/gmslist.txt"
+			return 0
+		fi
+	done
+	
+	# If all else fails, just echo a default value
+	echo "com.google.android.gms|com.google.android.gms.ads.identifier.service.AdvertisingIdService|com.google.android.gms.analytics.service.AnalyticsService|com.google.android.gms.nearby.discovery.service.DiscoveryService"
+}
+
+save_gmslist() {
+	# Find writable directory
+	local target_dir=""
+	
+	# Check if we previously found a file with get_gmslist
+	local source_file=""
+	for path in \
+		"/data/ghost/gmslist.txt" \
+		"$MODULE_PATH/gmslist.txt" \
+		"$(dirname "$0")/../gmslist.txt" \
+		"./gmslist.txt" \
+		"./temp_data/ghost/gmslist.txt"; do
+		if [ -f "$path" ]; then
+			source_file="$path"
+			target_dir="$(dirname "$path")"
+			break
+		fi
+	done
+	
+	# If no existing file found, try to find a writable directory
+	if [ -z "$target_dir" ] || [ ! -w "$target_dir" ]; then
+		for dir in "/data/ghost" "$MODULE_PATH" "./temp_data/ghost" "./"; do
+			if [ -d "$dir" ] && [ -w "$dir" ]; then
+				target_dir="$dir"
+				break
+			fi
+		done
+	fi
+	
+	# Ensure directory exists
+	mkdir -p "$target_dir" 2>/dev/null
+	
+	# Save the file
+	if [ -n "$target_dir" ] && [ -w "$target_dir" ]; then
+		echo "$1" | tr '/' '|' > "$target_dir/gmslist.txt"
+		# Check if save was successful
+		if [ $? -eq 0 ]; then
+			return 0
+		fi
+	fi
+	
+	# If we couldn't save anywhere, return an error
+	echo "Error: Could not save to any location" >&2
+	return 1
+}
+
+open_website() {
+	/system/bin/am start -a android.intent.action.VIEW -d "https://ghost.rem01gaming.dev/"
+}
+
+# Add backward compatibility functions
+get_gamelist() {
+    # For backward compatibility, call the renamed function
+    get_gmslist
+}
+
+save_gamelist() {
+    # For backward compatibility, call the renamed function
+    save_gmslist "$@"
+}
+
+save_logs() {
+	# Ensure all required directories exist with verbose output
+	for dir in /data/ghost /sdcard; do
+		if [ ! -d "$dir" ]; then
+			echo "Creating directory $dir" > /dev/kmsg 2>/dev/null
+			mkdir -p "$dir" 2>/dev/null
+			if [ ! -d "$dir" ]; then
+				echo "Failed to create $dir, trying alternative approach" > /dev/kmsg 2>/dev/null
+				# Try with su as fallback
+				su -c "mkdir -p $dir" 2>/dev/null
+			fi
+		fi
+	done
+	
+	# Ensure log file exists
+	touch /data/ghost/ghost_log 2>/dev/null
+	
+	# If we still can't access or create the directory, fallback to /data
+	if [ ! -w "/data/ghost" ] && [ -w "/data" ]; then
+		echo "Warning: /data/ghost is not writable, falling back to /data" > /dev/kmsg 2>/dev/null
+		mkdir -p /data/ghostgms 2>/dev/null
+		touch /data/ghostgms/ghost_log 2>/dev/null
+		GHOST_LOG="/data/ghostgms/ghost_log"
+	else
+		GHOST_LOG="/data/ghost/ghost_log"
+	fi
+
+	logfile="/sdcard/gmscontrol_log"
+	if [ ! -w "/sdcard" ]; then
+		# Try to find a writable location
+		for alt_path in /storage/emulated/0 /storage/self/primary /data/media/0; do
+			if [ -w "$alt_path" ]; then
+				logfile="$alt_path/gmscontrol_log"
+				echo "Using alternative log location: $logfile" > /dev/kmsg 2>/dev/null
+				break
+			fi
+		done
+	fi
+	
+	# Attempt to write to log file, with fallback
+	cat <<EOF >$logfile 2>/dev/null || echo "Warning: Failed to write log file" > /dev/kmsg
+*****************************************************
+GMS Control Panel Log
+
+Version: $(get_module_version)
+Chipset: $(get_chipset)
+Kernel Version: $(get_kernel)
+*****************************************************
+
+System Information:
+- Device: $(getprop ro.product.model 2>/dev/null || echo "Unknown") ($(getprop ro.product.device 2>/dev/null || echo "Unknown"))
+- Android: $(getprop ro.system.build.version.release 2>/dev/null || echo "Unknown") (SDK: $(getprop ro.system.build.version.sdk 2>/dev/null || echo "Unknown"))
+- Build: $(getprop ro.system.build.id 2>/dev/null || echo "Unknown")
+- Build Date: $(getprop ro.system.build.date 2>/dev/null || echo "Unknown")
+
+Current Settings:
+- GMS Optimization: $([ "$(get_kill_logd)" -eq 1 ] 2>/dev/null && echo "Enabled" || echo "Disabled")
+- Misc Optimizations: $([ "$(get_misc_opt)" -eq 1 ] 2>/dev/null && echo "Enabled" || echo "Disabled")
+
+Disabled GMS Services:
+$(
+    if [ -f /data/ghost/gmslist.txt ]; then
+        disabled_count=0
+        total_count=0
+        for pkg in $(cat /data/ghost/gmslist.txt | tr '|' '\n' | grep -v "^$"); do
+            total_count=$((total_count + 1))
+            
+            # Check if package exists
+            if pm list packages | grep -q "$(echo "$pkg" | cut -d'/' -f1)"; then
+                # Package exists, check if disabled
+                if pm list packages -d 2>/dev/null | grep -q "$pkg"; then
+                    disabled_count=$((disabled_count + 1))
+                    echo "- $pkg (Disabled)"
+                else
+                    echo "- $pkg (Enabled)"
+                fi
+            else
+                echo "- $pkg (Not Found - Check package name)"
+            fi
+        done
+        echo "Total: $disabled_count disabled out of $total_count services"
+    else
+        echo "No GMS service list found or not readable"
+        # Try to search for the file in other locations
+        for alt_path in "$MODULE_PATH/gmslist.txt" /data/adb/modules/ghost/gmslist.txt /data/adb/modules/GhostGMS/gmslist.txt; do
+            if [ -f "$alt_path" ]; then
+                echo "Found alternative GMS list at $alt_path"
+                break
+            fi
+        done
+    fi
+)
+
+Log History:
+$(cat $GHOST_LOG 2>/dev/null || echo "No log history available")
+EOF
+
+	# Verify log file was created
+	if [ -f "$logfile" ]; then
+		su -lp 2000 -c "cmd notification post -t 'GMS Control Panel' 'Tag$(date +%s)' \"Detailed logs saved to $logfile\"" 2>/dev/null ||
+			echo "GMS Control Panel: Detailed logs saved to $logfile" > /dev/kmsg
+		
+		# Save a record of the log in our tracking file
+		echo "$(date): Logs saved to $logfile" >> $GHOST_LOG 2>/dev/null
+		
+		# Return success for UI feedback
+		return 0
+	else
+		echo "GMS Control Panel: Failed to save logs" > /dev/kmsg
+		return 1
+	fi
+}
+
+# Handle old function name for backward compatibility
+disable_anything() {
+    disable_all_optimizations
+}
+
+# Add reapply_settings function for directly applying current settings
+reapply_settings() {
+    # Get current settings
+    kill_logd_status=$(get_kill_logd)
+    misc_opt_status=$(get_misc_opt)
+    
+    # Log the action
+    echo "Reapplying settings: GMS optimization=$([ "$kill_logd_status" -eq 1 ] && echo 'enabled' || echo 'disabled'), Misc optimizations=$([ "$misc_opt_status" -eq 1 ] && echo 'enabled' || echo 'disabled')" > /dev/kmsg 2>/dev/null
+    
+    # Apply GMS services optimization based on current status
+    if [ "$kill_logd_status" -eq 1 ]; then
+        # Apply GMS optimizations
+        su -lp 2000 -c "cmd notification post -t 'GMS Control Panel' 'Tag$(date +%s)' \"Reapplying GMS Services optimization\""
+        set_kill_logd 1
+    else
+        # Restore GMS services
+        su -lp 2000 -c "cmd notification post -t 'GMS Control Panel' 'Tag$(date +%s)' \"Restoring GMS Services\""
+        set_kill_logd 0
+    fi
+    
+    # Apply miscellaneous optimizations based on current status
+    if [ "$misc_opt_status" -eq 1 ]; then
+        # Apply misc optimizations
+        set_misc_opt 1
+    else
+        # Remove misc optimizations
+        set_misc_opt 0
+    fi
+    
+    # Ensure log directory exists
+    mkdir -p /data/ghost 2>/dev/null
+    touch /data/ghost/ghost_log 2>/dev/null
+    
+    # Log the action
+    echo "$(date): Settings reapplied - GMS optimizations: $([ "$kill_logd_status" -eq 1 ] && echo 'enabled' || echo 'disabled'), Misc optimizations: $([ "$misc_opt_status" -eq 1 ] && echo 'enabled' || echo 'disabled')" >> /data/ghost/ghost_log
+    
+    # Return success
+    return 0
+}
+
+# Run the requested function with the provided arguments
+$@ 
