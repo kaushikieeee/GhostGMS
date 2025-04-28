@@ -130,7 +130,7 @@ wlan_logging
 		start $svc 2>/dev/null
 	done
 	
-	# Based on GMS Control Panel v2.1 - Enable all Google services
+	# Based on GMS Control Panel v2.1.1 - Enable all Google services
 	
 	# Enable the advertising and tracking capabilities of Google Play Services
 	pm enable "com.google.android.gms/com.google.android.gms.ads.identifier.service.AdvertisingIdNotificationService" >/dev/null 2>&1
