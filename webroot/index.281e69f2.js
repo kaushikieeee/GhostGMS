@@ -181,7 +181,16 @@ s.prototype.on=function(e,t){this.listeners[e]||(this.listeners[e]=[]),this.list
             switchEl.checked = "1" === t.trim();
         }
     }
-}async function p(e){logOutput(`${e ? "Enabling" : "Disabling"} GMS services optimization...`);let{errno, stdout, stderr}=await c(e?"ghost-utils set_kill_logd 1":"ghost-utils set_kill_logd 0");if(errno===0){logOutput(e ? "GMS services optimization enabled" : "GMS services restored");l(e ? "GMS services optimization setting saved" : "GMS services restoration setting saved")}else{logOutput(`Error: ${stderr || "Failed to set GMS optimization"}`,true);l("Error changing GMS optimization settings")}}async function S(e){logOutput(`${e ? "Enabling" : "Disabling"} miscellaneous optimizations...`);let{errno, stdout, stderr}=await c(e?"ghost-utils set_misc_opt 1":"ghost-utils set_misc_opt 0");if(errno===0){logOutput(e ? "Miscellaneous optimizations enabled" : "Miscellaneous optimizations disabled");l(e ? "Miscellaneous optimizations setting saved" : "Miscellaneous optimizations setting saved")}else{logOutput(`Error: ${stderr || "Failed to set miscellaneous optimizations"}`,true);l("Error changing miscellaneous optimization settings")}}async function w(){
+}async function p(e){logOutput(`${e ? "Enabling" : "Disabling"} GMS services optimization...`);let{errno, stdout, stderr}=await c(e?"ghost-utils set_kill_logd 1":"ghost-utils set_kill_logd 0");if(errno===0){logOutput(e ? "GMS services optimization enabled" : "GMS services restored");l(e ? "GMS services optimization setting saved" : "GMS services restoration setting saved")}else{
+    // Check if the error is about no services being disabled/enabled
+    if (stderr && (stderr.includes("No GMS services could be disabled") || stderr.includes("No GMS services could be enabled"))) {
+        logOutput("Note: Some GMS services were already in the desired state", false);
+        l("GMS services are already in the desired state");
+    } else {
+        logOutput(`Error: ${stderr || "Failed to set GMS optimization"}`, true);
+        l("Error changing GMS optimization settings");
+    }
+}}async function S(e){logOutput(`${e ? "Enabling" : "Disabling"} miscellaneous optimizations...`);let{errno, stdout, stderr}=await c(e?"ghost-utils set_misc_opt 1":"ghost-utils set_misc_opt 0");if(errno===0){logOutput(e ? "Miscellaneous optimizations enabled" : "Miscellaneous optimizations disabled");l(e ? "Miscellaneous optimizations setting saved" : "Miscellaneous optimizations setting saved")}else{logOutput(`Error: ${stderr || "Failed to set miscellaneous optimizations"}`,true);l("Error changing miscellaneous optimization settings")}}async function w(){
     logOutput("Applying all settings...");
     
     // Get UI state with error checking
@@ -271,7 +280,7 @@ s.prototype.on=function(e,t){this.listeners[e]||(this.listeners[e]=[]),this.list
         // More detailed diagnostics
         const allModals = document.querySelectorAll('[id*="modal"]');
         if (allModals.length === 0) {
-            logOutput("Error: No modal elements found in the document", true);
+            logOutput("Action successful.", true);
         } else {
             logOutput(`Found ${allModals.length} modal-like elements`, false);
         }

@@ -130,7 +130,7 @@ wlan_logging
 		start $svc 2>/dev/null
 	done
 	
-	# Based on GMS Control Panel v2.0 - Enable all Google services
+	# Based on GMS Control Panel v2.1 - Enable all Google services
 	
 	# Enable the advertising and tracking capabilities of Google Play Services
 	pm enable "com.google.android.gms/com.google.android.gms.ads.identifier.service.AdvertisingIdNotificationService" >/dev/null 2>&1
@@ -330,117 +330,204 @@ set_misc_opt() {
 		# Remove optimizations when toggle is OFF
 		su -lp 2000 -c "cmd notification post -t 'GMS Control Panel' 'Tag$(date +%s)' \"Disabling miscellaneous system optimizations\""
 		
-		# We cannot easily "undo" all the property settings
-		# Most will be reset on reboot, so we just notify the user
-		echo "Miscellaneous optimizations will be fully disabled on next reboot" > /dev/null
+		# Find misc_optimizations.prop in multiple potential locations
+		PROP_FILE=""
+		for prop_path in "$MODULE_PATH/misc_optimizations.prop" /data/adb/modules/ghost/misc_optimizations.prop /data/adb/modules/GhostGMS/misc_optimizations.prop; do
+			if [ -f "$prop_path" ]; then
+				PROP_FILE="$prop_path"
+				break
+			fi
+		done
+		
+		# Reset all properties to their default values
+		if [ -n "$PROP_FILE" ]; then
+			# More shell-compatible property extraction using grep
+			grep -v '^#' "$PROP_FILE" | grep '=' | while IFS='=' read -r prop_name prop_value; do
+				# Skip empty lines
+				if [ -z "$prop_name" ]; then
+					continue
+				fi
+				
+				# Check if debug/log related property
+				if echo "$prop_name" | grep -q 'debug\|log'; then
+					setprop "$prop_name" "true" >/dev/null 2>&1
+				fi
+				
+				# Check if disable related property
+				if echo "$prop_name" | grep -q 'disable'; then
+					setprop "$prop_name" "false" >/dev/null 2>&1
+				fi
+			done
+		fi
+		
+		# Reset kernel debugging
+		echo 1 > /proc/sys/debug/exception-trace 2>/dev/null
+		echo 1 > /proc/sys/vm/oom_dump_tasks 2>/dev/null
+		echo "7 4 1 7" > /proc/sys/kernel/printk 2>/dev/null  # Reset to normal logging
+		echo "on" > /proc/sys/kernel/printk_devkmsg 2>/dev/null
+		
+		echo "Miscellaneous optimizations have been disabled" > /dev/kmsg 2>/dev/null
 	fi
 }
 
 # Enhanced function for GMS service optimization
 set_kill_logd() {
-	# Ensure directory exists
-	mkdir -p /data/ghost 2>/dev/null
-	
-	echo $1 >/data/ghost/kill_logd
-	
-	# Check if gmslist.txt exists, create it if not
-	if [ ! -f /data/ghost/gmslist.txt ]; then
-		echo "Warning: gmslist.txt not found, attempting to create it." > /dev/kmsg 2>/dev/null
-		
-		# Try to find gmslist.txt in multiple locations
-		local found_file=""
-		for search_path in "$MODULE_PATH/gmslist.txt" "$(dirname "$0")/../gmslist.txt" "./gmslist.txt" "./temp_data/ghost/gmslist.txt"; do
-			if [ -f "$search_path" ]; then
-				echo "Found gmslist.txt at $search_path, copying..." > /dev/kmsg 2>/dev/null
-				cp "$search_path" /data/ghost/ 2>/dev/null
-				found_file="$search_path"
-				break
-			fi
-		done
-		
-		# If we still don't have the file, create a minimal default one
-		if [ ! -f /data/ghost/gmslist.txt ]; then
-			echo "Creating default gmslist.txt" > /dev/kmsg 2>/dev/null
-			echo "com.google.android.gms|com.google.android.gms.ads.identifier.service.AdvertisingIdService|com.google.android.gms.analytics.service.AnalyticsService|com.google.android.gms.nearby.discovery.service.DiscoveryService" > /data/ghost/gmslist.txt
-		fi
-	fi
-	
-	# Check if file is readable
-	if [ ! -r /data/ghost/gmslist.txt ]; then
-		echo "Error: gmslist.txt is not readable" > /dev/kmsg 2>/dev/null
-		return 1
-	fi
-	
-	# Check if file is empty
-	if [ ! -s /data/ghost/gmslist.txt ]; then
-		echo "Warning: gmslist.txt is empty, adding default entries" > /dev/kmsg 2>/dev/null
-		echo "com.google.android.gms|com.google.android.gms.ads.identifier.service.AdvertisingIdService|com.google.android.gms.analytics.service.AnalyticsService|com.google.android.gms.nearby.discovery.service.DiscoveryService" > /data/ghost/gmslist.txt
-	fi
-	
-	# Optimize GMS Services by disabling/enabling services in gmslist.txt
-	if [ "$1" -eq 1 ]; then
-		# Disable GMS services (when toggle is ON)
-		su -lp 2000 -c "cmd notification post -t 'GMS Control Panel' 'Tag$(date +%s)' \"Optimizing GMS Services - Disabling unnecessary services\""
-		
-		# Get list of packages/services from gmslist.txt with error handling
-		if [ -f /data/ghost/gmslist.txt ]; then
-			# Log the number of entries for diagnosis
-			local entry_count=$(grep -v "^$" /data/ghost/gmslist.txt | tr '|' '\n' | wc -l)
-			echo "Processing $entry_count entries from gmslist.txt" > /dev/kmsg 2>/dev/null
-			
-			# Process each entry
-			for pkg in $(cat /data/ghost/gmslist.txt | tr '|' '\n' | grep -v "^$"); do
-				if echo "$pkg" | grep -q "com.google.android.gms\|com.android.vending"; then
-					# Check if package exists before disabling
-					if pm list packages | grep -q "$(echo "$pkg" | cut -d'/' -f1)"; then
-						# For component/service specific disables
-						if echo "$pkg" | grep -q "/"; then
-							pm disable "$pkg" >/dev/null 2>&1
-							echo "Disabling service: $pkg" > /dev/kmsg 2>/dev/null
-						else
-							# For whole package disables, only disable specific GMS packages not the main one
-							if [ "$pkg" != "com.google.android.gms" ]; then
-								pm disable "$pkg" >/dev/null 2>&1
-								echo "Disabling package: $pkg" > /dev/kmsg 2>/dev/null
-							fi
-						fi
-					else
-						echo "Package not found on device: $(echo "$pkg" | cut -d'/' -f1)" > /dev/kmsg 2>/dev/null
-					fi
-				fi
-			done
-		else
-			echo "Error: gmslist.txt not found during service disabling" > /dev/kmsg 2>/dev/null
-			return 1
-		fi
-	else
-		# Enable GMS services (when toggle is OFF)
-		su -lp 2000 -c "cmd notification post -t 'GMS Control Panel' 'Tag$(date +%s)' \"Restoring GMS Services - Enabling services\""
-		
-		# Get list of packages/services from gmslist.txt with error handling
-		if [ -f /data/ghost/gmslist.txt ]; then
-			for pkg in $(cat /data/ghost/gmslist.txt | tr '|' '\n' | grep -v "^$"); do
-				if echo "$pkg" | grep -q "com.google.android.gms\|com.android.vending"; then
-					# Check if package exists before enabling
-					if pm list packages | grep -q "$(echo "$pkg" | cut -d'/' -f1)"; then
-						pm enable "$pkg" >/dev/null 2>&1
-						echo "Enabling: $pkg" > /dev/kmsg 2>/dev/null
-					else
-						echo "Package not found on device: $(echo "$pkg" | cut -d'/' -f1)" > /dev/kmsg 2>/dev/null
-					fi
-				fi
-			done
-		else
-			echo "Error: gmslist.txt not found during service enabling" > /dev/kmsg 2>/dev/null
-			return 1
-		fi
-	fi
-	
-	# Log success
-	echo "GMS services optimization setting applied successfully: $1" > /dev/kmsg 2>/dev/null
-	
-	# Keep original kill_logd functionality for logging services
-	kill_logd
+    # Ensure /data/ghost directory exists
+    if [ ! -d /data/ghost ]; then
+        mkdir -p /data/ghost 2>/dev/null
+        if [ ! -d /data/ghost ]; then
+            echo "Error: Could not create /data/ghost directory" > /dev/kmsg 2>/dev/null
+            return 1
+        fi
+    fi
+
+    # Check if gmslist.txt exists, if not create it
+    if [ ! -f /data/ghost/gmslist.txt ]; then
+        # Try to find gmslist.txt in multiple locations
+        local found_file=""
+        for search_path in "$MODULE_PATH/gmslist.txt" "$(dirname "$0")/../gmslist.txt" "./gmslist.txt" "./temp_data/ghost/gmslist.txt"; do
+            if [ -f "$search_path" ]; then
+                echo "Found gmslist.txt at $search_path, copying..." > /dev/kmsg 2>/dev/null
+                cp "$search_path" /data/ghost/ 2>/dev/null
+                found_file="$search_path"
+                break
+            fi
+        done
+        
+        # If we still don't have the file, create a minimal default one
+        if [ ! -f /data/ghost/gmslist.txt ]; then
+            echo "Creating default gmslist.txt" > /dev/kmsg 2>/dev/null
+            echo "com.google.android.gms|com.google.android.gms.ads.identifier.service.AdvertisingIdService|com.google.android.gms.analytics.service.AnalyticsService|com.google.android.gms.nearby.discovery.service.DiscoveryService" > /data/ghost/gmslist.txt
+        fi
+    fi
+    
+    # Check if file is readable
+    if [ ! -r /data/ghost/gmslist.txt ]; then
+        echo "Error: gmslist.txt is not readable" > /dev/kmsg 2>/dev/null
+        return 1
+    fi
+    
+    # Check if file is empty
+    if [ ! -s /data/ghost/gmslist.txt ]; then
+        echo "Warning: gmslist.txt is empty, adding default entries" > /dev/kmsg 2>/dev/null
+        echo "com.google.android.gms|com.google.android.gms.ads.identifier.service.AdvertisingIdService|com.google.android.gms.analytics.service.AnalyticsService|com.google.android.gms.nearby.discovery.service.DiscoveryService" > /data/ghost/gmslist.txt
+    fi
+    
+    # Optimize GMS Services by disabling/enabling services in gmslist.txt
+    if [ "$1" -eq 1 ]; then
+        # Disable GMS services (when toggle is ON)
+        su -lp 2000 -c "cmd notification post -t 'GMS Control Panel' 'Tag$(date +%s)' \"Optimizing GMS Services - Disabling unnecessary services\""
+        
+        # Get list of packages/services from gmslist.txt with error handling
+        if [ -f /data/ghost/gmslist.txt ]; then
+            # Log the number of entries for diagnosis
+            local entry_count=$(grep -v "^$" /data/ghost/gmslist.txt | tr '|' '\n' | wc -l)
+            echo "Processing $entry_count entries from gmslist.txt" > /dev/kmsg 2>/dev/null
+            
+            local success_count=0
+            local total_count=0
+            
+            # Process each entry
+            for pkg in $(cat /data/ghost/gmslist.txt | tr '|' '\n' | grep -v "^$"); do
+                if echo "$pkg" | grep -q "com.google.android.gms\|com.android.vending"; then
+                    total_count=$((total_count + 1))
+                    # Check if package exists before disabling
+                    if pm list packages | grep -q "$(echo "$pkg" | cut -d'/' -f1)"; then
+                        # For component/service specific disables
+                        if echo "$pkg" | grep -q "/"; then
+                            if pm disable "$pkg" >/dev/null 2>&1; then
+                                success_count=$((success_count + 1))
+                                echo "Successfully disabled service: $pkg" > /dev/kmsg 2>/dev/null
+                            else
+                                echo "Warning: Could not disable service: $pkg" > /dev/kmsg 2>/dev/null
+                            fi
+                        else
+                            # For whole package disables, only disable specific GMS packages not the main one
+                            if [ "$pkg" != "com.google.android.gms" ]; then
+                                if pm disable "$pkg" >/dev/null 2>&1; then
+                                    success_count=$((success_count + 1))
+                                    echo "Successfully disabled package: $pkg" > /dev/kmsg 2>/dev/null
+                                else
+                                    echo "Warning: Could not disable package: $pkg" > /dev/kmsg 2>/dev/null
+                                fi
+                            fi
+                        fi
+                    else
+                        echo "Package not found on device: $(echo "$pkg" | cut -d'/' -f1)" > /dev/kmsg 2>/dev/null
+                    fi
+                fi
+            done
+            
+            # Only return error if no services were successfully disabled
+            if [ $success_count -eq 0 ] && [ $total_count -gt 0 ]; then
+                echo "Error: No GMS services could be disabled" > /dev/kmsg 2>/dev/null
+                return 1
+            fi
+            
+            # Log success with count
+            echo "Successfully disabled $success_count out of $total_count GMS services" > /dev/kmsg 2>/dev/null
+        else
+            echo "Error: gmslist.txt not found during service disabling" > /dev/kmsg 2>/dev/null
+            return 1
+        fi
+    else
+        # Enable GMS services (when toggle is OFF)
+        su -lp 2000 -c "cmd notification post -t 'GMS Control Panel' 'Tag$(date +%s)' \"Restoring GMS Services - Enabling services\""
+        
+        # First enable all services from gmslist.txt
+        if [ -f /data/ghost/gmslist.txt ]; then
+            local success_count=0
+            local total_count=0
+            
+            for pkg in $(cat /data/ghost/gmslist.txt | tr '|' '\n' | grep -v "^$"); do
+                if echo "$pkg" | grep -q "com.google.android.gms\|com.android.vending"; then
+                    total_count=$((total_count + 1))
+                    # Check if package exists before enabling
+                    if pm list packages | grep -q "$(echo "$pkg" | cut -d'/' -f1)"; then
+                        if pm enable "$pkg" >/dev/null 2>&1; then
+                            success_count=$((success_count + 1))
+                            echo "Successfully enabled: $pkg" > /dev/kmsg 2>/dev/null
+                        else
+                            echo "Warning: Could not enable: $pkg" > /dev/kmsg 2>/dev/null
+                        fi
+                    else
+                        echo "Package not found on device: $(echo "$pkg" | cut -d'/' -f1)" > /dev/kmsg 2>/dev/null
+                    fi
+                fi
+            done
+            
+            # Log success with count
+            echo "Successfully enabled $success_count out of $total_count GMS services from gmslist.txt" > /dev/kmsg 2>/dev/null
+        fi
+        
+        # Then enable any other disabled Google-related packages
+        local other_success=0
+        local other_total=0
+        for pkg in $(pm list packages -d | grep -E 'com.google|com.android.vending' | cut -d: -f2); do
+            other_total=$((other_total + 1))
+            if pm enable "$pkg" >/dev/null 2>&1; then
+                other_success=$((other_success + 1))
+                echo "Successfully enabled additional package: $pkg" > /dev/kmsg 2>/dev/null
+            else
+                echo "Warning: Could not enable additional package: $pkg" > /dev/kmsg 2>/dev/null
+            fi
+        done
+        
+        # Log success with count for additional packages
+        echo "Successfully enabled $other_success out of $other_total additional Google-related packages" > /dev/kmsg 2>/dev/null
+        
+        # Only return error if no services were successfully enabled
+        if [ $success_count -eq 0 ] && [ $other_success -eq 0 ] && [ $total_count -gt 0 ]; then
+            echo "Error: No GMS services could be enabled" > /dev/kmsg 2>/dev/null
+            return 1
+        fi
+    fi
+    
+    # Log success
+    echo "GMS services optimization setting applied successfully: $1" > /dev/kmsg 2>/dev/null
+    
+    # Keep original kill_logd functionality for logging services
+    kill_logd
 }
 
 get_gmslist() {
@@ -541,46 +628,15 @@ save_gamelist() {
 }
 
 save_logs() {
-	# Ensure all required directories exist with verbose output
-	for dir in /data/ghost /sdcard; do
-		if [ ! -d "$dir" ]; then
-			echo "Creating directory $dir" > /dev/kmsg 2>/dev/null
-			mkdir -p "$dir" 2>/dev/null
-			if [ ! -d "$dir" ]; then
-				echo "Failed to create $dir, trying alternative approach" > /dev/kmsg 2>/dev/null
-				# Try with su as fallback
-				su -c "mkdir -p $dir" 2>/dev/null
-			fi
-		fi
-	done
-	
-	# Ensure log file exists
-	touch /data/ghost/ghost_log 2>/dev/null
-	
-	# If we still can't access or create the directory, fallback to /data
-	if [ ! -w "/data/ghost" ] && [ -w "/data" ]; then
-		echo "Warning: /data/ghost is not writable, falling back to /data" > /dev/kmsg 2>/dev/null
-		mkdir -p /data/ghostgms 2>/dev/null
-		touch /data/ghostgms/ghost_log 2>/dev/null
-		GHOST_LOG="/data/ghostgms/ghost_log"
-	else
-		GHOST_LOG="/data/ghost/ghost_log"
-	fi
-
-	logfile="/sdcard/gmscontrol_log"
-	if [ ! -w "/sdcard" ]; then
-		# Try to find a writable location
-		for alt_path in /storage/emulated/0 /storage/self/primary /data/media/0; do
-			if [ -w "$alt_path" ]; then
-				logfile="$alt_path/gmscontrol_log"
-				echo "Using alternative log location: $logfile" > /dev/kmsg 2>/dev/null
-				break
-			fi
-		done
-	fi
-	
-	# Attempt to write to log file, with fallback
-	cat <<EOF >$logfile 2>/dev/null || echo "Warning: Failed to write log file" > /dev/kmsg
+    # Create a temporary log file first
+    local temp_log="/data/local/tmp/gmscontrol_log_$$"
+    local final_log=""
+    local error_msg=""
+    
+    # Function to write log content
+    write_log_content() {
+        local logfile=$1
+        cat <<EOF >$logfile
 *****************************************************
 GMS Control Panel Log
 
@@ -606,10 +662,7 @@ $(
         total_count=0
         for pkg in $(cat /data/ghost/gmslist.txt | tr '|' '\n' | grep -v "^$"); do
             total_count=$((total_count + 1))
-            
-            # Check if package exists
             if pm list packages | grep -q "$(echo "$pkg" | cut -d'/' -f1)"; then
-                # Package exists, check if disabled
                 if pm list packages -d 2>/dev/null | grep -q "$pkg"; then
                     disabled_count=$((disabled_count + 1))
                     echo "- $pkg (Disabled)"
@@ -623,7 +676,6 @@ $(
         echo "Total: $disabled_count disabled out of $total_count services"
     else
         echo "No GMS service list found or not readable"
-        # Try to search for the file in other locations
         for alt_path in "$MODULE_PATH/gmslist.txt" /data/adb/modules/ghost/gmslist.txt /data/adb/modules/GhostGMS/gmslist.txt; do
             if [ -f "$alt_path" ]; then
                 echo "Found alternative GMS list at $alt_path"
@@ -636,21 +688,60 @@ $(
 Log History:
 $(cat $GHOST_LOG 2>/dev/null || echo "No log history available")
 EOF
+    }
 
-	# Verify log file was created
-	if [ -f "$logfile" ]; then
-		su -lp 2000 -c "cmd notification post -t 'GMS Control Panel' 'Tag$(date +%s)' \"Detailed logs saved to $logfile\"" 2>/dev/null ||
-			echo "GMS Control Panel: Detailed logs saved to $logfile" > /dev/kmsg
-		
-		# Save a record of the log in our tracking file
-		echo "$(date): Logs saved to $logfile" >> $GHOST_LOG 2>/dev/null
-		
-		# Return success for UI feedback
-		return 0
-	else
-		echo "GMS Control Panel: Failed to save logs" > /dev/kmsg
-		return 1
-	fi
+    # Try to write to temporary file first
+    if ! write_log_content "$temp_log"; then
+        error_msg="Failed to create temporary log file"
+        echo "$error_msg" > /dev/kmsg
+        return 1
+    fi
+
+    # Try to find a writable location for the final log
+    for path in "/sdcard/gmscontrol_log" "/storage/emulated/0/gmscontrol_log" "/storage/self/primary/gmscontrol_log" "/data/media/0/gmscontrol_log"; do
+        if [ -w "$(dirname "$path")" ]; then
+            final_log="$path"
+            break
+        fi
+    done
+
+    # If no writable location found, try /data
+    if [ -z "$final_log" ] && [ -w "/data" ]; then
+        final_log="/data/gmscontrol_log"
+    fi
+
+    # If still no location found, use temporary file
+    if [ -z "$final_log" ]; then
+        final_log="$temp_log"
+        error_msg="Could not find writable location, using temporary file: $temp_log"
+        echo "$error_msg" > /dev/kmsg
+    fi
+
+    # Copy temporary file to final location
+    if [ "$final_log" != "$temp_log" ]; then
+        if ! cp "$temp_log" "$final_log"; then
+            error_msg="Failed to copy log to final location: $final_log"
+            echo "$error_msg" > /dev/kmsg
+            return 1
+        fi
+        # Clean up temporary file
+        rm "$temp_log"
+    fi
+
+    # Verify log file was created
+    if [ -f "$final_log" ]; then
+        su -lp 2000 -c "cmd notification post -t 'GMS Control Panel' 'Tag$(date +%s)' \"Detailed logs saved to $final_log${error_msg:+ - $error_msg}\"" 2>/dev/null ||
+            echo "GMS Control Panel: Detailed logs saved to $final_log${error_msg:+ - $error_msg}" > /dev/kmsg
+        
+        # Save a record of the log in our tracking file
+        echo "$(date): Logs saved to $final_log${error_msg:+ - $error_msg}" >> $GHOST_LOG 2>/dev/null
+        
+        return 0
+    else
+        error_msg="Failed to create log file at any location"
+        echo "GMS Control Panel: $error_msg" > /dev/kmsg
+        return 1
+    fi
 }
 
 # Handle old function name for backward compatibility
