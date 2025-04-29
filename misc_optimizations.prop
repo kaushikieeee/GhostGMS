@@ -27,7 +27,7 @@ debug.sf.ddms=0
 debug.sf.gpu_comp_tiling=0
 
 # Disables logging related to SurfaceFlinger's backpressure mechanism.
-debug.sf.disable_backpressure=1
+debug.sf.disable_backpressure=0
 
 # Disables logging related to surface re-computations.
 debug.sf.recomputecrop=0
@@ -51,7 +51,6 @@ media.stagefright.log-uri=0
 
 # Disables various profiling tools.
 profiler.debugmonitor=false
-profiler.launch=false
 profiler.hung.dumpdobugreport=false
 
 # Disables StrictMode, which checks for potential performance and security issues.
@@ -60,8 +59,8 @@ persist.android.strictmode=0
 # Changes behavior related to EGL context destruction.
 ro.egl.destroy_after_detach=false
 
-# Disables support for Kernel Samepage Merging (KSM), a memory optimization technique.
-ro.config.ksm.support=false
+# Modified for NothingMuch compatibility - Enable KSM support
+ro.config.ksm.support=true
 
 # Disables "checkin" logging that sends system information to Google.
 ro.config.nocheckin=1
@@ -69,11 +68,11 @@ ro.config.nocheckin=1
 # Disables debugging capabilities for the device.
 ro.debuggable=0
 
-# Sets the log buffer size to zero, effectively disabling the log system.
-ro.logd.size=0
+# Modified for NothingMuch compatibility - Set reasonable log buffer size
+ro.logd.size=64K
 
-# Disables the default compression cache.
-ro.compcache.default=0
+# Modified for NothingMuch compatibility - Enable compression cache
+ro.compcache.default=1
 
 # Disables JNI checks and QEMU-related logging.
 ro.kernel.android.checkjni=0
@@ -132,9 +131,6 @@ persist.sys.offlinelog.logcat=1
 
 # Disables OEM-specific dumps.
 persist.oem.dump=0
-
-# Enables the system's sleep mode.
-pm.sleep_mode=1
 
 # Forces disabling error reports and ulog.
 profiler.forse_disable_err_rpt=1
