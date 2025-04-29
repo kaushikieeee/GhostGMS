@@ -1,0 +1,11 @@
+{
+  "name": "ghostgms",
+  "version": "2.1.2",
+  "description": "GMS Control Panel by Kaushik",
+  "scripts": {
+    "build": "node webroot/build.js"
+  },
+  "dependencies": {
+    "terser": "^5.27.2"
+  }
+} 
