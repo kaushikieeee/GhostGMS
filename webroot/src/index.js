@@ -14,7 +14,8 @@ const CSRF_TOKEN_NAME = 'ghostgms_csrf';
 let csrfToken = null;
 let pendingRequests = new Set();
 const COMMAND_TIMEOUT_MS = 10000; // 10 seconds timeout for commands
-const LOG_DIR = "/sdcard/ghostgms/logs"; // Log directory path
+const LOG_DIR = "/data/media/0/ghostgms/logs"; // Using internal storage path
+const LOG_PERMISSIONS = "777"; // Full permissions for log directory
 
 // Initialize logging system
 async function initLogging() {
@@ -23,7 +24,7 @@ async function initLogging() {
         await executeCommand(`mkdir -p ${LOG_DIR}`);
         
         // Set proper permissions
-        await executeCommand(`chmod 755 ${LOG_DIR}`);
+        await executeCommand(`chmod ${LOG_PERMISSIONS} ${LOG_DIR}`);
         
         // Create today's log file
         const today = new Date().toISOString().split('T')[0];
@@ -33,7 +34,13 @@ async function initLogging() {
         const header = `=== GhostGMS Log - ${new Date().toISOString()} ===\n`;
         await executeCommand(`echo "${header}" > ${logFile}`);
         
-        logOutput("Logging system initialized successfully");
+        // Set permissions for the log file
+        await executeCommand(`chmod ${LOG_PERMISSIONS} ${logFile}`);
+        
+        logOutput("Logging system initialized successfully", false, {
+            logDir: LOG_DIR,
+            permissions: LOG_PERMISSIONS
+        });
         return true;
     } catch (error) {
         console.error("Failed to initialize logging system:", error);
@@ -50,9 +57,31 @@ async function writeLogEntry(level, message, context = {}) {
         const timestamp = new Date().toISOString();
         const logEntry = `[${timestamp}] [${level}] ${message} ${JSON.stringify(context)}\n`;
         
+        // Write to log file
         await executeCommand(`echo "${logEntry}" >> ${logFile}`);
+        
+        // Ensure permissions are maintained
+        await executeCommand(`chmod ${LOG_PERMISSIONS} ${logFile}`);
+        
+        // Verify log file exists and is writable
+        const verifyResult = await executeCommand(`ls -l ${logFile}`);
+        logOutput(`Log file status: ${verifyResult.stdout}`, false, {
+            logFile: logFile,
+            permissions: LOG_PERMISSIONS
+        });
     } catch (error) {
         console.error("Failed to write log entry:", error);
+        // Try to create the log file again if it doesn't exist
+        try {
+            const today = new Date().toISOString().split('T')[0];
+            const logFile = `${LOG_DIR}/ghostgms_${today}.log`;
+            await executeCommand(`touch ${logFile}`);
+            await executeCommand(`chmod ${LOG_PERMISSIONS} ${logFile}`);
+            // Retry writing the log entry
+            await writeLogEntry(level, message, context);
+        } catch (retryError) {
+            console.error("Failed to recover log file:", retryError);
+        }
     }
 }
 
