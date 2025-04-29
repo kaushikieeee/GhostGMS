@@ -6,7 +6,7 @@ Ghost GMS is a **Magisk module** designed to **optimize device performance** by 
 The module now includes a **WebUI** for an **easy-to-use interface** where users can **toggle settings** and **apply optimizations seamlessly**.  
 
 > **Note:**  
-> Ghost GMS is compatible with most **stock ROMs**. However, on **Nothing OS** and **NothingMuch ROM**, users may see an **error stating that GMS was unable to disable**—but in reality, it has been **successfully disabled**.
+> GhostGMS is compatible with most **stock ROMs**. However, on **Nothing OS** and **NothingMuch ROM**, users may see an **error stating that GMS was unable to disable**—but in reality, it has been **successfully disabled**.
 
 > UI forked from Encore Optimizations.
 
