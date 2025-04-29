@@ -23,7 +23,7 @@ function e(e){return e&&e.__esModule?e.default:e}var t=globalThis,n={},i={},o=t.
                     });
                 }, 500); // Add slight delay to simulate real command
             } else if (e.includes("get_module_version")) {
-                n({errno: 0, stdout: "2.1.1-test", stderr: ""});
+                n({errno: 0, stdout: "2.1.2-test", stderr: ""});
             } else if (e.includes("get_kill_logd") || e.includes("get_misc_opt")) {
                 n({errno: 0, stdout: "0", stderr: ""});
             } else if (e.includes("save_gmslist") || e.includes("save_gamelist")) {
@@ -63,7 +63,7 @@ function e(e){return e&&e.__esModule?e.default:e}var t=globalThis,n={},i={},o=t.
             if (e.includes("get_gmslist") || e.includes("get_gamelist")) {
                 n({errno: 0, stdout: "com.google.android.gms\ncom.google.android.gms.ads.identifier.service.AdvertisingIdService", stderr: ""});
             } else if (e.includes("get_module_version")) {
-                n({errno: 0, stdout: "2.1.1-browser", stderr: ""});
+                n({errno: 0, stdout: "2.1.2-browser", stderr: ""});
             } else if (e.includes("get_kill_logd") || e.includes("get_misc_opt")) {
                 n({errno: 0, stdout: "0", stderr: ""});
             } else if (e.includes("save_gmslist") || e.includes("save_gamelist")) {
