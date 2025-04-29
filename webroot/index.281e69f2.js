@@ -170,7 +170,10 @@ s.prototype.on=function(e,t){this.listeners[e]||(this.listeners[e]=[]),this.list
     if(0 === e) {
         const switchEl = document.getElementById("killLogdSwitch");
         if (switchEl) {
-            switchEl.checked = "1" === t.trim();
+            const currentState = t.trim() === "1";
+            switchEl.checked = currentState;
+            // Store the state in localStorage
+            localStorage.setItem('killLogdState', currentState);
         }
     }
 }async function A(){
@@ -178,10 +181,35 @@ s.prototype.on=function(e,t){this.listeners[e]||(this.listeners[e]=[]),this.list
     if(0 === e) {
         const switchEl = document.getElementById("miscOptSwitch");
         if (switchEl) {
-            switchEl.checked = "1" === t.trim();
+            const currentState = t.trim() === "1";
+            switchEl.checked = currentState;
+            // Store the state in localStorage
+            localStorage.setItem('miscOptState', currentState);
         }
     }
-}async function p(e){logOutput(`${e ? "Enabling" : "Disabling"} GMS services optimization...`);let{errno, stdout, stderr}=await c(e?"ghost-utils set_kill_logd 1":"ghost-utils set_kill_logd 0");if(errno===0){logOutput(e ? "GMS services optimization enabled" : "GMS services restored");l(e ? "GMS services optimization setting saved" : "GMS services restoration setting saved")}else{
+}
+
+// Add function to restore states from localStorage
+async function restoreStates() {
+    const killLogdSwitch = document.getElementById("killLogdSwitch");
+    const miscOptSwitch = document.getElementById("miscOptSwitch");
+    
+    if (killLogdSwitch) {
+        const savedState = localStorage.getItem('killLogdState');
+        if (savedState !== null) {
+            killLogdSwitch.checked = savedState === 'true';
+        }
+    }
+    
+    if (miscOptSwitch) {
+        const savedState = localStorage.getItem('miscOptState');
+        if (savedState !== null) {
+            miscOptSwitch.checked = savedState === 'true';
+        }
+    }
+}
+
+async function p(e){logOutput(`${e ? "Enabling" : "Disabling"} GMS services optimization...`);let{errno, stdout, stderr}=await c(e?"ghost-utils set_kill_logd 1":"ghost-utils set_kill_logd 0");if(errno===0){logOutput(e ? "GMS services optimization enabled" : "GMS services restored");l(e ? "GMS services optimization setting saved" : "GMS services restoration setting saved")}else{
     // Check if the error is about no services being disabled/enabled
     if (stderr && (stderr.includes("No GMS services could be disabled") || stderr.includes("No GMS services could be enabled"))) {
         logOutput("Note: Some GMS services were already in the desired state", false);
@@ -436,10 +464,10 @@ s.prototype.on=function(e,t){this.listeners[e]||(this.listeners[e]=[]),this.list
         l("Error occurred while disabling optimizations");
     }
 }async function I(){logOutput("Opening website...");await c("ghost-utils open_website")}d=new URL("ghost2.72daf16c.webp",import.meta.url).toString(),document.addEventListener("DOMContentLoaded",async e=>{
-    // Initialize console
-    logOutput("Initializing GMS Control Panel...");
+    // Restore states first
+    await restoreStates();
     
-    // Load app state
+    // Then load other data
     await m();
     await g();
     await f();
