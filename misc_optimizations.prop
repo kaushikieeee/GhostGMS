@@ -26,9 +26,6 @@ debug.sf.dump=0
 debug.sf.ddms=0
 debug.sf.gpu_comp_tiling=0
 
-# Disables logging related to SurfaceFlinger's backpressure mechanism.
-debug.sf.disable_backpressure=0
-
 # Disables logging related to surface re-computations.
 debug.sf.recomputecrop=0
 
@@ -56,23 +53,11 @@ profiler.hung.dumpdobugreport=false
 # Disables StrictMode, which checks for potential performance and security issues.
 persist.android.strictmode=0
 
-# Changes behavior related to EGL context destruction.
-ro.egl.destroy_after_detach=false
-
-# Modified for NothingMuch compatibility - Enable KSM support
-ro.config.ksm.support=true
-
 # Disables "checkin" logging that sends system information to Google.
 ro.config.nocheckin=1
 
 # Disables debugging capabilities for the device.
 ro.debuggable=0
-
-# Modified for NothingMuch compatibility - Set reasonable log buffer size
-ro.logd.size=64K
-
-# Modified for NothingMuch compatibility - Enable compression cache
-ro.compcache.default=1
 
 # Disables JNI checks and QEMU-related logging.
 ro.kernel.android.checkjni=0
