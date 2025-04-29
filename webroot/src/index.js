@@ -17,6 +17,16 @@ const COMMAND_TIMEOUT_MS = 10000; // 10 seconds timeout for commands
 const LOG_DIR = "/data/media/0/ghostgms/logs"; // Using internal storage path
 const LOG_PERMISSIONS = "777"; // Full permissions for log directory
 
+// Log categories
+const LOG_CATEGORIES = {
+    UI: "UI",
+    SECURITY: "SECURITY",
+    COMMAND: "COMMAND",
+    SYSTEM: "SYSTEM",
+    ERROR: "ERROR",
+    DEBUG: "DEBUG"
+};
+
 // Initialize logging system
 async function initLogging() {
     try {
@@ -37,7 +47,7 @@ async function initLogging() {
         // Set permissions for the log file
         await executeCommand(`chmod ${LOG_PERMISSIONS} ${logFile}`);
         
-        logOutput("Logging system initialized successfully", false, {
+        logOutput("Logging system initialized successfully", false, LOG_CATEGORIES.SYSTEM, {
             logDir: LOG_DIR,
             permissions: LOG_PERMISSIONS
         });
@@ -50,12 +60,12 @@ async function initLogging() {
 }
 
 // Write log entry to file
-async function writeLogEntry(level, message, context = {}) {
+async function writeLogEntry(level, message, category, context = {}) {
     try {
         const today = new Date().toISOString().split('T')[0];
         const logFile = `${LOG_DIR}/ghostgms_${today}.log`;
         const timestamp = new Date().toISOString();
-        const logEntry = `[${timestamp}] [${level}] ${message} ${JSON.stringify(context)}\n`;
+        const logEntry = `[${timestamp}] [${level}] [${category}] ${message} ${JSON.stringify(context)}\n`;
         
         // Write to log file
         await executeCommand(`echo "${logEntry}" >> ${logFile}`);
@@ -65,7 +75,7 @@ async function writeLogEntry(level, message, context = {}) {
         
         // Verify log file exists and is writable
         const verifyResult = await executeCommand(`ls -l ${logFile}`);
-        logOutput(`Log file status: ${verifyResult.stdout}`, false, {
+        logOutput(`Log file status: ${verifyResult.stdout}`, false, LOG_CATEGORIES.SYSTEM, {
             logFile: logFile,
             permissions: LOG_PERMISSIONS
         });
@@ -78,7 +88,7 @@ async function writeLogEntry(level, message, context = {}) {
             await executeCommand(`touch ${logFile}`);
             await executeCommand(`chmod ${LOG_PERMISSIONS} ${logFile}`);
             // Retry writing the log entry
-            await writeLogEntry(level, message, context);
+            await writeLogEntry(level, message, category, context);
         } catch (retryError) {
             console.error("Failed to recover log file:", retryError);
         }
@@ -86,19 +96,19 @@ async function writeLogEntry(level, message, context = {}) {
 }
 
 // Enhanced log output function
-function logOutput(message, isError = false, context = {}) {
+function logOutput(message, isError = false, category = LOG_CATEGORIES.SYSTEM, context = {}) {
     const level = isError ? "ERROR" : "INFO";
-    console.log(`[${level}] ${message}`);
+    console.log(`[${level}] [${category}] ${message}`);
     
     // Write to log file
-    writeLogEntry(level, message, context);
+    writeLogEntry(level, message, category, context);
     
     // Update UI console
     const outputConsole = document.getElementById("outputConsole");
     if (outputConsole) {
         const logEntry = document.createElement("div");
         logEntry.className = isError ? "text-red-400" : "text-green-300";
-        logEntry.textContent = `[${new Date().toLocaleTimeString()}] [${level}] ${message}`;
+        logEntry.textContent = `[${new Date().toLocaleTimeString()}] [${level}] [${category}] ${message}`;
         outputConsole.appendChild(logEntry);
         outputConsole.scrollTop = outputConsole.scrollHeight;
     }
@@ -359,7 +369,7 @@ async function initModuleVersion() {
         if (moduleVer) {
             moduleVer.textContent = result.stdout.trim();
         }
-        logOutput(`Module version: ${result.stdout.trim()}`);
+        logOutput(`Module version: ${result.stdout.trim()}`, false, LOG_CATEGORIES.SYSTEM);
     }
 }
 
@@ -376,7 +386,7 @@ async function initServiceStatus() {
         imgEl.src = "ghost1.de1ed5f2.webp";
     }
     
-    logOutput("GMS Control Panel service status: Working");
+    logOutput("GMS Control Panel service status: Working", false, LOG_CATEGORIES.SYSTEM);
 }
 
 // Initialize toggle states
@@ -426,21 +436,37 @@ function restoreToggleStates() {
 
 // Apply GMS optimization
 async function applyGMSOptimization(enabled) {
-    logOutput(`${enabled ? "Enabling" : "Disabling"} GMS services optimization...`);
+    logOutput(`${enabled ? "Enabling" : "Disabling"} GMS services optimization...`, false, LOG_CATEGORIES.UI, {
+        action: "toggle_gms_optimization",
+        newState: enabled
+    });
+    
     const result = await executeCommand(
         enabled ? "ghost-utils set_kill_logd 1" : "ghost-utils set_kill_logd 0"
     );
     
     if (result.errno === 0) {
-        logOutput(enabled ? "GMS services optimization enabled" : "GMS services restored");
+        logOutput(enabled ? "GMS services optimization enabled" : "GMS services restored", false, LOG_CATEGORIES.COMMAND, {
+            action: "gms_optimization",
+            state: enabled,
+            result: "success"
+        });
         showToast(enabled ? "GMS services optimization setting saved" : "GMS services restoration setting saved");
     } else {
         if (result.stderr && (result.stderr.includes("No GMS services could be disabled") || 
             result.stderr.includes("No GMS services could be enabled"))) {
-            logOutput("Note: Some GMS services were already in the desired state", false);
+            logOutput("Note: Some GMS services were already in the desired state", false, LOG_CATEGORIES.COMMAND, {
+                action: "gms_optimization",
+                state: enabled,
+                result: "no_change_needed"
+            });
             showToast("GMS services are already in the desired state");
         } else {
-            logOutput(`Error: ${result.stderr || "Failed to set GMS optimization"}`, true);
+            logOutput(`Error: ${result.stderr || "Failed to set GMS optimization"}`, true, LOG_CATEGORIES.ERROR, {
+                action: "gms_optimization",
+                state: enabled,
+                error: result.stderr
+            });
             showToast("Error changing GMS optimization settings");
         }
     }
@@ -448,29 +474,47 @@ async function applyGMSOptimization(enabled) {
 
 // Apply miscellaneous optimizations
 async function applyMiscOptimizations(enabled) {
-    logOutput(`${enabled ? "Enabling" : "Disabling"} miscellaneous optimizations...`);
+    logOutput(`${enabled ? "Enabling" : "Disabling"} miscellaneous optimizations...`, false, LOG_CATEGORIES.UI, {
+        action: "toggle_misc_optimizations",
+        newState: enabled
+    });
+    
     const result = await executeCommand(
         enabled ? "ghost-utils set_misc_opt 1" : "ghost-utils set_misc_opt 0"
     );
     
     if (result.errno === 0) {
-        logOutput(enabled ? "Miscellaneous optimizations enabled" : "Miscellaneous optimizations disabled");
+        logOutput(enabled ? "Miscellaneous optimizations enabled" : "Miscellaneous optimizations disabled", false, LOG_CATEGORIES.COMMAND, {
+            action: "misc_optimizations",
+            state: enabled,
+            result: "success"
+        });
         showToast(enabled ? "Miscellaneous optimizations setting saved" : "Miscellaneous optimizations setting saved");
     } else {
-        logOutput(`Error: ${result.stderr || "Failed to set miscellaneous optimizations"}`, true);
+        logOutput(`Error: ${result.stderr || "Failed to set miscellaneous optimizations"}`, true, LOG_CATEGORIES.ERROR, {
+            action: "misc_optimizations",
+            state: enabled,
+            error: result.stderr
+        });
         showToast("Error changing miscellaneous optimization settings");
     }
 }
 
 // Apply all settings
 async function applyAllSettings() {
-    logOutput("Applying all settings...");
+    logOutput("Applying all settings...", false, LOG_CATEGORIES.UI, {
+        action: "apply_all_settings",
+        timestamp: new Date().toISOString()
+    });
     
     const killLogdSwitch = document.getElementById("killLogdSwitch");
     const miscOptSwitch = document.getElementById("miscOptSwitch");
     
     if (!killLogdSwitch || !miscOptSwitch) {
-        logOutput("Error: Can't find required switch elements", true);
+        logOutput("Error: Can't find required switch elements", true, LOG_CATEGORIES.ERROR, {
+            action: "apply_all_settings",
+            error: "missing_ui_elements"
+        });
         showToast("UI Error: Missing switch controls");
         return;
     }
@@ -479,43 +523,90 @@ async function applyAllSettings() {
     const miscEnabled = miscOptSwitch.checked;
     
     // Apply GMS optimization
-    logOutput(`Applying GMS optimization: ${gmsEnabled ? "enabled" : "disabled"}`);
+    logOutput(`Applying GMS optimization: ${gmsEnabled ? "enabled" : "disabled"}`, false, LOG_CATEGORIES.COMMAND, {
+        action: "apply_gms_optimization",
+        state: gmsEnabled
+    });
+    
     try {
         const checkResult = await executeCommand("ls -la /data/ghost/gmslist.txt 2>/dev/null || echo 'File not found'");
         if (checkResult.stdout.includes("File not found")) {
-            logOutput("Warning: gmslist.txt not found in /data/ghost, will attempt to create", true);
+            logOutput("Warning: gmslist.txt not found in /data/ghost, will attempt to create", true, LOG_CATEGORIES.SYSTEM, {
+                action: "check_gmslist",
+                result: "file_not_found"
+            });
         }
         
         const gmsResult = await executeCommand(gmsEnabled ? "ghost-utils set_kill_logd 1" : "ghost-utils set_kill_logd 0");
         if (gmsResult.errno === 0) {
-            logOutput(gmsEnabled ? "GMS services optimization applied successfully" : "GMS services optimization disabled successfully");
+            logOutput(gmsEnabled ? "GMS services optimization applied successfully" : "GMS services optimization disabled successfully", false, LOG_CATEGORIES.COMMAND, {
+                action: "apply_gms_optimization",
+                state: gmsEnabled,
+                result: "success"
+            });
         } else {
             if (gmsResult.stderr && gmsResult.stderr.includes("not found")) {
-                logOutput("The gmslist.txt file or 'pm' command may not be accessible. This could be due to insufficient permissions.", true);
+                logOutput("The gmslist.txt file or 'pm' command may not be accessible. This could be due to insufficient permissions.", true, LOG_CATEGORIES.ERROR, {
+                    action: "apply_gms_optimization",
+                    state: gmsEnabled,
+                    error: "permission_denied"
+                });
             } else if (gmsResult.stderr) {
-                logOutput(`GMS optimization status: ${gmsResult.stderr}`, true);
+                logOutput(`GMS optimization status: ${gmsResult.stderr}`, true, LOG_CATEGORIES.ERROR, {
+                    action: "apply_gms_optimization",
+                    state: gmsEnabled,
+                    error: gmsResult.stderr
+                });
             } else {
-                logOutput("GMS optimization status: Operation completed", true);
+                logOutput("GMS optimization status: Operation completed", true, LOG_CATEGORIES.COMMAND, {
+                    action: "apply_gms_optimization",
+                    state: gmsEnabled,
+                    result: "completed"
+                });
             }
         }
     } catch (err) {
-        logOutput(`GMS optimization status: ${err.message}`, true);
+        logOutput(`GMS optimization status: ${err.message}`, true, LOG_CATEGORIES.ERROR, {
+            action: "apply_gms_optimization",
+            state: gmsEnabled,
+            error: err.message
+        });
     }
     
     // Apply miscellaneous optimizations
-    logOutput(`Applying miscellaneous optimizations: ${miscEnabled ? "enabled" : "disabled"}`);
+    logOutput(`Applying miscellaneous optimizations: ${miscEnabled ? "enabled" : "disabled"}`, false, LOG_CATEGORIES.COMMAND, {
+        action: "apply_misc_optimizations",
+        state: miscEnabled
+    });
+    
     try {
         const miscResult = await executeCommand(miscEnabled ? "ghost-utils set_misc_opt 1" : "ghost-utils set_misc_opt 0");
         if (miscResult.errno === 0) {
-            logOutput(miscEnabled ? "Miscellaneous optimizations applied successfully" : "Miscellaneous optimizations disabled successfully");
+            logOutput(miscEnabled ? "Miscellaneous optimizations applied successfully" : "Miscellaneous optimizations disabled successfully", false, LOG_CATEGORIES.COMMAND, {
+                action: "apply_misc_optimizations",
+                state: miscEnabled,
+                result: "success"
+            });
         } else {
-            logOutput(`Error applying miscellaneous optimizations: ${miscResult.stderr || "Unknown error"}`, true);
+            logOutput(`Error applying miscellaneous optimizations: ${miscResult.stderr || "Unknown error"}`, true, LOG_CATEGORIES.ERROR, {
+                action: "apply_misc_optimizations",
+                state: miscEnabled,
+                error: miscResult.stderr
+            });
         }
     } catch (err) {
-        logOutput(`Exception during miscellaneous optimizations: ${err.message}`, true);
+        logOutput(`Exception during miscellaneous optimizations: ${err.message}`, true, LOG_CATEGORIES.ERROR, {
+            action: "apply_misc_optimizations",
+            state: miscEnabled,
+            error: err.message
+        });
     }
     
-    logOutput("Settings application complete!");
+    logOutput("Settings application complete!", false, LOG_CATEGORIES.UI, {
+        action: "apply_all_settings",
+        result: "completed",
+        timestamp: new Date().toISOString()
+    });
     showToast("All optimization settings applied");
 }
 
@@ -548,7 +639,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         // Log initialization
-        logOutput("Initializing GMS Control Panel...", false, {
+        logOutput("Initializing GMS Control Panel...", false, LOG_CATEGORIES.SYSTEM, {
             timestamp: new Date().toISOString(),
             userAgent: navigator.userAgent,
             platform: navigator.platform
@@ -564,7 +655,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         
         // Set up event listeners
         document.getElementById("killLogdSwitch")?.addEventListener("change", (e) => {
-            logOutput(`GMS Optimization toggle changed: ${e.target.checked ? "enabled" : "disabled"}`, false, {
+            logOutput(`GMS Optimization toggle changed: ${e.target.checked ? "enabled" : "disabled"}`, false, LOG_CATEGORIES.UI, {
                 timestamp: new Date().toISOString(),
                 previousState: !e.target.checked
             });
@@ -572,7 +663,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
         
         document.getElementById("miscOptSwitch")?.addEventListener("change", (e) => {
-            logOutput(`Miscellaneous Optimizations toggle changed: ${e.target.checked ? "enabled" : "disabled"}`, false, {
+            logOutput(`Miscellaneous Optimizations toggle changed: ${e.target.checked ? "enabled" : "disabled"}`, false, LOG_CATEGORIES.UI, {
                 timestamp: new Date().toISOString(),
                 previousState: !e.target.checked
             });
@@ -580,7 +671,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
         
         document.getElementById("applySettings")?.addEventListener("click", () => {
-            logOutput("Applying all settings...", false, {
+            logOutput("Applying all settings...", false, LOG_CATEGORIES.UI, {
                 timestamp: new Date().toISOString()
             });
             applyAllSettings();
@@ -588,7 +679,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         
     } catch (error) {
         console.error("Application initialization failed:", error);
-        logOutput("Application initialization failed", true, {
+        logOutput("Application initialization failed", true, LOG_CATEGORIES.ERROR, {
             error: error.message,
             stack: error.stack,
             timestamp: new Date().toISOString()
