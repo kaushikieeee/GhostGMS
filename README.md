@@ -1,67 +1,73 @@
-# GhostGMS Module  
+# 👻 GhostGMS Module  
 
 ## 📌 Overview  
-Ghost GMS is a **Magisk module** designed to **optimize device performance** by allowing users to **disable or enable specific Google services (GMS)** while also applying **kernel, animation, and logging tweaks** to improve efficiency.  
+**GhostGMS** is a feature-packed **Magisk module** designed to help you **disable battery-draining Google services (GMS)** while applying **safe, stability-focused system tweaks**—like reducing logging, optimizing kernel flags, and smoothing out animations.  
 
-The module now includes a **WebUI** for an **easy-to-use interface** where users can **toggle settings** and **apply optimizations seamlessly**.  
+Now with a slick **WebUI**, you can manage it all with a few clicks—**no terminal commands**, no guesswork.
 
-> **Note:**  
-> GhostGMS is compatible with most **stock ROMs**. However, on **Nothing OS** and **NothingMuch ROM**, users may see an **error stating that GMS was unable to disable**—but in reality, it has been **successfully disabled**.
-
-> UI forked from Encore Optimizations.
+> 💡 **WebUI originally forked from Encore Optimizations**  
+> 💻 Maintained by [Kaushik (Veloxineology Labs)](https://github.com/veloxineology)
 
 ---
 
 ## 🚀 Features  
 
-### ✅ **Custom GMS Service Control**  
-- Users can **manually type** the GMS services they want to **enable/disable**.  
-- Alternatively, users can **use the predefined list** included in the module.  
-- Changes take effect after pressing the **Apply button** in the WebUI.  
+### ✅ GMS Service Control  
+- Type your own GMS services or use a **predefined safe list**.  
+- Apply toggles and changes in the **WebUI** (yup, it's all point & click).  
 
-### 🌐 **WebUI for Easy Configuration**  
-- **Simple toggles** for enabling/disabling different optimizations.  
-- **Apply changes instantly** with the **Apply button**.  
-- **Logs system status** and displays whether **GMS services** are currently **active**.  
+### 🌐 WebUI (Click, Toggle, Done ✅)  
+- Accessible via browser on the same Wi-Fi  
+- Real-time system state display  
+- Changes persist thanks to `localStorage`  
+- Super clean interface to toggle GMS, kernel, logging, and animation tweaks  
 
-### ⚡ **Performance Optimizations**  
-- **GMS Optimizations**:  
-  - Reduce background processes and restrict unnecessary services.  
-- **Kernel & System Tweaks**:  
-  - Optimize **animation speeds**.  
-  - Disable **unnecessary logging** to reduce resource usage.  
-  - Improve **power efficiency** and reduce **CPU wakeups**.  
+### ⚡ Performance & Battery Optimizations  
+- ☠️ Disable verbose logging (SurfaceFlinger, HWC, gamed, Wi-Fi debug, etc.)  
+- 🧠 Kernel-level tuning for smoother behavior  
+- 💤 Less background GMS chatter = more battery and less lag  
+- 🎞️ Animation tweaks for instant responsiveness  
 
-### 📊 **Logging and Debugging Panel**  
-- **View system logs** directly from the **WebUI**.  
-- **Check GMS status** and overall **system optimizations** in real time.  
+### 🛡️ Built for Stability  
+- Only **safe tweaks retained**  
+- Aggressive/bootloop-prone settings were 🔥 yeeted into the void  
+- Works out of the box on **ANY ROM** (including **Nothing OS**, **PixelOS**, **Lineage**, etc.)
 
 ---
 
-## 🛠️ How to Use  
+## 📦 How to Flash (3-step speedrun)
 
-1. **Install the module** via **Magisk/Zygisk**.  
-2. **Reboot your device** after installation.  
-3. **Open the WebUI** *(instructions provided in the module output after installation)*.  
-4. **Customize GMS optimizations**:  
-   - Enter specific **GMS services** to disable/enable **OR** use the built-in selection.  
-   - Toggle other **performance tweaks** (kernel, animation, logging optimizations).  
-5. **Press the Apply button** to finalize changes.  
-6. **Reboot again** to fully apply optimizations.  
+> ⚠️ Magisk + Zygisk required
+
+1. **Download & flash** the module via **Magisk Manager**  
+2. **Reboot your phone**  
+3. Access the WebUI:
+
+   - 🧙‍♂️ **KernelSU Users**: Automatically opens after install.  
+   - 🧪 **Magisk Users**: Use this standalone WebUI tool:  
+     👉 [`KsuWebUIStandalone`](https://github.com/5ec1cff/KsuWebUIStandalone)
+
+4. Toggle your desired settings  
+5. Hit **"Apply"** and then **Reboot** again
+
+> 📍 You’ll find the **WebUI link printed in your Magisk log** after installation!
 
 ---
 
 ## 🔄 Compatibility  
-✅ **Works on most stock ROMs**.  
 
-⚠️ **Nothing OS & NothingMuch ROM Users**:  
-- You may see an **error stating that GMS could not be disabled**.  
-- However, **GMS is actually disabled despite the error message**.  
+| ROM / OS              | Compatibility ✅ |
+|------------------------|------------------|
+| Stock ROMs            | ✅ Works like a charm  
+| Nothing OS            | ✅ No bugs, full support  
+| NothingMuch ROM       | ✅ Fully supported  
+| Pixel Experience      | ✅ 100%  
+| LineageOS / Custom    | ✅ Absolutely  
 
 ---
 
-## 📜 Notes  
-- If you experience **issues**, check the **logs in the WebUI** for details.  
-- Logs are stored in:  
+## 📂 Logs and Support  
+
+- Log Location:  
   ```bash
   /sdcard/gmscontrol_log
