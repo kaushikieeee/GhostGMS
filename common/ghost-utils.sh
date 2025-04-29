@@ -351,6 +351,41 @@ execute_secure_command() {
     return 0
 }
 
+# Log saving function
+save_logs() {
+    local dest_dir="/data/media/0/ghostgms/logs"
+    local timestamp=$(date +"%Y%m%d_%H%M%S")
+    local log_file="${dest_dir}/ghostgms_${timestamp}.log"
+    
+    # Create destination directory if it doesn't exist
+    mkdir -p "$dest_dir"
+    chmod 777 "$dest_dir"
+    
+    # Save current logs
+    {
+        echo "=== GhostGMS Log Dump - $(date) ==="
+        echo "System Information:"
+        echo "Device: $(getprop ro.product.device)"
+        echo "Model: $(getprop ro.product.model)"
+        echo "Android Version: $(getprop ro.build.version.release)"
+        echo "Build: $(getprop ro.build.id)"
+        echo ""
+        echo "=== Module Status ==="
+        echo "Version: $(cat /data/adb/modules/GhostGMS/module.prop | grep version= | cut -d= -f2)"
+        echo ""
+        echo "=== GMS Services Status ==="
+        pm list packages | grep -E 'com.google.android.gms|com.android.vending' | while read -r pkg; do
+            echo "$pkg: $(dumpsys package $pkg | grep -A1 "enabled=")"
+        done
+        echo ""
+        echo "=== System Logs ==="
+        logcat -d | grep -E 'GhostGMS|ghost-utils'
+    } > "$log_file"
+    
+    chmod 666 "$log_file"
+    echo "$log_file"
+}
+
 # Main command handler
 case "$1" in
     "get_security_token")
@@ -370,6 +405,9 @@ case "$1" in
         ;;
     "restore_iptables")
         restore_iptables
+        ;;
+    "save_logs")
+        save_logs
         ;;
     *)
         if ! is_command_allowed "$1" "$2"; then

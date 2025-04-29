@@ -610,6 +610,40 @@ async function applyAllSettings() {
     showToast("All optimization settings applied");
 }
 
+// Save logs function
+async function saveLogs() {
+    try {
+        logOutput("Saving logs...", false, LOG_CATEGORIES.UI, {
+            action: "save_logs",
+            timestamp: new Date().toISOString()
+        });
+        
+        const result = await executeCommand("ghost-utils save_logs");
+        
+        if (result.errno === 0) {
+            const logFile = result.stdout.trim();
+            logOutput(`Logs saved successfully to: ${logFile}`, false, LOG_CATEGORIES.SYSTEM, {
+                action: "save_logs",
+                result: "success",
+                logFile: logFile
+            });
+            showToast("Logs saved successfully");
+        } else {
+            logOutput(`Failed to save logs: ${result.stderr || "Unknown error"}`, true, LOG_CATEGORIES.ERROR, {
+                action: "save_logs",
+                error: result.stderr
+            });
+            showToast("Failed to save logs");
+        }
+    } catch (error) {
+        logOutput(`Error saving logs: ${error.message}`, true, LOG_CATEGORIES.ERROR, {
+            action: "save_logs",
+            error: error.message
+        });
+        showToast("Error saving logs");
+    }
+}
+
 // Initialize the application
 document.addEventListener("DOMContentLoaded", async () => {
     try {
