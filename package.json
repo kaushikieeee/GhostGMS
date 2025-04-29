@@ -1,6 +1,6 @@
 {
   "name": "ghostgms",
-  "version": "2.1.2",
+  "version": "3.0",
   "description": "GMS Control Panel by Kaushik",
   "scripts": {
     "build": "node webroot/build.js"
