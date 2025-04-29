@@ -3,15 +3,208 @@
  * Main JavaScript file for the web interface
  */
 
+// Security configuration
+let securityToken = null;
+let sessionTimeout = null;
+const SESSION_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
+const MAX_RETRIES = 3;
+let retryCount = 0;
+const SECURE_COOKIE_NAME = 'ghostgms_session';
+const CSRF_TOKEN_NAME = 'ghostgms_csrf';
+let csrfToken = null;
+let pendingRequests = new Set();
+const COMMAND_TIMEOUT_MS = 10000; // 10 seconds timeout for commands
+const LOG_DIR = "/sdcard/ghostgms/logs"; // Log directory path
+
+// Initialize logging system
+async function initLogging() {
+    try {
+        // Create log directory if it doesn't exist
+        await executeCommand(`mkdir -p ${LOG_DIR}`);
+        
+        // Set proper permissions
+        await executeCommand(`chmod 755 ${LOG_DIR}`);
+        
+        // Create today's log file
+        const today = new Date().toISOString().split('T')[0];
+        const logFile = `${LOG_DIR}/ghostgms_${today}.log`;
+        
+        // Initialize log file with header
+        const header = `=== GhostGMS Log - ${new Date().toISOString()} ===\n`;
+        await executeCommand(`echo "${header}" > ${logFile}`);
+        
+        logOutput("Logging system initialized successfully");
+        return true;
+    } catch (error) {
+        console.error("Failed to initialize logging system:", error);
+        showError("Failed to initialize logging system");
+        return false;
+    }
+}
+
+// Write log entry to file
+async function writeLogEntry(level, message, context = {}) {
+    try {
+        const today = new Date().toISOString().split('T')[0];
+        const logFile = `${LOG_DIR}/ghostgms_${today}.log`;
+        const timestamp = new Date().toISOString();
+        const logEntry = `[${timestamp}] [${level}] ${message} ${JSON.stringify(context)}\n`;
+        
+        await executeCommand(`echo "${logEntry}" >> ${logFile}`);
+    } catch (error) {
+        console.error("Failed to write log entry:", error);
+    }
+}
+
+// Enhanced log output function
+function logOutput(message, isError = false, context = {}) {
+    const level = isError ? "ERROR" : "INFO";
+    console.log(`[${level}] ${message}`);
+    
+    // Write to log file
+    writeLogEntry(level, message, context);
+    
+    // Update UI console
+    const outputConsole = document.getElementById("outputConsole");
+    if (outputConsole) {
+        const logEntry = document.createElement("div");
+        logEntry.className = isError ? "text-red-400" : "text-green-300";
+        logEntry.textContent = `[${new Date().toLocaleTimeString()}] [${level}] ${message}`;
+        outputConsole.appendChild(logEntry);
+        outputConsole.scrollTop = outputConsole.scrollHeight;
+    }
+}
+
+// Initialize security
+async function initSecurity() {
+    try {
+        // Check if we're running on localhost
+        if (!window.location.hostname.match(/^(localhost|127\.0\.0\.1)$/)) {
+            throw new Error("Access denied: Web interface can only be accessed from localhost");
+        }
+
+        // Check if we're using HTTPS
+        if (window.location.protocol !== 'https:' && !window.location.hostname.match(/^(localhost|127\.0\.0\.1)$/)) {
+            throw new Error("Access denied: Web interface must be accessed via HTTPS");
+        }
+
+        // Check for required APIs
+        if (!window.crypto || !window.crypto.getRandomValues) {
+            throw new Error("Required security APIs not available");
+        }
+
+        // Generate CSRF token
+        csrfToken = generateCSRFToken();
+        document.cookie = `${CSRF_TOKEN_NAME}=${csrfToken}; secure; samesite=Strict; path=/; max-age=${SESSION_TIMEOUT_MS/1000}`;
+
+        // Get security token from KSU
+        const result = await executeCommand("ghost-utils get_security_token");
+        if (result.errno === 0) {
+            securityToken = result.stdout.trim();
+            // Store token in secure cookie
+            document.cookie = `${SECURE_COOKIE_NAME}=${securityToken}; secure; samesite=Strict; path=/; max-age=${SESSION_TIMEOUT_MS/1000}`;
+            // Set session timeout
+            resetSessionTimeout();
+            // Reset retry count on successful authentication
+            retryCount = 0;
+        } else {
+            throw new Error("Failed to get security token");
+        }
+    } catch (error) {
+        console.error("Security initialization failed:", error);
+        showError("Security initialization failed. Please restart the module.");
+        return false;
+    }
+    return true;
+}
+
+// Generate CSRF token
+function generateCSRFToken() {
+    try {
+        const array = new Uint32Array(8);
+        window.crypto.getRandomValues(array);
+        return Array.from(array, dec => ('0' + dec.toString(16)).substr(-2)).join('');
+    } catch (error) {
+        console.error("Failed to generate CSRF token:", error);
+        throw new Error("Security error: Failed to generate CSRF token");
+    }
+}
+
+// Verify CSRF token
+function verifyCSRFToken(token) {
+    if (!token || typeof token !== 'string' || token.length !== 64) {
+        return false;
+    }
+    return token === csrfToken;
+}
+
+// Reset session timeout
+function resetSessionTimeout() {
+    if (sessionTimeout) {
+        clearTimeout(sessionTimeout);
+    }
+    sessionTimeout = setTimeout(() => {
+        securityToken = null;
+        csrfToken = null;
+        document.cookie = `${SECURE_COOKIE_NAME}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; secure; samesite=Strict`;
+        document.cookie = `${CSRF_TOKEN_NAME}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; secure; samesite=Strict`;
+        showError("Session expired. Please refresh the page.");
+    }, SESSION_TIMEOUT_MS);
+}
+
+// Sanitize command input
+function sanitizeCommand(command) {
+    if (!command || typeof command !== 'string') {
+        throw new Error("Invalid command input");
+    }
+    // Remove any potential command injection attempts
+    return command.replace(/[;&|`$(){}<>]/g, '');
+}
+
+// Validate command response
+function validateCommandResponse(response) {
+    if (!response || typeof response !== 'object') {
+        throw new Error("Invalid command response");
+    }
+    if (typeof response.errno !== 'number') {
+        throw new Error("Invalid error code in response");
+    }
+    if (typeof response.stdout !== 'string' || typeof response.stderr !== 'string') {
+        throw new Error("Invalid output in response");
+    }
+    return true;
+}
+
 // Utility function to execute commands with KSU
 async function executeCommand(command, params = {}) {
     return new Promise((resolve, reject) => {
+        // Check if we have a valid security token
+        if (!securityToken) {
+            reject(new Error("Not authenticated"));
+            return;
+        }
+
+        // Reset session timeout on activity
+        resetSessionTimeout();
+
+        // Sanitize command
+        command = sanitizeCommand(command);
+
         const callbackName = `exec_callback_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+        
+        // Set command timeout
+        const timeoutId = setTimeout(() => {
+            if (pendingRequests.has(callbackName)) {
+                pendingRequests.delete(callbackName);
+                delete window[callbackName];
+                reject(new Error("Command execution timed out"));
+            }
+        }, COMMAND_TIMEOUT_MS);
         
         // Test environment simulation
         if (window.location.pathname.includes('test.html')) {
             console.log("[TEST] Simulating command:", command);
-            // Simulate command execution with test data
+            clearTimeout(timeoutId);
             setTimeout(() => {
                 resolve({
                     errno: 0,
@@ -24,19 +217,61 @@ async function executeCommand(command, params = {}) {
 
         // Real device execution with KSU
         if (typeof ksu !== 'undefined' && ksu.exec) {
+            // Add to pending requests
+            pendingRequests.add(callbackName);
+
             window[callbackName] = (errno, stdout, stderr) => {
-                resolve({ errno, stdout, stderr });
+                // Clean up timeout
+                clearTimeout(timeoutId);
+                
+                // Clean up callback
                 delete window[callbackName];
+                pendingRequests.delete(callbackName);
+                
+                try {
+                    // Validate response
+                    const response = { errno, stdout, stderr };
+                    validateCommandResponse(response);
+                    
+                    // Handle authentication errors
+                    if (errno === 1 && stderr.includes("Invalid token")) {
+                        retryCount++;
+                        if (retryCount >= MAX_RETRIES) {
+                            securityToken = null;
+                            csrfToken = null;
+                            document.cookie = `${SECURE_COOKIE_NAME}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; secure; samesite=Strict`;
+                            document.cookie = `${CSRF_TOKEN_NAME}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; secure; samesite=Strict`;
+                            reject(new Error("Authentication failed. Please refresh the page."));
+                            return;
+                        }
+                        // Retry with new token
+                        initSecurity().then(() => {
+                            executeCommand(command, params).then(resolve).catch(reject);
+                        }).catch(reject);
+                        return;
+                    }
+                    
+                    resolve(response);
+                } catch (error) {
+                    console.error("Error validating command response:", error);
+                    reject(error);
+                }
             };
 
             try {
-                ksu.exec(command, JSON.stringify(params), callbackName);
+                // Add security token and client IP to command
+                const clientIP = window.location.hostname;
+                const secureCommand = `ghost-utils verify_token ${securityToken} ${clientIP} && ${command}`;
+                ksu.exec(secureCommand, JSON.stringify(params), callbackName);
             } catch (error) {
                 console.error("Error executing command:", error);
+                clearTimeout(timeoutId);
+                pendingRequests.delete(callbackName);
                 reject(error);
             }
         } else {
             // Browser fallback
+            clearTimeout(timeoutId);
             console.log("[BROWSER] KSU not available");
             resolve({
                 errno: 0,
@@ -45,6 +280,14 @@ async function executeCommand(command, params = {}) {
             });
         }
     });
+}
+
+// Clean up pending requests
+function cleanupPendingRequests() {
+    for (const callbackName of pendingRequests) {
+        delete window[callbackName];
+    }
+    pendingRequests.clear();
 }
 
 // Show toast notifications
@@ -70,18 +313,13 @@ function showToast(message) {
     }
 }
 
-// Log output to console and UI
-function logOutput(message, isError = false) {
-    console.log(`${isError ? "[ERROR]" : "[INFO]"} ${message}`);
-    
-    const outputConsole = document.getElementById("outputConsole");
-    if (outputConsole) {
-        const logEntry = document.createElement("div");
-        logEntry.className = isError ? "text-red-400" : "text-green-300";
-        logEntry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
-        outputConsole.appendChild(logEntry);
-        outputConsole.scrollTop = outputConsole.scrollHeight;
-    }
+// Show error message
+function showError(message) {
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'fixed top-0 left-0 right-0 bg-red-500 text-white p-4 text-center z-50';
+    errorDiv.textContent = message;
+    document.body.appendChild(errorDiv);
+    setTimeout(() => errorDiv.remove(), 5000);
 }
 
 // Initialize module version display
@@ -254,27 +492,83 @@ async function applyAllSettings() {
 
 // Initialize the application
 document.addEventListener("DOMContentLoaded", async () => {
-    // Restore saved states
-    restoreToggleStates();
-    
-    // Initialize components
-    await initModuleVersion();
-    await initServiceStatus();
-    await initToggleStates();
-    
-    // Set up event listeners
-    document.getElementById("killLogdSwitch")?.addEventListener("change", (e) => {
-        applyGMSOptimization(e.target.checked);
-    });
-    
-    document.getElementById("miscOptSwitch")?.addEventListener("change", (e) => {
-        applyMiscOptimizations(e.target.checked);
-    });
-    
-    document.getElementById("applySettings")?.addEventListener("click", () => {
-        applyAllSettings();
-    });
-    
-    // Initialize console
-    logOutput("Initializing GMS Control Panel...");
+    try {
+        // Check if we're running on localhost
+        if (!window.location.hostname.match(/^(localhost|127\.0\.0\.1)$/)) {
+            showError("Access denied: Web interface can only be accessed from localhost");
+            return;
+        }
+
+        // Check if we're using HTTPS
+        if (window.location.protocol !== 'https:' && !window.location.hostname.match(/^(localhost|127\.0\.0\.1)$/)) {
+            showError("Access denied: Web interface must be accessed via HTTPS");
+            return;
+        }
+
+        // Initialize logging system
+        const loggingInitialized = await initLogging();
+        if (!loggingInitialized) {
+            showError("Failed to initialize logging system");
+            return;
+        }
+
+        // Initialize security
+        const securityInitialized = await initSecurity();
+        if (!securityInitialized) {
+            return;
+        }
+
+        // Log initialization
+        logOutput("Initializing GMS Control Panel...", false, {
+            timestamp: new Date().toISOString(),
+            userAgent: navigator.userAgent,
+            platform: navigator.platform
+        });
+
+        // Restore saved states
+        restoreToggleStates();
+        
+        // Initialize components
+        await initModuleVersion();
+        await initServiceStatus();
+        await initToggleStates();
+        
+        // Set up event listeners
+        document.getElementById("killLogdSwitch")?.addEventListener("change", (e) => {
+            logOutput(`GMS Optimization toggle changed: ${e.target.checked ? "enabled" : "disabled"}`, false, {
+                timestamp: new Date().toISOString(),
+                previousState: !e.target.checked
+            });
+            applyGMSOptimization(e.target.checked);
+        });
+        
+        document.getElementById("miscOptSwitch")?.addEventListener("change", (e) => {
+            logOutput(`Miscellaneous Optimizations toggle changed: ${e.target.checked ? "enabled" : "disabled"}`, false, {
+                timestamp: new Date().toISOString(),
+                previousState: !e.target.checked
+            });
+            applyMiscOptimizations(e.target.checked);
+        });
+        
+        document.getElementById("applySettings")?.addEventListener("click", () => {
+            logOutput("Applying all settings...", false, {
+                timestamp: new Date().toISOString()
+            });
+            applyAllSettings();
+        });
+        
+    } catch (error) {
+        console.error("Application initialization failed:", error);
+        logOutput("Application initialization failed", true, {
+            error: error.message,
+            stack: error.stack,
+            timestamp: new Date().toISOString()
+        });
+        showError("Application initialization failed. Please refresh the page.");
+    }
+});
+
+// Clean up on page unload
+window.addEventListener("beforeunload", () => {
+    cleanupPendingRequests();
 }); 
