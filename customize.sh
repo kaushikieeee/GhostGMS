@@ -71,67 +71,99 @@ ghost_display_message() {
   sleep "$delay"
 }
 
-# Enhanced function to get user choice using volume keys
-ghost_get_choice() {
-  # Default to YES if we can't detect volume keys
-  local DEFAULT=true
-  local TIMEOUT=30
-  local START=$(date +%s)
-  
+# Create a temporary file for events
+EVENTS="$TMPDIR/events"
+rm -f $EVENTS 2>/dev/null
+touch $EVENTS
+
+# Function to test if volume keys can be detected
+keytest() {
+  ui_print "- Testing volume key detection -"
+  ui_print "   Press any Volume key..."
+  timeout 5 sh -c '/system/bin/getevent -lc 1 2>&1 | grep VOLUME | grep "DOWN" > $1' -- "$EVENTS" || return 1
+  if [ -s "$EVENTS" ]; then
+    ui_print "   Volume key detected!"
+    return 0
+  else
+    return 1
+  fi
+}
+
+# Modern volume key detection function
+choose_modern() {
+  # Clear previous events
+  rm -f $EVENTS 2>/dev/null
+  touch $EVENTS
+
   ui_print " "
   ui_print "   Press Volume Up for YES"
   ui_print "   Press Volume Down for NO"
-  ui_print "   (Default: YES after $TIMEOUT seconds)"
+  ui_print "   (You have 15 seconds to make a choice)"
+  ui_print " "
+
+  # Wait for volume key press with timeout
+  timeout 15 sh -c 'while true; do
+    /system/bin/getevent -lc 1 2>&1 | grep VOLUME | grep "DOWN" > $1
+    if [ -s "$1" ]; then
+      break
+    fi
+    sleep 0.2
+  done' -- "$EVENTS" || { ui_print "   Timeout reached, defaulting to YES"; return 0; }
+
+  # Check which key was pressed
+  if grep -q "VOLUMEUP" $EVENTS || grep -q "Volume Up" $EVENTS || grep -q "KEY_VOLUMEUP" $EVENTS; then
+    ui_print "   → YES selected"
+    return 0
+  else
+    ui_print "   → NO selected"
+    return 1
+  fi
+}
+
+# Legacy volume key detection function
+choose_legacy() {
+  ui_print " "
+  ui_print "   Press Volume Up for YES"
+  ui_print "   Press Volume Down for NO"
+  ui_print "   (Using property method for older devices)"
   ui_print " "
   
-  # Multiple detection methods for different devices
+  # Use getprop to get volume key input (recovery mode)
+  local start_time=$(date +%s)
+  local timeout=15
+  
   while true; do
-    CURRENT=$(date +%s)
-    if [ $((CURRENT - START)) -gt $TIMEOUT ]; then
-      ui_print "   → Timeout reached, using default: YES"
+    local current_time=$(date +%s)
+    if [ $((current_time - start_time)) -gt $timeout ]; then
+      ui_print "   Timeout reached, defaulting to YES"
       return 0
     fi
     
-    # Try multiple getevent sources
-    for DEVICE in /dev/input/event* ; do
-      if $BOOTMODE; then
-        # First detection method
-        VOL_UP=$(getevent -lc 1 $DEVICE 2>/dev/null | grep -i "volume up" | grep -i "down" | head -n 1)
-        VOL_DOWN=$(getevent -lc 1 $DEVICE 2>/dev/null | grep -i "volume down" | grep -i "down" | head -n 1)
-        
-        # Second detection method  
-        if [ -z "$VOL_UP" ] && [ -z "$VOL_DOWN" ]; then
-          VOL_UP=$(getevent -lc 1 $DEVICE 2>/dev/null | grep -i "KEY_VOLUMEUP" | grep -i "down" | head -n 1)
-          VOL_DOWN=$(getevent -lc 1 $DEVICE 2>/dev/null | grep -i "KEY_VOLUMEDOWN" | grep -i "down" | head -n 1)
-        fi
-        
-        # If we detected something, break out
-        if [ -n "$VOL_UP" ]; then
-          ui_print "   → YES selected"
-          return 0
-        fi
-        
-        if [ -n "$VOL_DOWN" ]; then
-          ui_print "   → NO selected"
-          return 1
-        fi
-      else
-        # In recovery mode
-        choice=$(getprop "recovery.make_choice")
-        if [ "$choice" = "0" ]; then
-          ui_print "   → NO selected"
-          return 1
-        elif [ "$choice" = "1" ]; then
-          ui_print "   → YES selected"
-          return 0
-        fi
-      fi
-    done
+    local choice=$(getprop "recovery.make_choice")
+    if [ "$choice" = "0" ]; then
+      ui_print "   → NO selected"
+      return 1
+    elif [ "$choice" = "1" ]; then
+      ui_print "   → YES selected"
+      return 0
+    fi
     
-    # Small delay between detection attempts
-    sleep 0.2
+    sleep 0.5
   done
 }
+
+# Determine which volume key function to use
+if keytest; then
+  ui_print "   Using modern volume key detection"
+  ghost_get_choice() {
+    choose_modern
+  }
+else
+  ui_print "   Using legacy volume key detection (for older devices)"
+  ghost_get_choice() {
+    choose_legacy
+  }
+fi
 
 # Set default values for optimizations
 ENABLE_KERNEL_TWEAKS=true
