@@ -95,8 +95,8 @@ jobs:
           # Create a clean directory for the zip
           mkdir -p release_temp
           
-          # Copy all necessary files
-          cp -r * release_temp/
+          # Copy all necessary files, excluding the release_temp directory
+          find . -type f -not -path "./release_temp/*" -not -path "./.git/*" -not -path "./.github/*" | xargs -I{} cp --parents {} release_temp/
           
           # Create the zip file
           cd release_temp
@@ -131,4 +131,4 @@ jobs:
       - name: Cleanup
         run: |
           rm -rf release_temp
-          rm GhostGMS-${{ inputs.version }}.zip
+          rm -f GhostGMS-${{ inputs.version }}.zip 
