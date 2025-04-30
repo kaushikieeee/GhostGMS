@@ -71,25 +71,66 @@ ghost_display_message() {
   sleep "$delay"
 }
 
-# Function to get user choice using volume keys
+# Enhanced function to get user choice using volume keys
 ghost_get_choice() {
-  local choice
+  # Default to YES if we can't detect volume keys
+  local DEFAULT=true
+  local TIMEOUT=30
+  local START=$(date +%s)
+  
   ui_print " "
   ui_print "   Press Volume Up for YES"
   ui_print "   Press Volume Down for NO"
+  ui_print "   (Default: YES after $TIMEOUT seconds)"
   ui_print " "
-  if $BOOTMODE; then
-    choice=$(getevent -lc 1 2>/dev/null | grep VOLUME | grep "DOWN" | grep -v KEY_VOLUMEUP | head -n 1)
-  else
-    choice=$(getprop "recovery.make_choice")
-  fi
-  if [[ "$choice" == *"KEY_VOLUMEDOWN"* ]] || [[ "$choice" == "0" ]]; then
-    ui_print "   → NO selected"
-    return 1
-  else
-    ui_print "   → YES selected"
-    return 0
-  fi
+  
+  # Multiple detection methods for different devices
+  while true; do
+    CURRENT=$(date +%s)
+    if [ $((CURRENT - START)) -gt $TIMEOUT ]; then
+      ui_print "   → Timeout reached, using default: YES"
+      return 0
+    fi
+    
+    # Try multiple getevent sources
+    for DEVICE in /dev/input/event* ; do
+      if $BOOTMODE; then
+        # First detection method
+        VOL_UP=$(getevent -lc 1 $DEVICE 2>/dev/null | grep -i "volume up" | grep -i "down" | head -n 1)
+        VOL_DOWN=$(getevent -lc 1 $DEVICE 2>/dev/null | grep -i "volume down" | grep -i "down" | head -n 1)
+        
+        # Second detection method  
+        if [ -z "$VOL_UP" ] && [ -z "$VOL_DOWN" ]; then
+          VOL_UP=$(getevent -lc 1 $DEVICE 2>/dev/null | grep -i "KEY_VOLUMEUP" | grep -i "down" | head -n 1)
+          VOL_DOWN=$(getevent -lc 1 $DEVICE 2>/dev/null | grep -i "KEY_VOLUMEDOWN" | grep -i "down" | head -n 1)
+        fi
+        
+        # If we detected something, break out
+        if [ -n "$VOL_UP" ]; then
+          ui_print "   → YES selected"
+          return 0
+        fi
+        
+        if [ -n "$VOL_DOWN" ]; then
+          ui_print "   → NO selected"
+          return 1
+        fi
+      else
+        # In recovery mode
+        choice=$(getprop "recovery.make_choice")
+        if [ "$choice" = "0" ]; then
+          ui_print "   → NO selected"
+          return 1
+        elif [ "$choice" = "1" ]; then
+          ui_print "   → YES selected"
+          return 0
+        fi
+      fi
+    done
+    
+    # Small delay between detection attempts
+    sleep 0.2
+  done
 }
 
 # Set default values for optimizations
@@ -495,19 +536,6 @@ if [ ! "$(getprop veloxine-install)" == "hold" ]; then
   echo " "
   dmesg -c > /dev/null 2>&1 || ghost_log "Error clearing Dmesg logs: $?"
 
-
-echo " "
-echo " "
-echo " "
-echo "⣿⣿⣿⣿⠿⠿⠿⠿⠿⠿⣿⣿⣿⣿"
-echo "⣿⣿⡟⠁⣀⡀⢀⡀⠈⢹⣿⣿"
-echo "⣿⡇⢀⡾⠿⡇⠸⠿⢦⢸⣿"
-echo "⣿⡇⠘⠶⠶⠃⠘⠶⠶⠃⢸⣿"
-echo "⣿⣧⡀⠀⠀⠀⠀⠀⠀⢀⣼⣿"
-echo "⣿⣿⣷⣶⣶⣶⣶⣶⣾⣿⣿⣿"
-echo " "
-echo "█░█ █▀█ █▀█ █▀█ █▄█"
-echo "█▀█ █▀█ █▀▀ █▀▀ █"
 sleep 1
 echo " "
 echo "-----------------------------------------------------"
