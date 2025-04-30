@@ -1,73 +1,43 @@
-# 👻 GhostGMS Module  
+# GhostGMS
 
-## 📌 Overview  
-**GhostGMS** is a feature-packed **Magisk module** designed to help you **disable battery-draining Google services (GMS)** while applying **safe, stability-focused system tweaks**—like reducing logging, optimizing kernel flags, and smoothing out animations.  
+GhostGMS is a system optimization module for Android that enhances performance and battery life by debloating and optimizing Google Mobile Services (GMS).
 
-Now with a slick **WebUI**, you can manage it all with a few clicks—**no terminal commands**, no guesswork.
+## Features
 
-> 💡 **WebUI originally forked from Encore Optimizations**  
-> 💻 Maintained by [Kaushik (Veloxineology Labs)](https://github.com/veloxineology)
+- Disables unnecessary GMS background processes
+- Optimizes system properties for better performance
+- Disables system logs to reduce battery drain
+- Applies kernel-level tweaks for improved battery life
+- Includes action button for toggling GMS services without reboot
+- Supports automatic updates through Magisk/KernelSU
 
----
+## Installation
 
-## 🚀 Features  
+1. Download the latest release from the [Releases page](https://github.com/veloxineology/GhostGMS/releases)
+2. Install through Magisk or KernelSU manager
+3. During installation, select your preferred optimization options
+4. Reboot your device
+5. Use the action button in the module section to toggle GMS services
 
-### ✅ GMS Service Control  
-- Type your own GMS services or use a **predefined safe list**.  
-- Apply toggles and changes in the **WebUI** (yup, it's all point & click).  
+## Automatic Updates
 
-### 🌐 WebUI (Click, Toggle, Done ✅)  
-- Accessible via browser on the same Wi-Fi  
-- Real-time system state display  
-- Changes persist thanks to `localStorage`  
-- Super clean interface to toggle GMS, kernel, logging, and animation tweaks  
+The module supports automatic updates through the Magisk/KernelSU module interface. When a new version is available:
 
-### ⚡ Performance & Battery Optimizations  
-- ☠️ Disable verbose logging (SurfaceFlinger, HWC, gamed, Wi-Fi debug, etc.)  
-- 🧠 Kernel-level tuning for smoother behavior  
-- 💤 Less background GMS chatter = more battery and less lag  
-- 🎞️ Animation tweaks for instant responsiveness  
+1. Open Magisk/KernelSU app
+2. Go to the Modules section
+3. An update notification will appear for GhostGMS
+4. Click "Update" to install the latest version
 
-### 🛡️ Built for Stability  
-- Only **safe tweaks retained**  
-- Aggressive/bootloop-prone settings were 🔥 yeeted into the void  
-- Works out of the box on **ANY ROM** (including **Nothing OS**, **PixelOS**, **Lineage**, etc.)
+## Checking GMS Status
 
----
+1. Try opening Quick Share from the Quick Settings Panel
+2. If it doesn't open, GMS processes are disabled
+3. If it opens, GMS processes are enabled
 
-## 📦 How to Flash (3-step speedrun)
+## Support
 
-> ⚠️ Magisk + Zygisk required
-
-1. **Download & flash** the module via **Magisk Manager**  
-2. **Reboot your phone**  
-3. Access the WebUI:
-
-   - 🧙‍♂️ **KernelSU Users**: Automatically opens after install.  
-   - 🧪 **Magisk Users**: Use this standalone WebUI tool:  
-     👉 [`KsuWebUIStandalone`](https://github.com/5ec1cff/KsuWebUIStandalone)
-
-4. Toggle your desired settings  
-5. Hit **"Apply"** and then **Reboot** again
-
-> 📍 You’ll find the **WebUI link printed in your Magisk log** after installation!
+For questions or issues, join our Telegram group: [t.me/veloxineologysupport](https://t.me/veloxineologysupport)
 
 ---
 
-## 🔄 Compatibility  
-
-| ROM / OS              | Compatibility ✅ |
-|------------------------|------------------|
-| Stock ROMs            | ✅ Works like a charm  
-| Nothing OS            | ✅ No bugs, full support  
-| NothingMuch ROM       | ✅ Fully supported  
-| Pixel Experience      | ✅ 100%  
-| LineageOS / Custom    | ✅ Absolutely  
-
----
-
-## 📂 Logs and Support  
-
-- Log Location:  
-  ```bash
-  /sdcard/gmscontrol_log
+Created by Kaushik (@veloxineology)

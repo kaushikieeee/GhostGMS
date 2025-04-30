@@ -1,0 +1,8 @@
+id=GhostGMS
+name=GhostGMS by Kaushik.
+version=v2.0
+versionCode=20
+author=Kaushik (@veloxineology)
+description=GhostGMS enhances performance and extends battery life by debloating and optimizing Google Mobile Services and system components. Includes user-configurable optimizations.
+support=https://t.me/veloxineologysupport
+updateJson=https://raw.githubusercontent.com/veloxineology/GhostGMS/main/update.json
