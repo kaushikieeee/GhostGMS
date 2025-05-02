@@ -91,9 +91,9 @@ keytest() {
 
 # Modern volume key detection function
 choose_modern() {
-  # Clear previous events
-  rm -f $EVENTS 2>/dev/null
-  touch $EVENTS
+  local event
+  local volupkey='KEY_VOLUMEUP'
+  local voldownkey='KEY_VOLUMEDOWN'
 
   ui_print " "
   ui_print "   Press Volume Up for YES"
@@ -102,22 +102,29 @@ choose_modern() {
   ui_print " "
 
   # Wait for volume key press with timeout
-  timeout 15 sh -c 'while true; do
-    /system/bin/getevent -lc 1 2>&1 | grep VOLUME | grep "DOWN" > $1
-    if [ -s "$1" ]; then
-      break
+  timeout 15 sh -c '
+  while true; do
+    event="$(getevent -lnc 1)"
+    # `KEY.*DOWN` means that the key was pressed, not released
+    if echo "${event}" | grep -q "${volupkey}.*DOWN"; then
+      echo 'volup' > $1 && break
+    elif echo "${event}" | grep -q "${voldownkey}.*DOWN"; then
+      echo 'voldown' > $1 && break
     fi
-    sleep 0.2
-  done' -- "$EVENTS" || { ui_print "   Timeout reached, defaulting to YES"; return 0; }
+  done
+  ' -- "$EVENTS" || { ui_print "   Timeout reached, defaulting to YES"; return 0; }
 
   # Check which key was pressed
-  if grep -q "VOLUMEUP" $EVENTS || grep -q "Volume Up" $EVENTS || grep -q "KEY_VOLUMEUP" $EVENTS; then
-    ui_print "   → YES selected"
-    return 0
-  else
-    ui_print "   → NO selected"
-    return 1
-  fi
+  case "$EVENTS" in
+    volup)
+      ui_print "   → YES selected"
+      return 0
+      ;;
+    voldown)
+      ui_print "   → NO selected"
+      return 1
+      ;;
+  esac
 }
 
 # Legacy volume key detection function
