@@ -1,261 +1,481 @@
 # Toggle All Google Services (may break features)
 # Toggle the advertising and tracking capabilities of Google Play Services.
-com.google.android.gms/com.google.android.gms.ads.identifier.service.AdvertisingIdNotificationService
-com.google.android.gms/com.google.android.gms.ads.identifier.service.AdvertisingIdService
-com.google.android.gms/com.google.android.gms.nearby.mediums.nearfieldcommunication.NfcAdvertisingService
+com.google.android.gms/com.google.android.gms.ads.identifier.service.AdvertisingIdNotificationService|ads
+com.google.android.gms/com.google.android.gms.ads.identifier.service.AdvertisingIdService|ads
+com.google.android.gms/com.google.android.gms.nearby.mediums.nearfieldcommunication.NfcAdvertisingService|ads
  
 # Restrict/Allow Google's data collection and analytics on your Android device.
-com.google.android.gms/com.google.android.gms.analytics.AnalyticsService
-com.google.android.gms/com.google.android.gms.analytics.AnalyticsTaskService
-com.google.android.gms/com.google.android.gms.analytics.internal.PlayLogReportingService
-com.google.android.gms/com.google.android.gms.stats.eastworld.EastworldService
-com.google.android.gms/com.google.android.gms.stats.service.DropBoxEntryAddedService
-com.google.android.gms/com.google.android.gms.stats.PlatformStatsCollectorService
-com.google.android.gms/com.google.android.gms.common.stats.GmsCoreStatsService
-com.google.android.gms/com.google.android.gms.common.stats.StatsUploadService
-com.google.android.gms/com.google.android.gms.backup.stats.BackupStatsService
-com.google.android.gms/com.google.android.gms.checkin.CheckinApiService
-com.google.android.gms/com.google.android.gms.checkin.CheckinService
-com.google.android.gms/com.google.android.gms.tron.CollectionService
-com.google.android.gms/com.google.android.gms.common.config.PhenotypeCheckinService
+com.google.android.gms/com.google.android.gms.analytics.AnalyticsService|analytics
+com.google.android.gms/com.google.android.gms.analytics.AnalyticsTaskService|analytics
+com.google.android.gms/com.google.android.gms.analytics.internal.PlayLogReportingService|analytics
+com.google.android.gms/com.google.android.gms.stats.eastworld.EastworldService|analytics
+com.google.android.gms/com.google.android.gms.stats.service.DropBoxEntryAddedService|analytics
+com.google.android.gms/com.google.android.gms.stats.PlatformStatsCollectorService|analytics
+com.google.android.gms/com.google.android.gms.common.stats.GmsCoreStatsService|analytics
+com.google.android.gms/com.google.android.gms.common.stats.StatsUploadService|analytics
+com.google.android.gms/com.google.android.gms.backup.stats.BackupStatsService|analytics
+com.google.android.gms/com.google.android.gms.checkin.CheckinApiService|analytics
+com.google.android.gms/com.google.android.gms.checkin.CheckinService|analytics
+com.google.android.gms/com.google.android.gms.tron.CollectionService|analytics
+com.google.android.gms/com.google.android.gms.common.config.PhenotypeCheckinService|analytics
 
 # Toggle bug reporting functionality of gms.
-com.google.android.gms/com.google.android.gms.feedback.FeedbackAsyncService
-com.google.android.gms/com.google.android.gms.feedback.LegacyBugReportService
-com.google.android.gms/com.google.android.gms.feedback.OfflineReportSendTaskService
-com.google.android.gms/com.google.android.gms.googlehelp.metrics.ReportBatchedMetricsGcmTaskService
-com.google.android.gms/com.google.android.gms.analytics.internal.PlayLogReportingService
-com.google.android.gms/com.google.android.gms.locationsharingreporter.service.reporting.periodic.PeriodicReporterMonitoringService
-com.google.android.gms/com.google.android.location.reporting.service.ReportingAndroidService
-com.google.android.gms/com.google.android.location.reporting.service.ReportingSyncService
-com.google.android.gms/com.google.android.gms.common.stats.net.NetworkReportService
-com.google.android.gms/com.google.android.gms.presencemanager.service.PresenceManagerPresenceReportService
-com.google.android.gms/com.google.android.gms.usagereporting.service.UsageReportingIntentService
+com.google.android.gms/com.google.android.gms.feedback.FeedbackAsyncService|reporting
+com.google.android.gms/com.google.android.gms.feedback.LegacyBugReportService|reporting
+com.google.android.gms/com.google.android.gms.feedback.OfflineReportSendTaskService|reporting
+com.google.android.gms/com.google.android.gms.googlehelp.metrics.ReportBatchedMetricsGcmTaskService|reporting
+com.google.android.gms/com.google.android.gms.analytics.internal.PlayLogReportingService|reporting
+com.google.android.gms/com.google.android.gms.locationsharingreporter.service.reporting.periodic.PeriodicReporterMonitoringService|reporting
+com.google.android.gms/com.google.android.location.reporting.service.ReportingAndroidService|location
+com.google.android.gms/com.google.android.location.reporting.service.ReportingSyncService|location
+com.google.android.gms/com.google.android.gms.common.stats.net.NetworkReportService|reporting
+com.google.android.gms/com.google.android.gms.presencemanager.service.PresenceManagerPresenceReportService|reporting
+com.google.android.gms/com.google.android.gms.usagereporting.service.UsageReportingIntentService|reporting
 
 # Toggle Google Cast services.
-com.google.android.gms/com.google.android.gms.cast.media.CastMediaRoute2ProviderService
-com.google.android.gms/com.google.android.gms.cast.media.CastMediaRoute2ProviderService_Isolated
-com.google.android.gms/com.google.android.gms.cast.media.CastMediaRoute2ProviderService_Persistent
-com.google.android.gms/com.google.android.gms.cast.media.CastMediaRouteProviderService
-com.google.android.gms/com.google.android.gms.cast.media.CastMediaRouteProviderService_Isolated
-com.google.android.gms/com.google.android.gms.cast.media.CastMediaRouteProviderService_Persistent
-com.google.android.gms/com.google.android.gms.cast.media.CastRemoteDisplayProviderService
-com.google.android.gms/com.google.android.gms.cast.media.CastRemoteDisplayProviderService_Isolated
-com.google.android.gms/com.google.android.gms.cast.media.CastRemoteDisplayProviderService_Persistent
-com.google.android.gms/com.google.android.gms.cast.service.CastPersistentService_Persistent
-com.google.android.gms/com.google.android.gms.cast.service.CastSocketMultiplexerLifeCycleService
-com.google.android.gms/com.google.android.gms.cast.service.CastSocketMultiplexerLifeCycleService_Isolated
-com.google.android.gms/com.google.android.gms.cast.service.CastSocketMultiplexerLifeCycleService_Persistent
-com.google.android.gms/com.google.android.gms.chimera.CastPersistentBoundBrokerService
+com.google.android.gms/com.google.android.gms.cast.media.CastMediaRoute2ProviderService|cast
+com.google.android.gms/com.google.android.gms.cast.media.CastMediaRoute2ProviderService_Isolated|cast
+com.google.android.gms/com.google.android.gms.cast.media.CastMediaRoute2ProviderService_Persistent|cast
+com.google.android.gms/com.google.android.gms.cast.media.CastMediaRouteProviderService|cast
+com.google.android.gms/com.google.android.gms.cast.media.CastMediaRouteProviderService_Isolated|cast
+com.google.android.gms/com.google.android.gms.cast.media.CastMediaRouteProviderService_Persistent|cast
+com.google.android.gms/com.google.android.gms.cast.media.CastRemoteDisplayProviderService|cast
+com.google.android.gms/com.google.android.gms.cast.media.CastRemoteDisplayProviderService_Isolated|cast
+com.google.android.gms/com.google.android.gms.cast.media.CastRemoteDisplayProviderService_Persistent|cast
+com.google.android.gms/com.google.android.gms.cast.service.CastPersistentService_Persistent|cast
+com.google.android.gms/com.google.android.gms.cast.service.CastSocketMultiplexerLifeCycleService|cast
+com.google.android.gms/com.google.android.gms.cast.service.CastSocketMultiplexerLifeCycleService_Isolated|cast
+com.google.android.gms/com.google.android.gms.cast.service.CastSocketMultiplexerLifeCycleService_Persistent|cast
+com.google.android.gms/com.google.android.gms.chimera.CastPersistentBoundBrokerService|cast
 
 # Toggle debugging services related to Google Play Services.
-com.google.android.gms/com.google.android.gms.nearby.messages.debug.DebugPokeService
-com.google.android.gms/com.google.android.gms.clearcut.debug.ClearcutDebugDumpService
+com.google.android.gms/com.google.android.gms.nearby.messages.debug.DebugPokeService|nearby
+com.google.android.gms/com.google.android.gms.clearcut.debug.ClearcutDebugDumpService|nearby
 
 # Toggle services related to component discovery within Google Play Services and Firebase.
-com.google.firebase.components.ComponentDiscoveryService
-com.google.android.gms/com.google.android.gms.nearby.discovery.service.DiscoveryService
-com.google.android.gms/com.google.mlkit.common.internal.MlKitComponentDiscoveryService
+com.google.firebase.components.ComponentDiscoveryService|discovery
+com.google.android.gms/com.google.android.gms.nearby.discovery.service.DiscoveryService|discovery
+com.google.android.gms/com.google.mlkit.common.internal.MlKitComponentDiscoveryService|discovery
 
 # Toggle services related to location and time zone information.
-com.google.android.gms/com.google.android.gms.geotimezone.GeoTimeZoneService
-com.google.android.gms/com.google.android.gms.location.geocode.GeocodeService
+com.google.android.gms/com.google.android.gms.geotimezone.GeoTimeZoneService|location
+com.google.android.gms/com.google.android.gms.location.geocode.GeocodeService|location
 
 # Toggle specific services related to Google Play Services, particularly those associated with authentication and account management.
-com.google.android.gms/com.google.android.gms.chimera.GmsIntentOperationService_AuthAccountIsolated
-com.google.android.gms/com.google.android.gms.chimera.GmsIntentOperationService_AuthAccountIsolate
-com.google.android.gms/com.google.android.gms.chimera.PersistentApiService_AuthAccountIsolated
-com.google.android.gms/com.google.android.gms.chimera.PersistentIntentOperationService_AuthAccountIsolated
+com.google.android.gms/com.google.android.gms.chimera.GmsIntentOperationService_AuthAccountIsolated|auth
+com.google.android.gms/com.google.android.gms.chimera.GmsIntentOperationService_AuthAccountIsolate|auth
+com.google.android.gms/com.google.android.gms.chimera.PersistentApiService_AuthAccountIsolated|auth
+com.google.android.gms/com.google.android.gms.chimera.PersistentIntentOperationService_AuthAccountIsolated|auth
 
 # Toggle various background update services.
-com.google.android.gms/com.google.android.gms.auth.folsom.service.FolsomPublicKeyUpdateService
-com.google.android.gms/com.google.android.gms.fonts.update.UpdateSchedulerService
-com.google.android.gms/com.google.android.gms.icing.proxy.IcingInternalCorporaUpdateService
-com.google.android.gms/com.google.android.gms.instantapps.routing.DomainFilterUpdateService
-com.google.android.gms/com.google.android.gms.mobiledataplan.service.PeriodicUpdaterService
-com.google.android.gms/com.google.android.gms.phenotype.service.sync.PackageUpdateTaskService
-com.google.android.gms/com.google.android.gms.update.SystemUpdateGcmTaskService
-com.google.android.gms/com.google.android.gms.update.SystemUpdateService
-com.google.android.gms/com.google.android.gms.update.UpdateFromSdCardService
+com.google.android.gms/com.google.android.gms.auth.folsom.service.FolsomPublicKeyUpdateService|update
+com.google.android.gms/com.google.android.gms.fonts.update.UpdateSchedulerService|update
+com.google.android.gms/com.google.android.gms.icing.proxy.IcingInternalCorporaUpdateService|update
+com.google.android.gms/com.google.android.gms.instantapps.routing.DomainFilterUpdateService|update
+com.google.android.gms/com.google.android.gms.mobiledataplan.service.PeriodicUpdaterService|update
+com.google.android.gms/com.google.android.gms.phenotype.service.sync.PackageUpdateTaskService|update
+com.google.android.gms/com.google.android.gms.update.SystemUpdateGcmTaskService|update
+com.google.android.gms/com.google.android.gms.update.SystemUpdateService|update
+com.google.android.gms/com.google.android.gms.update.UpdateFromSdCardService|update
 
 # Toggle services related to smartwatches and wearables.
-com.google.android.gms/com.google.android.gms.backup.wear.BackupSettingsListenerService
-com.google.android.gms/com.google.android.gms.dck.service.DckWearableListenerService
-com.google.android.gms/com.google.android.gms.fitness.service.wearable.WearableSyncAccountService
-com.google.android.gms/com.google.android.gms.fitness.service.wearable.WearableSyncConfigService
-com.google.android.gms/com.google.android.gms.fitness.service.wearable.WearableSyncConnectionService
-com.google.android.gms/com.google.android.gms.fitness.service.wearable.WearableSyncMessageService
-com.google.android.gms/com.google.android.gms.fitness.wearables.WearableSyncService
-com.google.android.gms/com.google.android.gms.wearable.service.WearableControlService
-com.google.android.gms/com.google.android.gms.wearable.service.WearableService
-com.google.android.gms/com.google.android.gms.nearby.fastpair.service.WearableDataListenerService
-com.google.android.gms/com.google.android.location.wearable.WearableLocationService
-com.google.android.gms/com.google.android.location.fused.wearable.GmsWearableListenerService
-com.google.android.gms/com.google.android.gms.mdm.services.MdmPhoneWearableListenerService
-com.google.android.gms/com.google.android.gms.tapandpay.wear.WearProxyService
+com.google.android.gms/com.google.android.gms.backup.wear.BackupSettingsListenerService|wear
+com.google.android.gms/com.google.android.gms.dck.service.DckWearableListenerService|wear
+com.google.android.gms/com.google.android.gms.fitness.service.wearable.WearableSyncAccountService|fitness
+com.google.android.gms/com.google.android.gms.fitness.service.wearable.WearableSyncConfigService|fitness
+com.google.android.gms/com.google.android.gms.fitness.service.wearable.WearableSyncConnectionService|fitness
+com.google.android.gms/com.google.android.gms.fitness.service.wearable.WearableSyncMessageService|fitness
+com.google.android.gms/com.google.android.gms.fitness.wearables.WearableSyncService|fitness
+com.google.android.gms/com.google.android.gms.wearable.service.WearableControlService|wear
+com.google.android.gms/com.google.android.gms.wearable.service.WearableService|wear
+com.google.android.gms/com.google.android.gms.nearby.fastpair.service.WearableDataListenerService|nearby
+com.google.android.gms/com.google.android.location.wearable.WearableLocationService|location
+com.google.android.gms/com.google.android.location.fused.wearable.GmsWearableListenerService|location
+com.google.android.gms/com.google.android.gms.mdm.services.MdmPhoneWearableListenerService|update
+com.google.android.gms/com.google.android.gms.tapandpay.wear.WearProxyService|wear
 
 # Toggle services related to Trusted Agents / Find My Device
-com.google.android.gms/com.google.android.gms.auth.trustagent.GoogleTrustAgent
-com.google.android.gms/com.google.android.gms.trustagent.api.bridge.TrustAgentBridgeService
-com.google.android.gms/com.google.android.gms.trustagent.api.state.TrustAgentState
+com.google.android.gms/com.google.android.gms.auth.trustagent.GoogleTrustAgent|wear
+com.google.android.gms/com.google.android.gms.trustagent.api.bridge.TrustAgentBridgeService|wear
+com.google.android.gms/com.google.android.gms.trustagent.api.state.TrustAgentState|wear
 
 # Toggle services related to enpromo"
-com.google.android.gms/com.google.android.gms.enpromo.PromoInternalPersistentService
-com.google.android.gms/com.google.android.gms.enpromo.PromoInternalService
+com.google.android.gms/com.google.android.gms.enpromo.PromoInternalPersistentService|analytics
+com.google.android.gms/com.google.android.gms.enpromo.PromoInternalService|analytics
 
 # Toggle services related to emergency features and potentially child safety settings. 
-com.google.android.gms/com.google.android.gms.thunderbird.EmergencyLocationService 
-com.google.android.gms/com.google.android.gms.thunderbird.EmergencyPersistentService
-com.google.android.gms/com.google.android.gms.kids.chimera.KidsServiceProxy
-com.google.android.gms/com.google.android.gms.personalsafety.service.PersonalSafetyService
+com.google.android.gms/com.google.android.gms.thunderbird.EmergencyLocationService|location
+com.google.android.gms/com.google.android.gms.thunderbird.EmergencyPersistentService|location
+com.google.android.gms/com.google.android.gms.kids.chimera.KidsServiceProxy|wear
+com.google.android.gms/com.google.android.gms.personalsafety.service.PersonalSafetyService|wear
 
 # Toggle services related to Google Fit health and fitness tracking app.
-com.google.android.gms/com.google.android.gms.fitness.cache.DataUpdateListenerCacheService
-com.google.android.gms/com.google.android.gms.fitness.service.ble.FitBleBroker
-com.google.android.gms/com.google.android.gms.fitness.service.config.FitConfigBroker
-com.google.android.gms/com.google.android.gms.fitness.service.goals.FitGoalsBroker
-com.google.android.gms/com.google.android.gms.fitness.service.history.FitHistoryBroker
-com.google.android.gms/com.google.android.gms.fitness.service.internal.FitInternalBroker
-com.google.android.gms/com.google.android.gms.fitness.service.proxy.FitProxyBroker
-com.google.android.gms/com.google.android.gms.fitness.service.recording.FitRecordingBroker
-com.google.android.gms/com.google.android.gms.fitness.service.sensors.FitSensorsBroker
-com.google.android.gms/com.google.android.gms.fitness.service.sessions.FitSessionsBroker
-com.google.android.gms/com.google.android.gms.fitness.sensors.sample.CollectSensorService
-com.google.android.gms/com.google.android.gms.fitness.sync.FitnessSyncAdapterService 
-com.google.android.gms/com.google.android.gms.fitness.sync.SyncGcmTaskService
+com.google.android.gms/com.google.android.gms.fitness.cache.DataUpdateListenerCacheService|fitness
+com.google.android.gms/com.google.android.gms.fitness.service.ble.FitBleBroker|fitness
+com.google.android.gms/com.google.android.gms.fitness.service.config.FitConfigBroker|fitness
+com.google.android.gms/com.google.android.gms.fitness.service.goals.FitGoalsBroker|fitness
+com.google.android.gms/com.google.android.gms.fitness.service.history.FitHistoryBroker|fitness
+com.google.android.gms/com.google.android.gms.fitness.service.internal.FitInternalBroker|fitness
+com.google.android.gms/com.google.android.gms.fitness.service.proxy.FitProxyBroker|fitness
+com.google.android.gms/com.google.android.gms.fitness.service.recording.FitRecordingBroker|fitness
+com.google.android.gms/com.google.android.gms.fitness.service.sensors.FitSensorsBroker|fitness
+com.google.android.gms/com.google.android.gms.fitness.service.sessions.FitSessionsBroker|fitness
+com.google.android.gms/com.google.android.gms.fitness.sensors.sample.CollectSensorService|fitness
+com.google.android.gms/com.google.android.gms.fitness.sync.FitnessSyncAdapterService|sync
+com.google.android.gms/com.google.android.gms.fitness.sync.SyncGcmTaskService|sync
 
 # Toggle services related to Google Nearby / Quick Share
-com.google.android.gms/com.google.android.gms.nearby.bootstrap.service.NearbyBootstrapService
-com.google.android.gms/com.google.android.gms.nearby.connection.service.NearbyConnectionsAndroidService
-com.google.android.gms/com.google.location.nearby.direct.service.NearbyDirectService
-com.google.android.gms/com.google.android.gms.nearby.messages.service.NearbyMessagesService
+com.google.android.gms/com.google.android.gms.nearby.bootstrap.service.NearbyBootstrapService|nearby
+com.google.android.gms/com.google.android.gms.nearby.connection.service.NearbyConnectionsAndroidService|nearby
+com.google.android.gms/com.google.location.nearby.direct.service.NearbyDirectService|nearby
+com.google.android.gms/com.google.android.gms.nearby.messages.service.NearbyMessagesService|nearby
 
 # Toggle services related to logging and data collection.
-com.google.android.gms/com.google.android.gms.analytics.internal.PlayLogReportingService
-com.google.android.gms/com.google.android.gms.romanesco.ContactsLoggerUploadService
-com.google.android.gms/com.google.android.gms.magictether.logging.DailyMetricsLoggerService
-com.google.android.gms/com.google.android.gms.checkin.EventLogService
-com.google.android.gms/com.google.android.gms.backup.component.FullBackupJobLoggerService
+com.google.android.gms/com.google.android.gms.analytics.internal.PlayLogReportingService|analytics
+com.google.android.gms/com.google.android.gms.romanesco.ContactsLoggerUploadService|analytics
+com.google.android.gms/com.google.android.gms.magictether.logging.DailyMetricsLoggerService|background
+com.google.android.gms/com.google.android.gms.checkin.EventLogService|reporting
+com.google.android.gms/com.google.android.gms.backup.component.FullBackupJobLoggerService|analytics
 
 # Toggle services related to security, app verification, and potentially network management.
-com.google.android.gms/com.google.android.gms.security.safebrowsing.SafeBrowsingUpdateTaskService
-com.google.android.gms/com.google.android.gms.security.verifier.ApkUploadService
-com.google.android.gms/com.google.android.gms.security.verifier.InternalApkUploadService
-com.google.android.gms/com.google.android.gms.security.snet.SnetIdleTaskService
-com.google.android.gms/com.google.android.gms.security.snet.SnetNormalTaskService
-com.google.android.gms/com.google.android.gms.security.snet.SnetService
-com.google.android.gms/com.google.android.gms.tapandpay.security.StorageKeyCacheService
-com.google.android.gms/com.google.android.gms.droidguard.DroidGuardGcmTaskService
-com.google.android.gms/com.google.android.gms.pay.security.storagekey.service.StorageKeyCacheService
+com.google.android.gms/com.google.android.gms.security.safebrowsing.SafeBrowsingUpdateTaskService|auth
+com.google.android.gms/com.google.android.gms.security.verifier.ApkUploadService|auth
+com.google.android.gms/com.google.android.gms.security.verifier.InternalApkUploadService|auth
+com.google.android.gms/com.google.android.gms.security.snet.SnetIdleTaskService|auth
+com.google.android.gms/com.google.android.gms.security.snet.SnetNormalTaskService|auth
+com.google.android.gms/com.google.android.gms.security.snet.SnetService|auth
+com.google.android.gms/com.google.android.gms.tapandpay.security.StorageKeyCacheService|auth
+com.google.android.gms/com.google.android.gms.droidguard.DroidGuardGcmTaskService|auth
+com.google.android.gms/com.google.android.gms.pay.security.storagekey.service.StorageKeyCacheService|auth
 
 # Toggle services related to Google Pay (formerly Android Pay) & Google Wallet.
-com.google.android.gms/com.google.android.gms.tapandpay.gcmtask.TapAndPayGcmTaskService
-com.google.android.gms/com.google.android.gms.tapandpay.globalactions.QuickAccessWalletService
-com.google.android.gms/com.google.android.gms.tapandpay.globalactions.WalletQuickAccessWalletService
-com.google.android.gms/com.google.android.gms.pay.gcmtask.PayGcmTaskService
-com.google.android.gms/com.google.android.gms.pay.hce.service.PayHceService
-com.google.android.gms/com.google.android.gms.pay.notifications.PayNotificationService
-com.google.android.gms/com.google.android.gms.wallet.service.PaymentService
-com.google.android.gms/com.google.android.gms.wallet.service.WalletGcmTaskService
+com.google.android.gms/com.google.android.gms.tapandpay.gcmtask.TapAndPayGcmTaskService|payment
+com.google.android.gms/com.google.android.gms.tapandpay.globalactions.QuickAccessWalletService|wallet
+com.google.android.gms/com.google.android.gms.tapandpay.globalactions.WalletQuickAccessWalletService|wallet
+com.google.android.gms/com.google.android.gms.pay.gcmtask.PayGcmTaskService|payment
+com.google.android.gms/com.google.android.gms.pay.hce.service.PayHceService|payment
+com.google.android.gms/com.google.android.gms.pay.notifications.PayNotificationService|payment
+com.google.android.gms/com.google.android.gms.wallet.service.PaymentService|payment
+com.google.android.gms/com.google.android.gms.wallet.service.WalletGcmTaskService|wallet
 
 # Toggle services related to location (excluding essential GPS services).
-com.google.android.gms/com.google.android.gms.fitness.cache.DataUpdateListenerCacheService
-com.google.android.gms/com.google.android.gms.fitness.sensors.sample.CollectSensorService
-com.google.android.gms/com.google.android.gms.fitness.sync.SyncGcmTaskService
+com.google.android.gms/com.google.android.gms.fitness.cache.DataUpdateListenerCacheService|fitness
+com.google.android.gms/com.google.android.gms.fitness.sensors.sample.CollectSensorService|fitness
+com.google.android.gms/com.google.android.gms.fitness.sync.SyncGcmTaskService|sync
 
 # Toggle services related to components within Google Play Services related to Google Play Games.
-com.google.android.gms/com.google.android.gms.games.chimera.GamesSignInIntentServiceProxy
-com.google.android.gms/com.google.android.gms.games.chimera.GamesSyncServiceNotificationProxy
-com.google.android.gms/com.google.android.gms.games.chimera.GamesUploadServiceProxy
-com.google.android.gms/com.google.android.gms.gp.gameservice.GameService
-com.google.android.gms/com.google.android.gms.gp.gameservice.GameSessionService
+com.google.android.gms/com.google.android.gms.games.chimera.GamesSignInIntentServiceProxy|wear
+com.google.android.gms/com.google.android.gms.games.chimera.GamesSyncServiceNotificationProxy|wear
+com.google.android.gms/com.google.android.gms.games.chimera.GamesUploadServiceProxy|wear
+com.google.android.gms/com.google.android.gms.gp.gameservice.GameService|wear
+com.google.android.gms/com.google.android.gms.gp.gameservice.GameSessionService|wear
 
 # Toggle services related to Google Instant Apps.
-com.google.android.gms/com.google.android.gms.chimera.GmsApiServiceNoInstantApps
-com.google.android.gms/com.google.android.gms.chimera.PersistentApiServiceNoInstantApps
-com.google.android.gms/com.google.android.gms.instantapps.service.InstantAppsService
-com.google.android.gms/com.google.android.gms.chimera.UiApiServiceNoInstantApps
+com.google.android.gms/com.google.android.gms.chimera.GmsApiServiceNoInstantApps|sync
+com.google.android.gms/com.google.android.gms.chimera.PersistentApiServiceNoInstantApps|sync
+com.google.android.gms/com.google.android.gms.instantapps.service.InstantAppsService|sync
+com.google.android.gms/com.google.android.gms.chimera.UiApiServiceNoInstantApps|sync
 
 # Safe Services (doesn't break anything)
 # Google Play Instant Apps Services
-com.android.vending/com.google.android.fisnky.instantapps.InstantAppsLoggingService
-com.google.android.gms/.instantapps.service.InstantAppsService
-com.google.android.gms/com.google.android.finsky.instantapps.InstantAppsLoggingService
+com.android.vending/com.google.android.fisnky.instantapps.InstantAppsLoggingService|background
+com.google.android.gms/.instantapps.service.InstantAppsService|background
+com.google.android.gms/com.google.android.finsky.instantapps.InstantAppsLoggingService|background
 
 # Google Work Apps Job Services
-com.google.android.apps.work.clouddpc/.base.policy.services.ReportingPartialCollectionJobService
-com.google.android.apps.work.clouddpc/.base.policy.services.StatusReportJobService
-com.google.android.apps.work.clouddpc/.vanilla.bugreport.jobs.RemoteBugReportJobService
+com.google.android.apps.work.clouddpc/.base.policy.services.ReportingPartialCollectionJobService|background
+com.google.android.apps.work.clouddpc/.base.policy.services.StatusReportJobService|background
+com.google.android.apps.work.clouddpc/.vanilla.bugreport.jobs.RemoteBugReportJobService|background
 
 # Google Ads Services
-com.google.android.gms/.ads.AdRequestBrokerService
-com.google.android.gms/.ads.cache.CacheBrokerService
-com.google.android.gms/.ads.config.FlagsReceiver
-com.google.android.gms/.ads.identifier.service.AdvertisingIdNotificationService
-com.google.android.gms/.ads.identifier.service.AdvertisingIdService
-com.google.android.gms/.ads.jams.NegotiationService
-com.google.android.gms/.ads.measurement.GmpConversionTrackingBrokerService
-com.google.android.gms/.ads.social.GcmSchedulerWakeupService
-com.google.android.gms/.adsidentity.service.AdServicesExtDataStorageService
+com.google.android.gms/.ads.AdRequestBrokerService|ads
+com.google.android.gms/.ads.cache.CacheBrokerService|ads
+com.google.android.gms/.ads.config.FlagsReceiver|ads
+com.google.android.gms/.ads.identifier.service.AdvertisingIdNotificationService|ads
+com.google.android.gms/.ads.identifier.service.AdvertisingIdService|ads
+com.google.android.gms/.ads.jams.NegotiationService|ads
+com.google.android.gms/.ads.measurement.GmpConversionTrackingBrokerService|tracking
+com.google.android.gms/.ads.social.GcmSchedulerWakeupService|ads
+com.google.android.gms/.adsidentity.service.AdServicesExtDataStorageService|ads
 
 # Google Analytics Services
-com.google.android.gms/.analytics.AnalyticsReceiver
-com.google.android.gms/.analytics.AnalyticsService
-com.google.android.gms/.analytics.AnalyticsTaskService
-com.google.android.gms/.analytics.internal.PlayLogReportingService
-com.google.android.gms/.analytics.service.AnalyticsService
+com.google.android.gms/.analytics.AnalyticsReceiver|analytics
+com.google.android.gms/.analytics.AnalyticsService|analytics
+com.google.android.gms/.analytics.AnalyticsTaskService|analytics
+com.google.android.gms/.analytics.internal.PlayLogReportingService|analytics
+com.google.android.gms/.analytics.service.AnalyticsService|analytics
 
 # Google Trust Agent Services
-com.google.android.gms/.auth.trustagent.ActiveUnlockTrustAgent
-com.google.android.gms/.auth.trustagent.GoogleTrustAgent
+com.google.android.gms/.auth.trustagent.ActiveUnlockTrustAgent|auth
+com.google.android.gms/.auth.trustagent.GoogleTrustAgent|wear
 
 # Google Backup Services
-com.google.android.gms/.backup.component.FullBackupJobLoggerService
-com.google.android.gms/.backup.stats.BackupStatsService
+com.google.android.gms/.backup.component.FullBackupJobLoggerService|analytics
+com.google.android.gms/.backup.stats.BackupStatsService|analytics
 
 # Google Check-in and Event Logging Services
-com.google.android.gms/.checkin.EventLogService
-com.google.android.gms/.chimera.GmsIntentOperationService
-com.google.android.gms/.chimera.container.logger.ExternalDebugLoggerService
-com.google.android.gms/.common.appdoctor.LocalAppDoctorReceiver
-com.google.android.gms/.common.stats.GmsCoreStatsService
-com.google.android.gms/.common.stats.StatsUploadService
+com.google.android.gms/.checkin.EventLogService|reporting
+com.google.android.gms/.chimera.GmsIntentOperationService|auth
+com.google.android.gms/.chimera.container.logger.ExternalDebugLoggerService|analytics
+com.google.android.gms/.common.appdoctor.LocalAppDoctorReceiver|analytics
+com.google.android.gms/.common.stats.GmsCoreStatsService|analytics
+com.google.android.gms/.common.stats.StatsUploadService|analytics
 
 # Google Feedback and Help Services
-com.google.android.gms/.feedback.LegacyBugReportService
-com.google.android.gms/.feedback.OfflineReportSendTaskService
-com.google.android.gms/.googlehelp.metrics.ReportBatchedMetricsGcmTaskService
+com.google.android.gms/.feedback.LegacyBugReportService|reporting
+com.google.android.gms/.feedback.OfflineReportSendTaskService|reporting
+com.google.android.gms/.googlehelp.metrics.ReportBatchedMetricsGcmTaskService|reporting
 
 # Google Location Reporting Services
-com.google.android.gms/.location.reporting.service.GcmBroadcastReceiver
+com.google.android.gms/.location.reporting.service.GcmBroadcastReceiver|location
 
 # Magic Tether Services
-com.google.android.gms/.magictether.logging.DailyMetricsLoggerService
+com.google.android.gms/.magictether.logging.DailyMetricsLoggerService|background
 
 # Google App Measurement Services
-com.google.android.gms/.measurement.AppMeasurementJobService
-com.google.android.gms/.measurement.AppMeasurementReceiver
-com.google.android.gms/.measurement.AppMeasurementService
-com.google.android.gms/.measurement.PackageMeasurementReceiver
+com.google.android.gms/.measurement.AppMeasurementJobService|analytics
+com.google.android.gms/.measurement.AppMeasurementReceiver|analytics
+com.google.android.gms/.measurement.AppMeasurementService|analytics
+com.google.android.gms/.measurement.PackageMeasurementReceiver|analytics
 
 # Google Contacts Logger Services
-com.google.android.gms/.romanesco.ContactsLoggerUploadService
+com.google.android.gms/.romanesco.ContactsLoggerUploadService|analytics
 
 # Google Stats Services
-com.google.android.gms/.stats.PlatformStatsCollectorService
-com.google.android.gms/.stats.eastworld.EastworldService
-com.google.android.gms/.stats.service.DropBoxEntryAddedReceiver
-com.google.android.gms/.stats.service.DropBoxEntryAddedService
+com.google.android.gms/.stats.PlatformStatsCollectorService|analytics
+com.google.android.gms/.stats.eastworld.EastworldService|analytics
+com.google.android.gms/.stats.service.DropBoxEntryAddedReceiver|analytics
+com.google.android.gms/.stats.service.DropBoxEntryAddedService|analytics
 
 # Google Tron Services
-com.google.android.gms/.tron.AlarmReceiver
-com.google.android.gms/.tron.CollectionService
+com.google.android.gms/.tron.AlarmReceiver|analytics
+com.google.android.gms/.tron.CollectionService|analytics
 
 # Google UDC GCM Services
-com.google.android.gms/.udc.gcm.GcmBroadcastReceiver
+com.google.android.gms/.udc.gcm.GcmBroadcastReceiver|analytics
 
 # Google Usage Reporting Services
-com.google.android.gms/.usagereporting.service.UsageReportingIntentService
+com.google.android.gms/.usagereporting.service.UsageReportingIntentService|reporting
 
 # Google MDM Services
-com.google.android.gms/com.google.android.gms.mdm.receivers.MdmDeviceAdminReceiver 
+com.google.android.gms/com.google.android.gms.mdm.receivers.MdmDeviceAdminReceiver|sync
+ 
+# GhostGMS Service Categories
+# Format: service_name|category
+# Categories: ads, tracking, analytics, reporting, background, update, location, geofence, 
+#            nearby, cast, discovery, sync, cloud, auth, wallet, payment, wear, fitness,
+#            core, essential
+# Core/essential services are always kept enabled during selective disabling
+
+# Advertising and Tracking Services
+com.google.android.gms/com.google.android.gms.ads.AdRequestBrokerService|ads
+com.google.android.gms/com.google.android.gms.ads.identifier.service.AdvertisingIdService|ads
+com.google.android.gms/com.google.android.gms.ads.settings.AdsSettingsActivityService|ads
+com.google.android.gms/com.google.android.gms.ads.GservicesValueBrokerService|ads
+com.google.android.gms/com.google.android.gms.ads.measurement.GmpConversionTrackingBrokerService|tracking
+com.google.android.gms/com.google.android.gms.ads.jams.NegotiationService|ads
+com.google.android.gms/com.google.android.gms.ads.MobileAdsSettingManagerService|ads
+com.google.android.gms/com.google.android.gms.ads.identifier.service.AdvertisingIdNotificationService|ads
+com.google.android.gms/analytics.AnalyticsService|tracking
+com.google.android.gms/com.google.android.gms.nearby.mediums.nearfieldcommunication.NfcAdvertisingService|tracking
+
+# Analytics and Reporting Services
+com.google.android.gms/com.google.android.gms.analytics.service.AnalyticsService|analytics
+com.google.android.gms/com.google.android.gms.analytics.AnalyticsService|analytics
+com.google.android.gms/com.google.android.gms.analytics.AnalyticsTaskService|analytics
+com.google.android.gms/com.google.android.gms.analytics.internal.PlayLogReportingService|analytics
+com.google.android.gms/com.google.android.gms.backup.BackupOrchestrationService|analytics
+com.google.android.gms/com.google.android.gms.crash.service.CrashReportService|reporting
+com.google.android.gms/com.google.android.gms.common.download.DownloadWorkService|reporting
+com.google.android.gms/com.google.android.gms.clearcut.service.ClearcutLoggerService|analytics
+com.google.android.gms/com.google.android.gms.common.stats.GmsCoreStatsService|analytics
+com.google.android.gms/com.google.android.gms.feedback.FeedbackAsyncService|reporting
+com.google.android.gms/com.google.android.gms.stats.PlatformStatsCollectorService|analytics
+com.google.android.gms/com.google.android.gms.feedback.LegacyBugReportService|reporting
+com.google.android.gms/com.google.android.gms.feedback.OfflineReportSendTaskService|reporting
+com.google.android.gms/com.google.android.gms.googlehelp.metrics.ReportBatchedMetricsGcmTaskService|reporting
+com.google.android.gms/com.google.android.gms.locationsharingreporter.service.reporting.periodic.PeriodicReporterMonitoringService|reporting
+com.google.android.gms/com.google.android.gms.common.stats.net.NetworkReportService|reporting
+com.google.android.gms/com.google.android.gms.presencemanager.service.PresenceManagerPresenceReportService|reporting
+com.google.android.gms/com.google.android.gms.usagereporting.service.UsageReportingIntentService|reporting
+com.google.android.gms/com.google.android.gms.stats.eastworld.EastworldService|analytics
+com.google.android.gms/com.google.android.gms.stats.service.DropBoxEntryAddedService|analytics
+com.google.android.gms/com.google.android.gms.common.stats.StatsUploadService|analytics
+com.google.android.gms/com.google.android.gms.backup.stats.BackupStatsService|analytics
+com.google.android.gms/com.google.android.gms.checkin.CheckinApiService|analytics
+com.google.android.gms/com.google.android.gms.checkin.CheckinService|analytics
+com.google.android.gms/com.google.android.gms.tron.CollectionService|analytics
+com.google.android.gms/com.google.android.gms.common.config.PhenotypeCheckinService|analytics
+com.google.android.gms/com.google.android.gms.romanesco.ContactsLoggerUploadService|analytics
+
+# Background and Update Services
+com.google.android.gms/com.google.android.gms.chimera.PersistentBoundBrokerService|background
+com.google.android.gms/com.google.android.gms.chimera.GmsApiService|background
+com.google.android.gms/com.google.android.gms.chimera.GmsIntentOperationService|background
+com.google.android.gms/com.google.android.gms.measurement.AppMeasurementService|background
+com.google.android.gms/com.google.android.gms.gmscompliance.service.GmsComplianceService|background
+com.google.android.gms/com.google.android.gms.common.stats.GmsCoreStatsService|background
+com.google.android.gms/com.google.android.gms.mdm.services.MdmPhoneWearableListenerService|update
+com.google.android.gms/com.google.android.gms.update.OtaSuggestionSummaryProvider|update
+com.google.android.gms/com.google.android.gms.update.SystemUpdateService|update
+com.google.android.gms/com.google.android.gms.auth.folsom.service.FolsomPublicKeyUpdateService|update
+com.google.android.gms/com.google.android.gms.fonts.update.UpdateSchedulerService|update
+com.google.android.gms/com.google.android.gms.icing.proxy.IcingInternalCorporaUpdateService|update
+com.google.android.gms/com.google.android.gms.instantapps.routing.DomainFilterUpdateService|update
+com.google.android.gms/com.google.android.gms.mobiledataplan.service.PeriodicUpdaterService|update
+com.google.android.gms/com.google.android.gms.phenotype.service.sync.PackageUpdateTaskService|update
+com.google.android.gms/com.google.android.gms.update.SystemUpdateGcmTaskService|update
+com.google.android.gms/com.google.android.gms.update.UpdateFromSdCardService|update
+com.google.android.gms/com.google.android.gms.chimera.GmsIntentOperationService_AuthAccountIsolated|background
+com.google.android.gms/com.google.android.gms.chimera.GmsIntentOperationService_AuthAccountIsolate|background
+com.google.android.gms/com.google.android.gms.chimera.PersistentApiService_AuthAccountIsolated|background
+com.google.android.gms/com.google.android.gms.chimera.PersistentIntentOperationService_AuthAccountIsolated|background
+com.google.android.gms/com.google.android.gms.magictether.logging.DailyMetricsLoggerService|background
+
+# Location and Geofence Services
+com.google.android.gms/com.google.android.gms.deviceconnection.service.DeviceConnectionServiceBroker|location
+com.google.android.gms/com.google.android.location.reporting.service.ReportingAndroidService|location
+com.google.android.gms/com.google.android.gms.fido.fido2.pollux.CableAuthenticatorService|location
+com.google.android.gms/com.google.android.location.internal.GoogleLocationManagerService|location
+com.google.android.gms/com.google.android.gms.locationsharing.service.LocationSharingService|location
+com.google.android.gms/com.google.android.gms.places.PlaceDetectionService|location
+com.google.android.gms/com.google.android.gms.persistent.offnetwork.service.OffNetworkService|location
+com.google.android.gms/com.google.android.gms.geofence.GeofenceApiService|geofence
+com.google.android.gms/com.google.android.location.geofencer.service.GeofenceProviderService|geofence
+com.google.android.gms/com.google.android.gms.geotimezone.GeoTimeZoneService|location
+com.google.android.gms/com.google.android.gms.location.geocode.GeocodeService|location
+com.google.android.gms/com.google.android.location.reporting.service.ReportingAndroidService|location
+com.google.android.gms/com.google.android.location.reporting.service.ReportingSyncService|location
+com.google.android.gms/com.google.android.location.wearable.WearableLocationService|location
+com.google.android.gms/com.google.android.location.fused.wearable.GmsWearableListenerService|location
+com.google.android.gms/com.google.android.gms.location.reporting.service.GcmBroadcastReceiver|location
+com.google.android.gms/com.google.android.gms.thunderbird.EmergencyLocationService|location
+com.google.android.gms/com.google.android.gms.thunderbird.EmergencyPersistentService|location
+com.google.android.gms/com.google.android.gms.fitness.cache.DataUpdateListenerCacheService|location
+com.google.android.gms/com.google.android.gms.fitness.sensors.sample.CollectSensorService|location
+
+# Nearby and Discovery Services
+com.google.android.gms/com.google.android.gms.nearby.connection.service.NearbyConnectionsAndroidService|nearby
+com.google.android.gms/com.google.android.gms.nearby.exposurenotification.service.ExposureNotificationService|nearby
+com.google.android.gms/com.google.android.gms.nearby.bootstrap.service.NearbyBootstrapService|nearby
+com.google.android.gms/com.google.android.gms.nearby.sharing.service.ShareSheetSessionService|nearby
+com.google.android.gms/com.google.android.gms.cast.service.CastService|cast
+com.google.android.gms/com.google.android.gms.cast.service.media.CastMediaService|cast
+com.google.android.gms/com.google.android.gms.cast.service.session.CastSessionService|cast
+com.google.android.gms/com.google.android.gms.mobiledataplan.service.MobileDataPlanService|discovery
+com.google.android.gms/com.google.android.gms.nearby.messages.debug.DebugPokeService|nearby
+com.google.android.gms/com.google.android.gms.clearcut.debug.ClearcutDebugDumpService|nearby
+com.google.firebase.components.ComponentDiscoveryService|discovery
+com.google.android.gms/com.google.android.gms.nearby.discovery.service.DiscoveryService|discovery
+com.google.android.gms/com.google.mlkit.common.internal.MlKitComponentDiscoveryService|discovery
+com.google.android.gms/com.google.android.gms.cast.media.CastMediaRoute2ProviderService|cast
+com.google.android.gms/com.google.android.gms.cast.media.CastMediaRoute2ProviderService_Isolated|cast
+com.google.android.gms/com.google.android.gms.cast.media.CastMediaRoute2ProviderService_Persistent|cast
+com.google.android.gms/com.google.android.gms.cast.media.CastMediaRouteProviderService|cast
+com.google.android.gms/com.google.android.gms.cast.media.CastMediaRouteProviderService_Isolated|cast
+com.google.android.gms/com.google.android.gms.cast.media.CastMediaRouteProviderService_Persistent|cast
+com.google.android.gms/com.google.android.gms.cast.media.CastRemoteDisplayProviderService|cast
+com.google.android.gms/com.google.android.gms.cast.media.CastRemoteDisplayProviderService_Isolated|cast
+com.google.android.gms/com.google.android.gms.cast.media.CastRemoteDisplayProviderService_Persistent|cast
+com.google.android.gms/com.google.android.gms.cast.service.CastPersistentService_Persistent|cast
+com.google.android.gms/com.google.android.gms.cast.service.CastSocketMultiplexerLifeCycleService|cast
+com.google.android.gms/com.google.android.gms.cast.service.CastSocketMultiplexerLifeCycleService_Isolated|cast
+com.google.android.gms/com.google.android.gms.cast.service.CastSocketMultiplexerLifeCycleService_Persistent|cast
+com.google.android.gms/com.google.android.gms.chimera.CastPersistentBoundBrokerService|cast
+com.google.android.gms/com.google.android.gms.nearby.bootstrap.service.NearbyBootstrapService|nearby
+com.google.android.gms/com.google.android.gms.nearby.connection.service.NearbyConnectionsAndroidService|nearby
+com.google.location.nearby.direct.service.NearbyDirectService|nearby
+com.google.android.gms/com.google.android.gms.nearby.messages.service.NearbyMessagesService|nearby
+com.google.android.gms/com.google.android.gms.nearby.fastpair.service.WearableDataListenerService|nearby
+
+# Sync, Cloud and Auth Services
+com.google.android.gms/com.google.android.gms.auth.api.credentials.credentialsapi.service.CredentialsApiService|auth
+com.google.android.gms/com.google.android.gms.auth.api.identity.service.IdentityService|auth
+com.google.android.gms/com.google.android.gms.auth.api.phone.service.SmsRetrieverApiService|auth
+com.google.android.gms/com.google.android.gms.auth.api.signin.RevocationService|auth
+com.google.android.gms/com.google.android.gms.auth.authzen.api.AuthzenAutofillSyncSetupService|sync
+com.google.android.gms/com.google.android.gms.auth.cryptauth.cryptauthservice.CryptauthService|auth
+com.google.android.gms/com.google.android.gms.backup.component.BackupSnapshotService|cloud
+com.google.android.gms/com.google.android.gms.chromesync.sync.BackendMeetingPointService|sync
+com.google.android.gms/com.google.android.gms.chimera.GmsApiServiceNoInstantApps|sync
+com.google.android.gms/com.google.android.gms.chimera.PersistentApiServiceNoInstantApps|sync
+com.google.android.gms/com.google.android.gms.instantapps.service.InstantAppsService|sync
+com.google.android.gms/com.google.android.gms.chimera.UiApiServiceNoInstantApps|sync
+com.google.android.gms/com.google.android.gms.security.safebrowsing.SafeBrowsingUpdateTaskService|auth
+com.google.android.gms/com.google.android.gms.security.verifier.ApkUploadService|auth
+com.google.android.gms/com.google.android.gms.security.verifier.InternalApkUploadService|auth
+com.google.android.gms/com.google.android.gms.security.snet.SnetIdleTaskService|auth
+com.google.android.gms/com.google.android.gms.security.snet.SnetNormalTaskService|auth
+com.google.android.gms/com.google.android.gms.security.snet.SnetService|auth
+com.google.android.gms/com.google.android.gms.tapandpay.security.StorageKeyCacheService|auth
+com.google.android.gms/com.google.android.gms.droidguard.DroidGuardGcmTaskService|auth
+com.google.android.gms/com.google.android.gms.fitness.sync.SyncGcmTaskService|sync
+com.google.android.gms/com.google.android.gms.fitness.sync.FitnessSyncAdapterService|sync
+
+# Wallet and Payment Services
+com.google.android.gms/com.google.android.gms.wallet.service.PaymentsService|payment
+com.google.android.gms/com.google.android.gms.pay.service.PayGrpcUiService|payment
+com.google.android.gms/com.google.android.gms.wallet.notifications.WalletNotificationsService|wallet
+com.google.android.gms/com.google.android.gms.tapandpay.gcmtask.TapAndPayGcmTaskService|payment
+com.google.android.gms/com.google.android.gms.wallet.service.WalletGoogleServiceBroker|wallet
+com.google.android.gms/com.google.android.gms.tapandpay.hce.service.TpHceService|payment
+com.google.android.gms/com.google.android.gms.tapandpay.gcmtask.TapAndPayGcmTaskService|payment
+com.google.android.gms/com.google.android.gms.tapandpay.globalactions.QuickAccessWalletService|wallet
+com.google.android.gms/com.google.android.gms.tapandpay.globalactions.WalletQuickAccessWalletService|wallet
+com.google.android.gms/com.google.android.gms.pay.gcmtask.PayGcmTaskService|payment
+com.google.android.gms/com.google.android.gms.pay.hce.service.PayHceService|payment
+com.google.android.gms/com.google.android.gms.pay.notifications.PayNotificationService|payment
+com.google.android.gms/com.google.android.gms.wallet.service.PaymentService|payment
+com.google.android.gms/com.google.android.gms.wallet.service.WalletGcmTaskService|wallet
+com.google.android.gms/com.google.android.gms.tapandpay.wear.WearProxyService|payment
+com.google.android.gms/com.google.android.gms.pay.security.storagekey.service.StorageKeyCacheService|payment
+
+# Wear and Fitness Services
+com.google.android.gms/com.google.android.gms.fitness.service.FitnessSensorService|fitness
+com.google.android.gms/com.google.android.gms.fitness.GoogleFitnessService|fitness
+com.google.android.gms/com.google.android.gms.wearable.service.WearableService|wear
+com.google.android.gms/com.google.android.gms.wearable.service.WearableControlService|wear
+com.google.android.gms/com.google.android.gms.trustagent.AuthenticatorService|wear
+com.google.android.gms/com.google.android.gms.wearables.settings.WearablesSyncService|wear
+com.google.android.gms/com.google.android.gms.wearable.service.ListenerService|wear
+com.google.android.gms/com.google.android.gms.backup.wear.BackupSettingsListenerService|wear
+com.google.android.gms/com.google.android.gms.dck.service.DckWearableListenerService|wear
+com.google.android.gms/com.google.android.gms.fitness.service.wearable.WearableSyncAccountService|fitness
+com.google.android.gms/com.google.android.gms.fitness.service.wearable.WearableSyncConfigService|fitness
+com.google.android.gms/com.google.android.gms.fitness.service.wearable.WearableSyncConnectionService|fitness
+com.google.android.gms/com.google.android.gms.fitness.service.wearable.WearableSyncMessageService|fitness
+com.google.android.gms/com.google.android.gms.fitness.wearables.WearableSyncService|fitness
+com.google.android.gms/com.google.android.gms.auth.trustagent.GoogleTrustAgent|wear
+com.google.android.gms/com.google.android.gms.trustagent.api.bridge.TrustAgentBridgeService|wear
+com.google.android.gms/com.google.android.gms.trustagent.api.state.TrustAgentState|wear
+com.google.android.gms/com.google.android.gms.kids.chimera.KidsServiceProxy|wear
+com.google.android.gms/com.google.android.gms.personalsafety.service.PersonalSafetyService|wear
+com.google.android.gms/com.google.android.gms.fitness.cache.DataUpdateListenerCacheService|fitness
+com.google.android.gms/com.google.android.gms.fitness.service.ble.FitBleBroker|fitness
+com.google.android.gms/com.google.android.gms.fitness.service.config.FitConfigBroker|fitness
+com.google.android.gms/com.google.android.gms.fitness.service.goals.FitGoalsBroker|fitness
+com.google.android.gms/com.google.android.gms.fitness.service.history.FitHistoryBroker|fitness
+com.google.android.gms/com.google.android.gms.fitness.service.internal.FitInternalBroker|fitness
+com.google.android.gms/com.google.android.gms.fitness.service.proxy.FitProxyBroker|fitness
+com.google.android.gms/com.google.android.gms.fitness.service.recording.FitRecordingBroker|fitness
+com.google.android.gms/com.google.android.gms.fitness.service.sensors.FitSensorsBroker|fitness
+com.google.android.gms/com.google.android.gms.fitness.service.sessions.FitSessionsBroker|fitness
+com.google.android.gms/com.google.android.gms.fitness.sensors.sample.CollectSensorService|fitness
+com.google.android.gms/com.google.android.gms.games.chimera.GamesSignInIntentServiceProxy|wear
+com.google.android.gms/com.google.android.gms.games.chimera.GamesSyncServiceNotificationProxy|wear
+com.google.android.gms/com.google.android.gms.games.chimera.GamesUploadServiceProxy|wear
+com.google.android.gms/com.google.android.gms.gp.gameservice.GameService|wear
+com.google.android.gms/com.google.android.gms.gp.gameservice.GameSessionService|wear
+
+# Core and Essential Services (Always enabled by default)
+com.google.android.gms/com.google.android.gms.auth.account.be.AccountStatusChecker|core
+com.google.android.gms/com.google.android.gms.auth.account.accountstatus.DefaultAccountStatusService|core
+com.google.android.gms/com.google.android.gms.auth.be.appcert.AppCertService|essential
+com.google.android.gms/com.google.android.gms.auth.folsom.service.FolsomService|essential
+com.google.android.gms/com.google.android.gms.auth.managed.ui.DeviceManagementSettingsActivity|essential
+com.google.android.gms/com.google.android.gms.auth.account.authenticator.WorkAccountAuthenticatorService|essential
+com.google.android.gms/com.google.android.gms.auth.trustagent.ActiveUnlockTrustAgent|essential
+com.google.android.gms/com.google.android.gms.measurement.AppMeasurementJobService|core
+com.google.android.gms/com.google.android.gms.measurement.AppMeasurementReceiver|core
+com.google.android.gms/com.google.android.gms.measurement.PackageMeasurementReceiver|core
+com.google.android.gms/com.google.android.gms.mdm.receivers.MdmDeviceAdminReceiver|essential 

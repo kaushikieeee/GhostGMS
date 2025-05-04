@@ -1,6 +1,6 @@
 {
-  "version": "v2.0",
-  "versionCode": 20,
-  "zipUrl": "https://github.com/veloxineology/GhostGMS/releases/download/v2.0/GhostGMS-v2.0.zip",
+  "version": "2.0",
+  "versionCode": 13,
+  "zipUrl": "https://github.com/veloxineology/GhostGMS/releases/download/2.0/GhostGMS-2.0.zip",
   "changelog": "https://raw.githubusercontent.com/veloxineology/GhostGMS/main/CHANGELOG.md"
 } 

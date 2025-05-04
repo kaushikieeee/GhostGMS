@@ -1,12 +1,12 @@
 # Changelog
 
 ## v2.0 (Current)
-- Added advanced battery optimization algorithms
-- Improved GMS services management with more granular controls
+- Added advanced GMS service categorization system with granular control
+- Improved volume key detection for more reliable installation choices
 - Enhanced system property optimizations with focus on Android 14 compatibility
-- Added automatic update mechanism directly through Magisk/KernelSU interface
-- Improved action button functionality with better error handling
-- Reduced module size by optimizing scripts
+- Removed action button functionality for simpler and more stable operation
+- Consolidated service management into improved veloxine.sh script
+- Improved notification system with PowerSaver app support and fallback method
 - Fixed compatibility issues with newer devices
 - Added extensive logging options for troubleshooting
 

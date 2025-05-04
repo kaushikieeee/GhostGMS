@@ -1,7 +1,8 @@
+# Logging Tweaks
 # Disables Real-Time Transport Protocol (RTP) logging.
 config.disable_rtt=true
 
-# Disables JNI (Java Native Interface) checks, reducing logging related to native code interaction.
+# Disables logging related to native code interaction.
 dalvik.vm.checkjni=false
 
 # Stops logging slow database queries.
@@ -24,19 +25,12 @@ debug.hwc.otf=0
 debug.hwc_dump_en=0
 debug.sf.dump=0
 debug.sf.ddms=0
-debug.sf.gpu_comp_tiling=0
-
-# Disables logging related to SurfaceFlinger's backpressure mechanism.
-debug.sf.disable_backpressure=1
 
 # Disables logging related to surface re-computations.
 debug.sf.recomputecrop=0
 
 # Disables logging of Application Not Responding (ANR) events.
 debugtool.anrhistory=0
-
-# Disables GPU-based pixel buffers, impacting rendering.
-hwui.use_gpu_pixel_buffers=false
 
 # Disables real-time logcat output and streaming.
 logcat.live=disable
@@ -57,12 +51,6 @@ profiler.hung.dumpdobugreport=false
 # Disables StrictMode, which checks for potential performance and security issues.
 persist.android.strictmode=0
 
-# Changes behavior related to EGL context destruction.
-ro.egl.destroy_after_detach=false
-
-# Disables support for Kernel Samepage Merging (KSM), a memory optimization technique.
-ro.config.ksm.support=false
-
 # Disables "checkin" logging that sends system information to Google.
 ro.config.nocheckin=1
 
@@ -71,9 +59,6 @@ ro.debuggable=0
 
 # Sets the log buffer size to zero, effectively disabling the log system.
 ro.logd.size=0
-
-# Disables the default compression cache.
-ro.compcache.default=0
 
 # Disables JNI checks and QEMU-related logging.
 ro.kernel.android.checkjni=0
@@ -84,9 +69,6 @@ ro.kernel.checkjni=0
 ro.sf.battery_log=0
 ro.sf.battery.log.enabled=0
 
-# Disables multiple simultaneous call ringtones.
-ro.telephony.call_ring.multiple=false
-
 # Disables the RW logger, used for debugging network interactions.
 rw.logger=0
 
@@ -95,9 +77,6 @@ persist.ims.disableDebugLogs=1
 
 # Disables debugging related to Wi-Fi Direct (WFD).
 persist.debug.wfd.enable=0
-
-# Disables AAC support for Bluetooth A2DP.
-persist.bt.a2dp.aac_disable=true
 
 # Disables QMI (Qualcomm MSM Interface) logging for ADB.
 persist.data.qmi.adb_logmask=0
@@ -110,64 +89,19 @@ persist.brcm.log=none
 persist.brcm.cp_crash=none 
 persist.brcm.ap_crash=none
 
-# Disables an override for USB tethering.
-persist.sys.dun.override=0
-
-# Disables an OEM socket for the radio.
-persist.radio.oem_socket=false
-
-# Disables virtual WFD capabilities.
-persist.sys.wfd.virtual=0
-
-# Disables various IMS logging and functionality.
-persist.ims.enableADBLogs=0
-persist.ims.enableDebugLogs=0
-persist.ims.disabled=1
-persist.ims.disableQXDMLogs=0
-persist.ims.disableIMSLogs=0
+# Disables OEM-specific dumps.
+persist.oem.dump=0
 
 # Enables offline logging for the kernel and logcat. 
 persist.sys.offlinelog.kernel=1
 persist.sys.offlinelog.logcat=1
 
-# Disables OEM-specific dumps.
-persist.oem.dump=0
-
-# Enables the system's sleep mode.
-pm.sleep_mode=1
-
 # Forces disabling error reports and ulog.
 profiler.forse_disable_err_rpt=1
 profiler.forse_disable_ulog=1
 
-# Disables debugging related to display management.
-sdm.debug.disable_inline_rotator=1
-sdm.debug.disable_skip_validate=1
-
-# Enables profiling for game tools.
-sys.games.gt.prof=1
-
-# Disables GPU performance mode.
-sys.hwc.gpu_perf_mode=0
-
-# Disables concurrent A2DP connections for FM radio.
-vendor.fm.a2dp.conc.disabled=true
-
-# Disables B-frame encoding for the video decoder.
-vendor.vidc.enc.disable_bframes=1
-
 # Disables video decoder debugging.
 vidc.debug.level=0
-
-# Disables Ultra Buffer With Cache (UBWC) for video.
-video.disable.ubwc=1
-
-# Sets the Wi-Fi interface to "wlan0." 
-#wifi.interface=wlan0 # Causing bootloop on some ROMs 
-
-# Sets the system's composition type to GPU-based.
-debug.composition.type=gpu
-persist.sys.composition.type=gpu
 
 # Disables various SurfaceFlinger display options.
 debug.sf.showupdates=0
@@ -177,9 +111,6 @@ debug.sf.showfps=0
 
 # Disables specific tags for the "atrace" profiling tool.
 debug.atrace.tags.enableflags=0
-
-# Disables a mechanism for killing tasks that are allocating memory excessively.
-debug.kill_allocating_task=0
 
 # Disables logging for specific services.
 persist.service.pcsync.enable=0
@@ -193,12 +124,6 @@ log.redirect-stdio=false
 profiler.debugmonitor=false
 profiler.hung.dumpdobugreport=false
 
-# Disables StrictMode, which checks for potential performance and security issues.
-persist.android.strictmode=0
-
-# Disables bytecode verification for the Dalvik VM, impacting security.
-dalvik.vm.verify-bytecode=false
-
 # Disables debug logging for memory allocation.
 libc.debug.malloc=0
 
@@ -208,7 +133,7 @@ av.debug.disable.pers.cache=true
 # Disables enabling RAM dumps for the SSR (System Server Recovery) service.
 persist.vendor.ssr.enable_ramdumps=0
 
-# Disables various log outputs related to the system's core functionality, including media playback, rendering, and audio output.
+# Disables various log outputs related to the system's core functionality
 log.resolves=0
 log.pm4=0
 log.pm4mem=0
@@ -242,35 +167,8 @@ log_fps_interval=0
 # Disables debug-specific logging and testing.
 debug_test=0
 
-# GhostGMS System Properties
+# GMS Related Properties
 # These properties will only be applied if ENABLE_SYS_PROPS=1 in user preferences
-
-# Performance optimizations
-ro.config.hw_fast_dormancy=1
-ro.config.hw_power_saving=true
-ro.vendor.extension_library=libqti-perfd-client.so
-ro.sys.fw.bg_apps_limit=32
-ro.config.max_starting_bg=8
-ro.mot.build.customerid=retusa_glb
-debug.sf.hw=1
-debug.performance.tuning=1
-video.accelerate.hw=1
-debug.egl.profiler=1
-debug.egl.hw=1
-debug.composition.type=gpu
-debug.enable.sglscale=1
-debug.sf.latch_unsignaled=1
-
-# Battery optimizations
-ro.ril.power_collapse=1
-power.saving.mode=1
-ro.vold.umsdirtyratio=20
-pm.sleep_mode=1
-wifi.supplicant_scan_interval=180
-ro.mot.eri.losalert.delay=1000
-persist.adb.notify=0
-ro.sys.fw.bg_apps_limit=32
-power_supply.wakeup=enable
 
 # GMS optimizations
 ro.com.google.gmsversion=12_202304
@@ -287,23 +185,3 @@ ro.setupwizard.gservices_delay=-1
 setupwizard.feature.predeferred_enabled=false
 setupwizard.feature.baseline_setupwizard_enabled=false
 ro.control_privapp_permissions=enforce
-
-# Background process limits
-ro.sys.fw.bg_apps_limit=32
-ro.config.max_starting_bg=8
-
-# Memory management
-dalvik.vm.dex2oat-flags=--no-watch-dog
-dalvik.vm.dex2oat-filter=everything
-dalvik.vm.image-dex2oat-filter=everything
-
-# Graphics optimizations
-debug.sf.latch_unsignaled=1
-debug.sf.enable_hwc_vds=1
-debug.sf.early_phase_offset_ns=1500000
-debug.sf.early_app_phase_offset_ns=1500000
-debug.sf.early_gl_phase_offset_ns=3000000
-debug.sf.early_gl_app_phase_offset_ns=15000000
-debug.sf.high_fps_early_phase_offset_ns=6100000
-debug.sf.high_fps_early_gl_phase_offset_ns=9000000
-debug.sf.phase_offset_threshold_for_next_vsync_ns=6100000
