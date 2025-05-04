@@ -1,6 +1,6 @@
 name=GhostGMS
-version=1.3
-versionCode=13
-author=Veloxine, Migrator
+version=2.0
+versionCode=20
+author=Kaushik
 description=Optimize Google Play Services (GMS) for better performance, battery life and privacy
 updateJson=https://raw.githubusercontent.com/veloxineology/GhostGMS/main/update.json
