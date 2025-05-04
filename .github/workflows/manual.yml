@@ -1,0 +1,171 @@
+name: Manual Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., 2.0)'
+        required: true
+        type: string
+      release_notes:
+        description: 'Release notes (markdown format)'
+        required: true
+        type: string
+      pre_release:
+        description: 'Mark as pre-release?'
+        required: false
+        type: boolean
+        default: false
+
+# Add permissions here
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Verify version in module.prop
+        run: |
+          if [ ! -f module.prop ]; then
+            echo "Error: module.prop not found"
+            exit 1
+          fi
+          CURRENT_VERSION=$(grep 'version=' module.prop | cut -d'=' -f2)
+          if [ -z "$CURRENT_VERSION" ]; then
+            echo "Error: Could not extract version from module.prop"
+            exit 1
+          fi
+          if [ "$CURRENT_VERSION" != "${{ inputs.version }}" ]; then
+            echo "Error: Version in module.prop ($CURRENT_VERSION) doesn't match input version (${{ inputs.version }})"
+            exit 1
+          fi
+          
+      - name: Verify version in update.json
+        run: |
+          if [ ! -f update.json ]; then
+            echo "Error: update.json not found"
+            exit 1
+          fi
+          JSON_VERSION=$(grep -o '"version": *"[^"]*"' update.json | cut -d'"' -f4)
+          if [ -z "$JSON_VERSION" ]; then
+            echo "Error: Could not extract version from update.json"
+            exit 1
+          fi
+          if [ "$JSON_VERSION" != "${{ inputs.version }}" ]; then
+            echo "Error: Version in update.json ($JSON_VERSION) doesn't match input version (${{ inputs.version }})"
+            exit 1
+          fi
+          
+          # Check ZIP URL in update.json
+          ZIP_URL=$(grep -o '"zipUrl": *"[^"]*"' update.json | cut -d'"' -f4)
+          EXPECTED_URL="https://github.com/veloxineology/GhostGMS/releases/download/${{ inputs.version }}/GhostGMS-${{ inputs.version }}.zip"
+          if [ "$ZIP_URL" != "$EXPECTED_URL" ]; then
+            echo "Error: zipUrl in update.json doesn't match expected format"
+            echo "Expected: $EXPECTED_URL"
+            echo "Found: $ZIP_URL"
+            exit 1
+          fi
+          
+      - name: Check required files
+        run: |
+          REQUIRED_FILES=(
+            "module.prop"
+            "LICENSE"
+            "README.md"
+            "update.json"
+            "CHANGELOG.md"
+            "customize.sh"
+            "service.sh"
+            "veloxine.sh"
+            "post-fs-data.sh"
+            "gmslist.txt"
+            "system.prop"
+            "tools/arm/keycheck"
+            "tools/x86/keycheck"
+          )
+          
+          for file in "${REQUIRED_FILES[@]}"; do
+            if [ ! -e "$file" ]; then
+              echo "Error: Required file/directory '$file' not found"
+              exit 1
+            fi
+          done
+          
+      - name: Create zip file
+        run: |
+          # Create a clean directory for the zip
+          mkdir -p release_temp
+          mkdir -p release_temp/config
+          mkdir -p release_temp/logs
+          
+          # Copy all necessary files, excluding the release_temp directory and git-related directories
+          find . -type f \
+            -not -path "./release_temp/*" \
+            -not -path "./.git/*" \
+            -not -path "./.github/*" \
+            -not -path "./.gitignore" \
+            | xargs -I{} cp --parents {} release_temp/
+          
+          # Make sure all scripts are executable
+          find release_temp -name "*.sh" -exec chmod +x {} \;
+          find release_temp/tools -name "keycheck" -exec chmod +x {} \;
+          
+          # Create the zip file
+          cd release_temp
+          zip -r ../GhostGMS-${{ inputs.version }}.zip *
+          cd ..
+          
+      - name: Check zip file integrity
+        run: |
+          if [ ! -f GhostGMS-${{ inputs.version }}.zip ]; then
+            echo "Error: Zip file was not created"
+            exit 1
+          fi
+          
+          # Check if zip file is not empty
+          if [ ! -s GhostGMS-${{ inputs.version }}.zip ]; then
+            echo "Error: Created zip file is empty"
+            exit 1
+          fi
+          
+          # Verify key files are in the zip
+          echo "Checking for important files in zip..."
+          IMPORTANT_FILES=(
+            "module.prop" 
+            "customize.sh" 
+            "veloxine.sh"
+            "post-fs-data.sh"
+            "service.sh"
+            "tools/arm/keycheck" 
+            "tools/x86/keycheck"
+            "gmslist.txt"
+            "system.prop"
+          )
+          
+          for file in "${IMPORTANT_FILES[@]}"; do
+            if ! unzip -l GhostGMS-${{ inputs.version }}.zip | grep -q "$file"; then
+              echo "Error: $file not found in the zip archive"
+              exit 1
+            fi
+          done
+          echo "All important files verified in zip file"
+          
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: GhostGMS-${{ inputs.version }}.zip
+          tag_name: ${{ inputs.version }}
+          name: GhostGMS ${{ inputs.version }}
+          body: ${{ inputs.release_notes }}
+          prerelease: ${{ inputs.pre_release }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Cleanup
+        run: |
+          rm -rf release_temp
+          rm -f GhostGMS-${{ inputs.version }}.zip 
