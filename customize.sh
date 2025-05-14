@@ -40,8 +40,8 @@ ui_print() {
 
 newline() {
   local count="${1:-1}"
-  for ((i=0; i<count; i++)); do
-    ui_print ""
+  for _ in $(seq 1 "$count"); do
+    ui_print " "
   done
 }
 
