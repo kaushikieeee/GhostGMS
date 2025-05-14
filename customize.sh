@@ -24,6 +24,9 @@ else
   ui_print "! Warning: Could not determine SU implementation"
 fi
 
+# Create logs directory
+mkdir -p $MODDIR/logs
+
 # Check for debug mode
 if [ -f "$MODDIR/debug" ]; then
   DEBUG_MODE=true
@@ -35,7 +38,6 @@ else
 fi
 
 # Create a directory structure
-mkdir -p $MODDIR/logs
 mkdir -p $MODDIR/config
 mkdir -p $MODDIR/system/bin
 
