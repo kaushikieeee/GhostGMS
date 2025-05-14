@@ -1,0 +1,16 @@
+*.zip
+*.log
+*.tmp
+*.bak
+*.swp
+*.DS_Store
+Thumbs.db
+*.old
+*.orig
+*.rej
+*.suo
+*.user
+*.ncb
+*.sln
+*.vcxproj
+*.vcxproj.filters
