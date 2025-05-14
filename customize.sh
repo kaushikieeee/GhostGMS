@@ -7,22 +7,6 @@
 
 # Set up environment
 MODDIR=${0%/*}
-OUTFD=$2
-
-# Detect SU implementation
-if command -v magisk >/dev/null; then
-  SU_TYPE="Magisk"
-  MAGISK_VER=$(magisk -v 2>/dev/null)
-  MAGISK_VER_CODE=$(magisk -V 2>/dev/null)
-  ui_print "• Magisk detected: $MAGISK_VER ($MAGISK_VER_CODE)"
-elif command -v ksud >/dev/null; then
-  SU_TYPE="KernelSU"
-  KISU_VER=$(ksud -V 2>/dev/null)
-  ui_print "• KernelSU detected: $KISU_VER"
-else
-  SU_TYPE="Unknown SU"
-  ui_print "! Warning: Could not determine SU implementation"
-fi
 
 # Create logs directory
 mkdir -p $MODDIR/logs
