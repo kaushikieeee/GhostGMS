@@ -47,70 +47,21 @@ info_print() {
 # Volume Key Functions
 #########################
 
-# Modern keycheck method
-check_keycheck() {
-  # Get device architecture
-  ARCH=$(getprop ro.product.cpu.abi)
-  
-  # Set $ARCH32 based on $ARCH
-  if [ "$ARCH" == "arm64-v8a" ] || [ "$ARCH" == "armeabi-v7a" ]; then
-    ARCH32="arm"
-  elif [ "$ARCH" == "x86_64" ] || [ "$ARCH" == "x86" ]; then
-    ARCH32="x86"
-  else
-    ARCH32="arm"
-  fi
-  
-  # Check if keycheck binary exists for the architecture
-  if [ -f "$MODDIR/tools/$ARCH32/keycheck" ]; then
-    # Make keycheck executable
-    chmod 0755 "$MODDIR/tools/$ARCH32/keycheck"
-    return 0
-  else
-    return 1
-  fi
-}
-
 # Function for detecting volume key presses
 ghost_get_choice() {
-  local TIMEOUT=30
-  local TEXT="$1"
-  local DEFAULT="$2"
-  local COUNT=0
-  
-  ui_print " "
-  ui_print "$TEXT"
-  ui_print "Press Volume + for YES, Volume - for NO"
-  ui_print "Default option in $TIMEOUT seconds: $DEFAULT"
-  
-  # Check if we have keycheck
-  if check_keycheck; then
-    # Keycheck method
-    ui_print "Using volume keys for selection..."
-    
-    # Consume existing input and wait for a new key press
-    timeout -t 0 $MODDIR/tools/$ARCH32/keycheck
-    timeout -t $TIMEOUT $MODDIR/tools/$ARCH32/keycheck
-    local SEL=$?
-
-    if [ $SEL -eq 42 ]; then
-      ui_print "Selected: YES"
-      return 0
-    elif [ $SEL -eq 41 ]; then
-      ui_print "Selected: NO"
-      return 1
-    else
-      ui_print "Timeout or no input detected. Using default: $DEFAULT"
-      [ "$DEFAULT" == "YES" ] && return 0 || return 1
+  local prompt="$1"
+  ui_print "$prompt"
+  ui_print " Waiting up to ${TIMEOUT}s…"
+  while :; do
+    event=$(timeout ${TIMEOUT} getevent -qlc 1 2>/dev/null)
+    code=$?
+    # Timeout returns 124 (toybox) or 143 (BusyBox)
+    if [ $code -eq 124 ] || [ $code -eq 143 ]; then
+      return 2
     fi
-  else
-    # Fallback to timeout with default
-    ui_print "Volume keys not available. Using timeout method..."
-    ui_print "Default option will be selected in $TIMEOUT seconds."
-    sleep $TIMEOUT
-    ui_print "Default selected: $DEFAULT"
-    [ "$DEFAULT" == "YES" ] && return 0 || return 1
-  fi
+    echo "$event" | grep -q "KEY_VOLUMEUP.*DOWN"    && return 0
+    echo "$event" | grep -q "KEY_VOLUMEDOWN.*DOWN"  && return 1
+  done
 }
 
 #########################
