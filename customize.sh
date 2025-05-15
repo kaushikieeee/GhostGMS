@@ -2,7 +2,7 @@
 ##########################################################################################
 # GhostGMS Module for Magisk and KernelSU
 # Authors: Veloxine, Migrator
-# Version: 1.3 (Enhanced UI)
+# Version: 2.0
 ##########################################################################################
 
 # Set up environment
