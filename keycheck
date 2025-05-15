@@ -1,7 +1,0 @@
-#!/system/bin/sh
-# This is a placeholder for the actual keycheck binary
-# The real binary should be included in the module zip
-# This script will be replaced by the actual binary during installation
-
-# Return volume up keycode for testing purposes
-exit 42 

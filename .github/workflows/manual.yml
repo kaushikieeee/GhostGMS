@@ -83,8 +83,6 @@ jobs:
             "post-fs-data.sh"
             "gmslist.txt"
             "system.prop"
-            "tools/arm/keycheck"
-            "tools/x86/keycheck"
           )
           
           for file in "${REQUIRED_FILES[@]}"; do
@@ -111,7 +109,6 @@ jobs:
           
           # Make sure all scripts are executable
           find release_temp -name "*.sh" -exec chmod +x {} \;
-          find release_temp/tools -name "keycheck" -exec chmod +x {} \;
           
           # Create the zip file
           cd release_temp
@@ -139,8 +136,6 @@ jobs:
             "veloxine.sh"
             "post-fs-data.sh"
             "service.sh"
-            "tools/arm/keycheck" 
-            "tools/x86/keycheck"
             "gmslist.txt"
             "system.prop"
           )
