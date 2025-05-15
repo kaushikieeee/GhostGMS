@@ -1,6 +1,6 @@
 #!/system/bin/sh
 ##########################################################################################
-# GhostGMS Module for Magisk
+# GhostGMS Module for Magisk and KernelSU
 # Authors: Veloxine, Migrator
 # Version: 1.3
 ##########################################################################################
@@ -47,70 +47,24 @@ info_print() {
 # Volume Key Functions
 #########################
 
-# Modern keycheck method
-check_keycheck() {
-  # Get device architecture
-  ARCH=$(getprop ro.product.cpu.abi)
-  
-  # Set $ARCH32 based on $ARCH
-  if [ "$ARCH" == "arm64-v8a" ] || [ "$ARCH" == "armeabi-v7a" ]; then
-    ARCH32="arm"
-  elif [ "$ARCH" == "x86_64" ] || [ "$ARCH" == "x86" ]; then
-    ARCH32="x86"
-  else
-    ARCH32="arm"
-  fi
-  
-  # Check if keycheck binary exists for the architecture
-  if [ -f "$MODDIR/tools/$ARCH32/keycheck" ]; then
-    # Make keycheck executable
-    chmod 0755 "$MODDIR/tools/$ARCH32/keycheck"
-    return 0
-  else
-    return 1
-  fi
-}
-
-# Function for detecting volume key presses
-ghost_get_choice() {
-  local TIMEOUT=30
-  local TEXT="$1"
-  local DEFAULT="$2"
-  local COUNT=0
-  
+# Modern key detection method
+choose_option() {
+  local prompt="$1"
+  ui_print "$prompt"
   ui_print " "
-  ui_print "$TEXT"
-  ui_print "Press Volume + for YES, Volume - for NO"
-  ui_print "Default option in $TIMEOUT seconds: $DEFAULT"
-  
-  # Check if we have keycheck
-  if check_keycheck; then
-    # Keycheck method
-    ui_print "Using volume keys for selection..."
-    
-    # Consume existing input and wait for a new key press
-    timeout -t 0 $MODDIR/tools/$ARCH32/keycheck
-    timeout -t $TIMEOUT $MODDIR/tools/$ARCH32/keycheck
-    local SEL=$?
-
-    if [ $SEL -eq 42 ]; then
-      ui_print "Selected: YES"
-      return 0
-    elif [ $SEL -eq 41 ]; then
-      ui_print "Selected: NO"
-      return 1
-    else
-      ui_print "Timeout or no input detected. Using default: $DEFAULT"
-      [ "$DEFAULT" == "YES" ] && return 0 || return 1
+  ui_print "🔼 = Yes | 🔽 = No"
+  ui_print " "
+  ui_print " Waiting up to ${TIMEOUT}s…"
+  while :; do
+    event=$(timeout ${TIMEOUT} getevent -qlc 1 2>/dev/null)
+    code=$?
+    # Timeout returns 124 (toybox) or 143 (BusyBox)
+    if [ $code -eq 124 ] || [ $code -eq 143 ]; then
+      return 2
     fi
-  else
-    # Fallback to timeout with default
-    ui_print "Volume keys not available. Using timeout method..."
-    ui_print "Default option will be selected in $TIMEOUT seconds."
-    sleep $TIMEOUT
-    ui_print "Default selected: $DEFAULT"
-    [ "$DEFAULT" == "YES" ] && return 0 || return 1
-  fi
+    echo "$event" | grep -q "KEY_VOLUMEUP.*DOWN"    && return 0
+    echo "$event" | grep -q "KEY_VOLUMEDOWN.*DOWN"  && return 1
+  done
 }
 
 #########################
@@ -126,20 +80,24 @@ ui_print "🔋 Better battery"
 ui_print "🔒 Privacy enhancement"
 ui_print " "
 
+ui_print "Press Volume Up for YES, Volume Down for NO."
+ui_print " "
+
 # Get settings for main features
-ghost_get_choice "👻 Enable GMS Ghosting? (Recommended)" "YES"
+TIMEOUT=30
+choose_option "👻 Enable GMS Ghosting? (Recommended)"
 ENABLE_GHOSTED=$?
 [ $ENABLE_GHOSTED -eq 0 ] && ENABLE_GHOSTED=1 || ENABLE_GHOSTED=0
 
-ghost_get_choice "📋 Disable GMS Logging? (Recommended)" "YES"
+choose_option "📋 Disable GMS Logging? (Recommended)"
 ENABLE_LOG_DISABLE=$?
 [ $ENABLE_LOG_DISABLE -eq 0 ] && ENABLE_LOG_DISABLE=1 || ENABLE_LOG_DISABLE=0
 
-ghost_get_choice "🔧 Set GMS-optimized system properties? (Recommended)" "YES"
+choose_option "🔧 Set GMS-optimized system properties? (Recommended)"
 ENABLE_SYS_PROPS=$?
 [ $ENABLE_SYS_PROPS -eq 0 ] && ENABLE_SYS_PROPS=1 || ENABLE_SYS_PROPS=0
 
-ghost_get_choice "⚙️ Disable intrusive GMS services? (Recommended)" "YES"
+choose_option "⚙️ Disable intrusive GMS services? (Recommended)"
 ENABLE_SERVICES_DISABLE=$?
 [ $ENABLE_SERVICES_DISABLE -eq 0 ] && ENABLE_SERVICES_DISABLE=1 || ENABLE_SERVICES_DISABLE=0
 
@@ -170,88 +128,70 @@ if [ "$ENABLE_SERVICES_DISABLE" = "1" ]; then
   ui_print " "
   ui_print "Choose which types of GMS services to disable:"
   
-  ghost_get_choice "🛑 Disable Ads services?" "YES"
-  result=$?
-  [ $result -eq 0 ] && DISABLE_ADS=1 || DISABLE_ADS=0
+  choose_option "🛑 Disable Ads services?" 
+  DISABLE_ADS=$?
   
-  ghost_get_choice "🛑 Disable Tracking services?" "YES"
-  result=$?
-  [ $result -eq 0 ] && DISABLE_TRACKING=1 || DISABLE_TRACKING=0
+  choose_option "🛑 Disable Tracking services?" 
+  DISABLE_TRACKING=$?
   
-  ghost_get_choice "📊 Disable Analytics services?" "YES"
-  result=$?
-  [ $result -eq 0 ] && DISABLE_ANALYTICS=1 || DISABLE_ANALYTICS=0
+  choose_option "📊 Disable Analytics services?" 
+  DISABLE_ANALYTICS=$?
   
-  ghost_get_choice "📊 Disable Reporting services?" "YES"
-  result=$?
-  [ $result -eq 0 ] && DISABLE_REPORTING=1 || DISABLE_REPORTING=0
+  choose_option "📊 Disable Reporting services?" 
+  DISABLE_REPORTING=$?
   
-  ghost_get_choice "🔄 Disable Background services?" "YES"
-  result=$?
-  [ $result -eq 0 ] && DISABLE_BACKGROUND=1 || DISABLE_BACKGROUND=0
+  choose_option "🔄 Disable Background services?" 
+  DISABLE_BACKGROUND=$?
   
-  ghost_get_choice "🔄 Disable Update services?" "YES"
-  result=$?
-  [ $result -eq 0 ] && DISABLE_UPDATE=1 || DISABLE_UPDATE=0
+  choose_option "🔄 Disable Update services?" 
+  DISABLE_UPDATE=$?
   
-  ghost_get_choice "📍 Disable Location services?" "NO"
-  result=$?
-  [ $result -eq 0 ] && DISABLE_LOCATION=1 || DISABLE_LOCATION=0
+  choose_option "📍 Disable Location services?" 
+  DISABLE_LOCATION=$?
   
-  ghost_get_choice "📍 Disable Geofence services?" "NO"
-  result=$?
-  [ $result -eq 0 ] && DISABLE_GEOFENCE=1 || DISABLE_GEOFENCE=0
+  choose_option "📍 Disable Geofence services?" 
+  DISABLE_GEOFENCE=$?
   
-  ghost_get_choice "📡 Disable Nearby services?" "NO"
-  result=$?
-  [ $result -eq 0 ] && DISABLE_NEARBY=1 || DISABLE_NEARBY=0
+  choose_option "📡 Disable Nearby services?" 
+  DISABLE_NEARBY=$?
   
-  ghost_get_choice "📡 Disable Cast services?" "NO"
-  result=$?
-  [ $result -eq 0 ] && DISABLE_CAST=1 || DISABLE_CAST=0
+  choose_option "📡 Disable Cast services?" 
+  DISABLE_CAST=$?
   
-  ghost_get_choice "📡 Disable Discovery services?" "NO"
-  result=$?
-  [ $result -eq 0 ] && DISABLE_DISCOVERY=1 || DISABLE_DISCOVERY=0
+  choose_option "📡 Disable Discovery services?" 
+  DISABLE_DISCOVERY=$?
   
-  ghost_get_choice "☁️ Disable Sync services?" "NO"
-  result=$?
-  [ $result -eq 0 ] && DISABLE_SYNC=1 || DISABLE_SYNC=0
+  choose_option "☁️ Disable Sync services?" 
+  DISABLE_SYNC=$?
   
-  ghost_get_choice "☁️ Disable Cloud services?" "NO"
-  result=$?
-  [ $result -eq 0 ] && DISABLE_CLOUD=1 || DISABLE_CLOUD=0
+  choose_option "☁️ Disable Cloud services?" 
+  DISABLE_CLOUD=$?
   
-  ghost_get_choice "☁️ Disable Auth services?" "NO"
-  result=$?
-  [ $result -eq 0 ] && DISABLE_AUTH=1 || DISABLE_AUTH=0
+  choose_option "☁️ Disable Auth services?" 
+  DISABLE_AUTH=$?
   
-  ghost_get_choice "💰 Disable Wallet services?" "NO"
-  result=$?
-  [ $result -eq 0 ] && DISABLE_WALLET=1 || DISABLE_WALLET=0
+  choose_option "💰 Disable Wallet services?" 
+  DISABLE_WALLET=$?
   
-  ghost_get_choice "💰 Disable Payment services?" "NO"
-  result=$?
-  [ $result -eq 0 ] && DISABLE_PAYMENT=1 || DISABLE_PAYMENT=0
+  choose_option "💰 Disable Payment services?" 
+  DISABLE_PAYMENT=$?
   
-  ghost_get_choice "⌚️ Disable Wear services?" "NO"
-  result=$?
-  [ $result -eq 0 ] && DISABLE_WEAR=1 || DISABLE_WEAR=0
+  choose_option "⌚️ Disable Wear services?" 
+  DISABLE_WEAR=$?
   
-  ghost_get_choice "⌚️ Disable Fitness services?" "NO"
-  result=$?
-  [ $result -eq 0 ] && DISABLE_FITNESS=1 || DISABLE_FITNESS=0
+  choose_option "⌚️ Disable Fitness services?" 
+  DISABLE_FITNESS=$?
 fi
 
-ghost_get_choice "📻 Disable GMS Receivers?" "NO"
+choose_option "📻 Disable GMS Receivers?" 
 ENABLE_RECEIVER_DISABLE=$?
 [ $ENABLE_RECEIVER_DISABLE -eq 0 ] && ENABLE_RECEIVER_DISABLE=1 || ENABLE_RECEIVER_DISABLE=0
 
-ghost_get_choice "🏬 Disable GMS Providers?" "NO"
+choose_option "🏬 Disable GMS Providers?" 
 ENABLE_PROVIDER_DISABLE=$?
 [ $ENABLE_PROVIDER_DISABLE -eq 0 ] && ENABLE_PROVIDER_DISABLE=1 || ENABLE_PROVIDER_DISABLE=0
 
-ghost_get_choice "🔠 Disable GMS Activities?" "NO"
+choose_option "🔠 Disable GMS Activities?" 
 ENABLE_ACTIVITY_DISABLE=$?
 [ $ENABLE_ACTIVITY_DISABLE -eq 0 ] && ENABLE_ACTIVITY_DISABLE=1 || ENABLE_ACTIVITY_DISABLE=0
 
