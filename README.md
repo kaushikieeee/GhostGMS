@@ -118,7 +118,7 @@
 ## 👨‍💻 Credits
 
 - Original concept and development by **Veloxine**
-- Additional improvements by **Migrator**
+- Additional improvements by **MiguVT**
 
 ## 📄 License
 
