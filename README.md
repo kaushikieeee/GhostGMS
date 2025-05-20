@@ -6,7 +6,7 @@
 
 *Optimize Google Mobile Services for better battery life, privacy, and performance*
 
-[![Version](https://img.shields.io/badge/Version-2.0-brightgreen.svg)](https://github.com/veloxineology/GhostGMS/releases)
+[![Version](https://img.shields.io/badge/Version-2.1-brightgreen.svg)](https://github.com/veloxineology/GhostGMS/releases)
 [![Magisk](https://img.shields.io/badge/Magisk-20%2B-00B0FF.svg)](https://github.com/topjohnwu/Magisk)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
