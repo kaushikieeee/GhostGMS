@@ -16,6 +16,11 @@ on:
         required: false
         type: boolean
         default: false
+      include_legacy:
+        description: 'Include GhostGMS-1.3.zip in release?'
+        required: false
+        type: boolean
+        default: false
 
 # Add permissions here
 permissions:
@@ -92,44 +97,40 @@ jobs:
             fi
           done
           
-      - name: Create zip file
+      - name: Create Core zip file
         run: |
-          # Create a clean directory for the zip
           mkdir -p release_temp
           mkdir -p release_temp/config
           mkdir -p release_temp/logs
-          
-          # Copy all necessary files, excluding the release_temp directory and git-related directories
           find . -type f \
             -not -path "./release_temp/*" \
             -not -path "./.git/*" \
             -not -path "./.github/*" \
             -not -path "./.gitignore" \
             | xargs -I{} cp --parents {} release_temp/
-          
-          # Make sure all scripts are executable
           find release_temp -name "*.sh" -exec chmod +x {} \;
-          
-          # Create the zip file
           cd release_temp
-          zip -r ../GhostGMS-${{ inputs.version }}.zip *
+          zip -r ../GhostGMS-Core-${{ inputs.version }}.zip *
           cd ..
-          
-      - name: Check zip file integrity
+
+      - name: Create Legacy zip (GhostGMS-Legacy-1.3.zip)
+        if: ${{ inputs.include_legacy }}
         run: |
-          if [ ! -f GhostGMS-${{ inputs.version }}.zip ]; then
-            echo "Error: Zip file was not created"
+          cd legacy/GhostGMS-1.3
+          zip -r ../../GhostGMS-Legacy-1.3.zip *
+          cd ../..
+          
+      - name: Check Core zip file integrity
+        run: |
+          if [ ! -f GhostGMS-Core-${{ inputs.version }}.zip ]; then
+            echo "Error: Core zip file was not created"
             exit 1
           fi
-          
-          # Check if zip file is not empty
-          if [ ! -s GhostGMS-${{ inputs.version }}.zip ]; then
-            echo "Error: Created zip file is empty"
+          if [ ! -s GhostGMS-Core-${{ inputs.version }}.zip ]; then
+            echo "Error: Created Core zip file is empty"
             exit 1
           fi
-          
-          # Verify key files are in the zip
-          echo "Checking for important files in zip..."
+          echo "Checking for important files in Core zip..."
           IMPORTANT_FILES=(
             "module.prop" 
             "customize.sh" 
@@ -139,20 +140,21 @@ jobs:
             "gmslist.txt"
             "system.prop"
           )
-          
           for file in "${IMPORTANT_FILES[@]}"; do
-            if ! unzip -l GhostGMS-${{ inputs.version }}.zip | grep -q "$file"; then
-              echo "Error: $file not found in the zip archive"
+            if ! unzip -l GhostGMS-Core-${{ inputs.version }}.zip | grep -q "$file"; then
+              echo "Error: $file not found in the Core zip archive"
               exit 1
             fi
           done
-          echo "All important files verified in zip file"
+          echo "All important files verified in Core zip file"
           
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
-          files: GhostGMS-${{ inputs.version }}.zip
+          files: |
+            GhostGMS-Core-${{ inputs.version }}.zip
+            ${{ inputs.include_legacy && 'GhostGMS-Legacy-1.3.zip' || '' }}
           tag_name: ${{ inputs.version }}
           name: GhostGMS ${{ inputs.version }}
           body: ${{ inputs.release_notes }}
@@ -163,4 +165,5 @@ jobs:
       - name: Cleanup
         run: |
           rm -rf release_temp
-          rm -f GhostGMS-${{ inputs.version }}.zip 
+          rm -f GhostGMS-Core-${{ inputs.version }}.zip 
+          rm -f GhostGMS-Legacy-1.3.zip

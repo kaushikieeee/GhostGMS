@@ -1,0 +1,8 @@
+id=GhostGMS
+name=GhostGMS by Kaushik.
+version=v1.3
+versionCode=1
+author=Kaushik (@veloxineology)
+description=Disables unnecessary GMS background processes to optimize performance and battery life.
+support=N/A
+updateJson=N/A
