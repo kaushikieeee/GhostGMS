@@ -14,7 +14,7 @@
 
 ## ✨ Overview
 
-GhostGMS has now reached a **saturation point**: after years of refinements and optimizations, the module has been fully developed to maximize battery life, privacy, and performance for Google Mobile Services (GMS) **without breaking Android functionality**.  
+GhostGMS has now reached a **saturation point**: after months of refinements and optimizations, the module has been fully developed to maximize battery life, privacy, and performance for Google Mobile Services (GMS) **without breaking Android functionality**.  
 
 While development continues, this release may represent the **final major feature expansion**. Future releases will focus mainly on stability, minor improvements, or compatibility updates rather than adding new optimization features.
 
