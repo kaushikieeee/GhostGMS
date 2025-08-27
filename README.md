@@ -1,9 +1,7 @@
 # 👻 GhostGMS
 
 <div align="center">
-
-![GhostGMS Banner](https://raw.githubusercontent.com/veloxineology/GhostGMS/main/docs/banner.png)
-
+  
 *Optimize Google Mobile Services for better battery life, privacy, and performance*
 
 [![Version](https://img.shields.io/badge/Version-3.0-brightgreen.svg)](https://github.com/veloxineology/GhostGMS/releases)
