@@ -1,8 +1,8 @@
 #!/system/bin/sh
 ##########################################################################################
 # GhostGMS Service Script
-# Authors: Veloxine, Migrator
-# Version: 2.0
+# Authors: Kaushik, MiguVT
+# Version: 3.0
 ##########################################################################################
 
 # Check for command line arguments

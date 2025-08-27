@@ -6,18 +6,45 @@
 
 *Optimize Google Mobile Services for better battery life, privacy, and performance*
 
-[![Version](https://img.shields.io/badge/Version-2.1-brightgreen.svg)](https://github.com/veloxineology/GhostGMS/releases)
+[![Version](https://img.shields.io/badge/Version-3.0-brightgreen.svg)](https://github.com/veloxineology/GhostGMS/releases)
 [![Magisk](https://img.shields.io/badge/Magisk-20%2B-00B0FF.svg)](https://github.com/topjohnwu/Magisk)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 </div>
 
-## ✨ Features
+---
 
-- 🔋 **Better Battery Life**: Reduce GMS wake locks and background activity
-- 🔒 **Enhanced Privacy**: Disable intrusive tracking and analytics services
-- ⚡ **Improved Performance**: Lower RAM usage and CPU utilization
-- 📱 **Maintained Functionality**: Essential Google services remain enabled
+## ✨ Overview
+
+GhostGMS has now reached a **saturation point**: after years of refinements and optimizations, the module has been fully developed to maximize battery life, privacy, and performance for Google Mobile Services (GMS) **without breaking Android functionality**.  
+
+While development continues, this release may represent the **final major feature expansion**. Future releases will focus mainly on stability, minor improvements, or compatibility updates rather than adding new optimization features.
+
+---
+
+## 🆕 Version 3.0 – Dual Modules
+
+Starting with **v3.0**, the release includes **two separate modules** under the same release:
+
+| Module | Description | Key Differences |
+|--------|-------------|----------------|
+| **GhostGMS 3.0 (Core)** | Optimized for maximum safety and compatibility | Focuses on GMS optimizations without kernel modifications |
+| **GhostGMS 2.0 (Legacy)** | Includes previous kernel tweaks and deeper system-level tweaks | May provide additional performance gains but could affect device stability if misused |
+
+Users can choose whichever module works best for their device and needs.
+
+---
+
+## ⚙️ Features
+
+- 🔋 **Better Battery Life**: Reduce GMS wake locks and background activity  
+- 🔒 **Enhanced Privacy**: Disable intrusive tracking and analytics services  
+- ⚡ **Improved Performance**: Lower RAM usage and CPU utilization  
+- 📱 **Maintained Functionality**: Essential Google services remain fully functional  
+
+> ⚠️ GhostGMS has reached the **maximum safe optimization level**. Adding further tweaks risks breaking Android or critical Google services.
+
+---
 
 ## 📋 Optimization Categories
 
@@ -61,30 +88,44 @@
 <p>Control wearable and fitness tracking features</p>
 </details>
 
+---
+
 ## ⚙️ Installation
 
-1. Download the latest release from the [Releases page](https://github.com/veloxineology/GhostGMS/releases)
-2. Install via Magisk Manager
-3. Follow the on-screen prompts to select your preferred optimizations
-4. Reboot your device
+1. Download the latest release from the [Releases page](https://github.com/veloxineology/GhostGMS/releases)  
+2. Install via Magisk Manager  
+3. Choose the preferred module (3.0 Core or 2.0 Legacy)  
+4. Follow the on-screen prompts to select your optimizations  
+5. Reboot your device  
+
+---
 
 ## 🔋 Battery Impact
 
-> ⚠️ **Important**: After installation, you may notice temporarily higher battery usage (Active/Idle drain) for the first 24-48 hours as Android adjusts to the new configuration. This is normal and will settle down after a couple of days, resulting in much better battery life.
+> ⚠️ **Important**: After installation, you may notice temporarily higher battery usage (Active/Idle drain) for the first 24–48 hours as Android adjusts to the new configuration. This is normal and will settle down after a couple of days, resulting in better battery life.  
+
+---
 
 ## 🚫 What This Module Does NOT Do
 
-- ❌ Doesn't modify kernel parameters
-- ❌ Doesn't remove Google apps or break core functionality
-- ❌ Doesn't change system memory management
-- ❌ Doesn't affect OTA updates
+- ❌ Doesn't modify Android kernel (3.0 Core)  
+- ❌ Doesn't remove Google apps or break core functionality  
+- ❌ Doesn't change system memory management  
+- ❌ Doesn't affect OTA updates  
+
+> The **Legacy 2.0 module** may include kernel tweaks, but users should proceed with caution.
+
+---
 
 ## 💡 Tips for Best Results
 
-- ✅ Enable all logging controls for maximum battery savings
-- ✅ Disable only the service categories you don't actively use
-- ✅ Run for at least 2-3 days to see the full benefits
-- ✅ Check logs in `/data/adb/modules/GhostGMS/logs/` for troubleshooting
+- ✅ Enable all logging controls for maximum battery savings  
+- ✅ Disable only service categories you don’t actively use  
+- ✅ Run for at least 2–3 days to see the full benefits  
+- ✅ Check logs in `/data/adb/modules/GhostGMS/logs/` for troubleshooting  
+- ✅ Compare performance between 3.0 Core and 2.0 Legacy if desired  
+
+---
 
 ## 📊 Compatibility
 
@@ -98,28 +139,42 @@
 | Android 9       | ⚠️ Limited Testing |
 | Android 8.x     | ⚠️ Limited Testing |
 
+---
+
 ## 🔍 Troubleshooting
 
 <details>
 <summary><b>Some Google apps show notifications about Google Play services</b></summary>
-<p>This is normal and safe to ignore. The essential functionality still works.</p>
+<p>This is normal and safe to ignore. Essential functionality still works.</p>
 </details>
 
 <details>
 <summary><b>Battery drain seems worse initially</b></summary>
-<p>Wait 24-48 hours for Android to adjust. Initial reconfiguration may temporarily increase battery usage.</p>
+<p>Wait 24–48 hours for Android to adjust. Initial reconfiguration may temporarily increase battery usage.</p>
 </details>
 
 <details>
 <summary><b>GCM push notifications delayed</b></summary>
-<p>Enable the "sync" category during installation if you rely heavily on timely notifications.</p>
+<p>Enable the "Sync" category during installation if you rely heavily on timely notifications.</p>
 </details>
+
+---
 
 ## 👨‍💻 Credits
 
-- Original concept and development by **Veloxine**
-- Additional improvements by **MiguVT**
+- Original concept and development by **Veloxine**  
+- Additional improvements by **MiguVT**  
+
+---
 
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 📝 Note from the Developer
+
+GhostGMS has reached the **final stage of safe optimization**. While there may be minor improvements in the future, **v3.0 is likely the last major feature release**.  
+
+Two modules are now provided so users can choose between **maximum safety (3.0 Core)** and **legacy tweaks (2.0 Legacy)** based on their needs.

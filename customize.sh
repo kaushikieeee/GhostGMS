@@ -1,8 +1,8 @@
 #!/system/bin/sh
 ##########################################################################################
 # GhostGMS Module for Magisk and KernelSU
-# Authors: Veloxine, Migrator
-# Version: 2.0
+# Authors: Kaushik, MiguVT
+# Version: 3.0
 ##########################################################################################
 
 # Set up environment
