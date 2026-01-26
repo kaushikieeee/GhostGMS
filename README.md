@@ -20,7 +20,7 @@ While development continues, this release may represent the **final major featur
 
 ---
 
-## � What's New in v3.1
+##  What's New in v3.1
 
 ### 🔧 Critical Fix: Comprehensive Uninstall Script
 
@@ -40,7 +40,7 @@ Version 3.1 addresses a **major oversight** in previous versions where the unins
 
 ---
 
-## �🆕 Version 3.0 – Dual Modules
+## 🆕 Version 3.0 – Dual Modules
 
 Starting with **v3.0**, the release includes **two separate modules** under the same release:
 
@@ -149,6 +149,8 @@ Users can choose whichever module works best for their device and needs.
 
 | Android Version | Status |
 |-----------------|--------|
+| Android 16      | ✅ Compatible |
+| Android 15      | ✅ Compatible |
 | Android 14      | ✅ Compatible |
 | Android 13      | ✅ Compatible |
 | Android 12/12L  | ✅ Compatible |
