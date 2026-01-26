@@ -1,15 +1,52 @@
 # Changelog
 
-## v3.1 (Latest)
-- **Critical Fix: Comprehensive Uninstall Script**  
-  - Fixed uninstall script to properly reverse ALL changes made by the module  
-  - Now correctly restores system settings (analytics, logging, bug reporting, usage stats)  
-  - Properly removes all resetprop changes (tombstone, LMK, Dalvik, blur settings)  
-  - Re-enables all disabled GMS services including location, auth, backup, and crash reporting  
-  - Added logging to `/data/local/tmp/ghostgms_uninstall.log` for debugging  
-  - Previous uninstall only re-enabled services but left settings changes in place  
-- **Both core and legacy versions updated**  
-- Module now provides complete reversibility when uninstalled  
+## v3.1 (Latest) - 26 January 2026
+
+### 🔧 Critical Fixes
+
+#### ✅ Comprehensive Uninstall Script
+- **Fixed:** Uninstall script now properly reverses **ALL** changes made by the module  
+- **System Settings:** Correctly restores analytics, logging, bug reporting, and usage stats  
+- **Runtime Properties:** Properly removes all resetprop changes (tombstone, LMK, Dalvik, blur settings)  
+- **GMS Services:** Re-enables all disabled services including location, auth, backup, and crash reporting  
+- **Logging:** Added uninstall logging to `/data/local/tmp/ghostgms_uninstall.log` for debugging  
+- **Impact:** Module now provides complete reversibility - uninstalling returns device to exact pre-installation state  
+- **Previous Behavior:** Only re-enabled services but left settings/properties modified
+
+#### ✅ KernelSU Next / APatch Compatibility (Issue #8)
+- **Fixed:** Module now works properly with KernelSU Next and APatch root managers  
+- **Core Module:** Added proper permissions (`chmod 755`/`644`) for config files  
+- **Core Module:** Added validation and warning if config creation fails during installation  
+- **Core Module:** Auto-creates config files with safe defaults if missing on boot  
+- **Legacy Module:** FIXED critical bug - config files were never created during installation!  
+- **Legacy Module:** Now creates `user_prefs` and `gms_categories` with default values  
+- **Fallback Logic:** Both versions now auto-generate config files on boot if missing  
+- **Error Logging:** Detailed logging to `boot_error.log` for troubleshooting  
+- **Impact:** No more "User preferences not found" error on first boot  
+- **Tested On:** Magisk, KernelSU, KernelSU Next v1.0.7+, APatch
+
+### ✨ New Features
+
+#### 🎨 Interactive Blur Disable Option
+- **Added:** Volume button prompt during installation to optionally disable UI blur effects  
+- **Default:** Blur stays enabled (safe for most ROMs)  
+- **User Choice:** Users can now choose whether to disable blur based on their ROM  
+- **Compatibility Fix:** Prevents transparent popups and unreadable notifications on OxygenOS/AOSP ROMs  
+- **Configuration:** Preference saved and applied conditionally on boot  
+- **Impact:** Better ROM compatibility without forcing blur changes on all users
+
+### 🔄 Updates
+
+- **Repository:** Updated GitHub username from `veloxineology` to `kaushikieeee`  
+- **Links:** Updated all repository URLs, documentation, and workflow files  
+- **Both Versions:** Core (3.1) and Legacy (1.3.1) both updated with all fixes  
+- **Compatibility:** Confirmed working on Android 8-15, Magisk 20+, KernelSU, KernelSU Next, APatch
+
+### 📝 Summary
+
+This release focuses on **stability and compatibility** across all root managers. Major issues with KernelSU Next/APatch are now resolved, and the module provides full reversibility on uninstall. The interactive blur option improves ROM compatibility without breaking existing functionality.
+
+**Upgrade Recommended:** If you're on v3.0 or earlier, especially with KernelSU Next/APatch, update to v3.1 immediately.
 
 ---
 
