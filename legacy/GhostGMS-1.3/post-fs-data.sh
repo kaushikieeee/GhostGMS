@@ -14,9 +14,15 @@ resetprop -n dalvik.vm.dex2oat-minidebuginfo false
 resetprop -n dalvik.vm.minidebuginfo false
 resetprop -n dalvik.vm.verify-bytecode false
 
-# Disable Blur
-resetprop -n disableBlurs true
-resetprop -n enable_blurs_on_windows 0
-resetprop -n ro.launcher.blur.appLaunch 0
-resetprop -n ro.sf.blurs_are_expensive 0
-resetprop -n ro.surface_flinger.supports_background_blur 0
+# Disable Blur (if enabled by user)
+MODDIR="${0%/*}"
+if [ -f "$MODDIR/config/user_prefs" ]; then
+  . "$MODDIR/config/user_prefs"
+  if [ "$ENABLE_BLUR_DISABLE" = "1" ]; then
+    resetprop -n disableBlurs true
+    resetprop -n enable_blurs_on_windows 0
+    resetprop -n ro.launcher.blur.appLaunch 0
+    resetprop -n ro.sf.blurs_are_expensive 0
+    resetprop -n ro.surface_flinger.supports_background_blur 0
+  fi
+fi

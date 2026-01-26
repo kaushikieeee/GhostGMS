@@ -76,6 +76,8 @@ choose_option "📋 Disable GMS Logging?" "Yes"
 ENABLE_LOG_DISABLE=$?
 choose_option "🔧 Set GMS-optimized system properties?" "Yes"
 ENABLE_SYS_PROPS=$?
+choose_option "🎨 Disable UI blur effects? (Can improve performance on some ROMs)" "No"
+ENABLE_BLUR_DISABLE=$?
 choose_option "⚙️ Disable intrusive GMS services?" "Yes"
 ENABLE_SERVICES_DISABLE=$?
 
@@ -120,6 +122,7 @@ print_section "📝 Configuration Summary"
 ui_print "Ghosting:         $([ "$ENABLE_GHOSTED" -eq 0 ] && echo Yes || echo No)"
 ui_print "Disable Logging:  $([ "$ENABLE_LOG_DISABLE" -eq 0 ] && echo Yes || echo No)"
 ui_print "System Props:     $([ "$ENABLE_SYS_PROPS" -eq 0 ] && echo Yes || echo No)"
+ui_print "Disable Blur:     $([ "$ENABLE_BLUR_DISABLE" -eq 0 ] && echo Yes || echo No)"
 ui_print "Service Disable:  $([ "$ENABLE_SERVICES_DISABLE" -eq 0 ] && echo Yes || echo No)"
 ui_print "Receivers:        $([ "$ENABLE_RECEIVER_DISABLE" -eq 0 ] && echo Yes || echo No)"
 ui_print "Providers:        $([ "$ENABLE_PROVIDER_DISABLE" -eq 0 ] && echo Yes || echo No)"
@@ -140,6 +143,7 @@ mkdir -p "$MODDIR/config"
   echo "ENABLE_GHOSTED=$([ "$ENABLE_GHOSTED" -eq 0 ] && echo 1 || echo 0)"
   echo "ENABLE_LOG_DISABLE=$([ "$ENABLE_LOG_DISABLE" -eq 0 ] && echo 1 || echo 0)"
   echo "ENABLE_SYS_PROPS=$([ "$ENABLE_SYS_PROPS" -eq 0 ] && echo 1 || echo 0)"
+  echo "ENABLE_BLUR_DISABLE=$([ "$ENABLE_BLUR_DISABLE" -eq 0 ] && echo 1 || echo 0)"
   echo "ENABLE_SERVICES_DISABLE=$([ "$ENABLE_SERVICES_DISABLE" -eq 0 ] && echo 1 || echo 0)"
   echo "ENABLE_RECEIVER_DISABLE=$([ "$ENABLE_RECEIVER_DISABLE" -eq 0 ] && echo 1 || echo 0)"
   echo "ENABLE_PROVIDER_DISABLE=$([ "$ENABLE_PROVIDER_DISABLE" -eq 0 ] && echo 1 || echo 0)"
