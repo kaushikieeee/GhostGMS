@@ -18,4 +18,4 @@ You can toggle GMS services as needed using the **Action button**.
 
 ---
 
-**Created by Kaushik (@veloxineology)**
+**Created by Kaushik (@kaushikieeee)**

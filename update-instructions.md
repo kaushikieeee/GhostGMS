@@ -7,7 +7,7 @@
    - In `update.json`: Update `version` and `versionCode`
 
 2. Update `zipUrl` in `update.json` to point to the new version's zip file:
-   - Example: `https://github.com/veloxineology/GhostGMS/releases/download/v2.1/GhostGMS-v2.1.zip`
+   - Example: `https://github.com/kaushikieeee/GhostGMS/releases/download/v2.1/GhostGMS-v2.1.zip`
 
 3. Add new changes to `CHANGELOG.md`
 
@@ -30,8 +30,8 @@ versionCode=21
 {
   "version": "v2.1",
   "versionCode": 21,
-  "zipUrl": "https://github.com/veloxineology/GhostGMS/releases/download/v2.1/GhostGMS-v2.1.zip",
-  "changelog": "https://raw.githubusercontent.com/veloxineology/GhostGMS/main/CHANGELOG.md"
+  "zipUrl": "https://github.com/kaushikieeee/GhostGMS/releases/download/v2.1/GhostGMS-v2.1.zip",
+  "changelog": "https://raw.githubusercontent.com/kaushikieeee/GhostGMS/main/CHANGELOG.md"
 }
 ```
 
