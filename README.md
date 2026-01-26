@@ -195,6 +195,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📝 Note from the Developer
 
-GhostGMS has reached the **final stage of safe optimization**. While there may be minor improvements in the future, **v3.0 is likely the last major feature release**.  
+GhostGMS has reached the **final stage of safe optimization**. While there may be minor improvements in the future, **v3.1 is likely the last major feature release**.  
 
 Two modules are now provided so users can choose between **maximum safety (3.1 Core)** and **legacy tweaks (1.3 Legacy)** based on their needs.
