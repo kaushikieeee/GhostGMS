@@ -4,7 +4,7 @@
   
 *Optimize Google Mobile Services for better battery life, privacy, and performance*
 
-[![Version](https://img.shields.io/badge/Version-3.0-brightgreen.svg)](https://github.com/veloxineology/GhostGMS/releases)
+[![Version](https://img.shields.io/badge/Version-3.1-brightgreen.svg)](https://github.com/kaushikieeee/GhostGMS/releases)
 [![Magisk](https://img.shields.io/badge/Magisk-20%2B-00B0FF.svg)](https://github.com/topjohnwu/Magisk)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
@@ -20,7 +20,27 @@ While development continues, this release may represent the **final major featur
 
 ---
 
-## 🆕 Version 3.0 – Dual Modules
+## � What's New in v3.1
+
+### 🔧 Critical Fix: Comprehensive Uninstall Script
+
+Version 3.1 addresses a **major oversight** in previous versions where the uninstall script didn't fully reverse all module changes:
+
+**What's Fixed:**
+- ✅ **System Settings Restoration** - Now properly restores analytics, logging, bug reporting, and usage stats settings
+- ✅ **Runtime Properties** - Removes all `resetprop` changes (tombstone, LMK, Dalvik, blur settings)
+- ✅ **Complete Service Re-enabling** - Re-enables ALL disabled GMS services including location, auth, backup, and crash reporting
+- ✅ **Uninstall Logging** - Added logging to `/data/local/tmp/ghostgms_uninstall.log` for debugging
+- ✅ **Both Versions Updated** - Core 3.1 and Legacy 1.3.1 now include comprehensive uninstall
+
+**Before v3.1:** Uninstalling only re-enabled GMS services but left system settings and properties modified  
+**After v3.1:** Module is now **fully reversible** - uninstalling returns your device to its exact pre-installation state
+
+> 💡 **Recommendation:** If you're on v3.0 or earlier, update to v3.1 for proper uninstall functionality.
+
+---
+
+## �🆕 Version 3.0 – Dual Modules
 
 Starting with **v3.0**, the release includes **two separate modules** under the same release:
 
@@ -90,7 +110,7 @@ Users can choose whichever module works best for their device and needs.
 
 ## ⚙️ Installation
 
-1. Download the latest release from the [Releases page](https://github.com/veloxineology/GhostGMS/releases)  
+1. Download the latest release from the [Releases page](https://github.com/kaushikieeee/GhostGMS/releases)  
 2. Install via Magisk Manager  
 3. Choose the preferred module (3.0 Core or 2.0 Legacy)  
 4. Follow the on-screen prompts to select your optimizations  
