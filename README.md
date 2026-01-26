@@ -182,7 +182,7 @@ Users can choose whichever module works best for their device and needs.
 
 ## 👨‍💻 Credits
 
-- Original concept and development by **Veloxine**  
+- Original concept and development by **Kaushik S**  
 - Additional improvements by **MiguVT**  
 
 ---
