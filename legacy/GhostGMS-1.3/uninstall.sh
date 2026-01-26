@@ -2,7 +2,44 @@ cat > "/data/adb/uninstall.sh" << 'EOF'
 until [[ -e "/sdcard/" ]]; do
   sleep 1
 done
-# Enable Google Services
+
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] GhostGMS Legacy Uninstall started" > /data/local/tmp/ghostgms_uninstall.log
+
+# Reverse System Settings Changes
+echo "Reversing system settings..." >> /data/local/tmp/ghostgms_uninstall.log
+settings put global gmscorestat_enabled 1
+settings put global play_store_panel_logging_enabled 1
+settings put global clearcut_events 1
+settings put global clearcut_gcm 1
+settings delete global phenotype__debug_bypass_phenotype
+settings delete global phenotype_boot_count
+settings delete global phenotype_flags
+settings put global ga_collection_enabled 1
+settings put global clearcut_enabled 1
+settings put global analytics_enabled 1
+settings put global uploading_enabled 1
+settings put global bug_report_in_power_menu 1
+settings put global usage_stats_enabled 1
+settings put global usagestats_collection_enabled 1
+
+# Reverse resetprop changes from post-fs-data.sh
+echo "Reversing resetprop changes..." >> /data/local/tmp/ghostgms_uninstall.log
+resetprop --delete tombstoned.max_tombstone_count
+resetprop --delete ro.lmk.debug
+resetprop --delete ro.lmk.log_stats
+resetprop --delete dalvik.vm.check-dex-sum
+resetprop --delete dalvik.vm.checkjni
+resetprop --delete dalvik.vm.dex2oat-minidebuginfo
+resetprop --delete dalvik.vm.minidebuginfo
+resetprop --delete dalvik.vm.verify-bytecode
+resetprop --delete disableBlurs
+resetprop --delete enable_blurs_on_windows
+resetprop --delete ro.launcher.blur.appLaunch
+resetprop --delete ro.sf.blurs_are_expensive
+resetprop --delete ro.surface_flinger.supports_background_blur
+
+# Re-enable all GMS services
+echo "Re-enabling GMS services..." >> /data/local/tmp/ghostgms_uninstall.log
 
 # Enable the advertising and tracking capabilities of Google Play Services.
 pm enable "com.google.android.gms/com.google.android.gms.ads.identifier.service.AdvertisingIdNotificationService"
@@ -277,6 +314,38 @@ pm enable "com.google.android.gms/.usagereporting.service.UsageReportingIntentSe
 
 # Google MDM Services
 pm enable "com.google.android.gms/com.google.android.gms.mdm.receivers.MdmDeviceAdminReceiver"
+
+# Additional services that might have been disabled
+pm enable "com.google.android.gms/com.google.android.gms.ads.AdRequestBrokerService"
+pm enable "com.google.android.gms/com.google.android.gms.ads.settings.AdsSettingsActivityService"
+pm enable "com.google.android.gms/com.google.android.gms.ads.GservicesValueBrokerService"
+pm enable "com.google.android.gms/com.google.android.gms.backup.BackupOrchestrationService"
+pm enable "com.google.android.gms/com.google.android.gms.crash.service.CrashReportService"
+pm enable "com.google.android.gms/com.google.android.gms.clearcut.service.ClearcutLoggerService"
+pm enable "com.google.android.gms/com.google.android.gms.deviceconnection.service.DeviceConnectionServiceBroker"
+pm enable "com.google.android.gms/com.google.android.gms.geofence.GeofenceApiService"
+pm enable "com.google.android.gms/com.google.android.location.geofencer.service.GeofenceProviderService"
+pm enable "com.google.android.gms/com.google.android.location.fused.FusedLocationService"
+pm enable "com.google.android.gms/com.google.android.location.internal.server.GoogleLocationService"
+pm enable "com.google.android.gms/com.google.android.location.network.NetworkLocationService"
+pm enable "com.google.android.gms/com.google.android.location.persistent.LocationPersistentService"
+pm enable "com.google.android.gms/com.google.android.location.reporting.service.LocationHistoryInjectorService"
+pm enable "com.google.android.gms/com.google.android.location.util.LocationAccuracyInjectorService"
+pm enable "com.google.android.gms/com.google.android.gms.nearby.exposurenotification.service.ExposureNotificationService"
+pm enable "com.google.android.gms/com.google.android.gms.nearby.sharing.service.ShareSheetSessionService"
+pm enable "com.google.android.gms/com.google.android.gms.auth.api.credentials.credentialsapi.service.CredentialsApiService"
+pm enable "com.google.android.gms/com.google.android.gms.auth.api.identity.service.IdentityService"
+pm enable "com.google.android.gms/com.google.android.gms.auth.api.phone.service.SmsRetrieverApiService"
+pm enable "com.google.android.gms/com.google.android.gms.auth.api.signin.RevocationService"
+pm enable "com.google.android.gms/com.google.android.gms.chimera.PersistentBoundBrokerService"
+pm enable "com.google.android.gms/com.google.android.gms.chimera.GmsApiService"
+pm enable "com.google.android.gms/com.google.android.gms.measurement.AppMeasurementJobService"
+
+# Re-enable system logging services that were killed in service.sh
+echo "System logging services will restart on next boot" >> /data/local/tmp/ghostgms_uninstall.log
+
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] GhostGMS Legacy Uninstall completed successfully" >> /data/local/tmp/ghostgms_uninstall.log
+echo "All GMS services re-enabled, settings restored, and kernel tweaks will reset on reboot" >> /data/local/tmp/ghostgms_uninstall.log
 
 sleep 30 
 rm -rf "/data/adb/uninstall.sh"
