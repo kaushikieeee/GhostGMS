@@ -1,6 +1,19 @@
 # Changelog
 
-## v3.0 (Latest)
+## v3.1 (Latest)
+- **Critical Fix: Comprehensive Uninstall Script**  
+  - Fixed uninstall script to properly reverse ALL changes made by the module  
+  - Now correctly restores system settings (analytics, logging, bug reporting, usage stats)  
+  - Properly removes all resetprop changes (tombstone, LMK, Dalvik, blur settings)  
+  - Re-enables all disabled GMS services including location, auth, backup, and crash reporting  
+  - Added logging to `/data/local/tmp/ghostgms_uninstall.log` for debugging  
+  - Previous uninstall only re-enabled services but left settings changes in place  
+- **Both core and legacy versions updated**  
+- Module now provides complete reversibility when uninstalled  
+
+---
+
+## v3.0
 - **Reached Saturation Point:** GhostGMS is now fully optimized; adding more tweaks risks breaking Android or critical Google functionality.  
 - **Dual Module Release:**  
   - **3.0 Core:** Safe optimizations with no kernel modifications; focuses on maximum battery, privacy, and performance while maintaining full stability.  
