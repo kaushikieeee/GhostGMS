@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GhostGMS Control Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .version {
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .status-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .status-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+        
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-active .status-dot {
+            background: #28a745;
+        }
+        
+        .status-inactive .status-dot {
+            background: #dc3545;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .config-section {
+            margin-bottom: 25px;
+        }
+        
+        .config-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+        }
+        
+        .config-section h3::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin-right: 10px;
+            border-radius: 2px;
+        }
+        
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .toggle-row:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+        
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+        
+        .toggle-icon {
+            margin-right: 12px;
+            font-size: 1.3em;
+        }
+        
+        .toggle-info {
+            flex: 1;
+        }
+        
+        .toggle-title {
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+        
+        .toggle-desc {
+            font-size: 0.85em;
+            color: #6c757d;
+        }
+        
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 30px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(30px);
+        }
+        
+        /* Buttons */
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+            color: white;
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            display: none;
+            z-index: 1000;
+            min-width: 300px;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .toast.show {
+            display: block;
+        }
+        
+        .toast-success {
+            border-left: 4px solid #28a745;
+        }
+        
+        .toast-error {
+            border-left: 4px solid #dc3545;
+        }
+        
+        .toast-info {
+            border-left: 4px solid #667eea;
+        }
+        
+        /* Loading Spinner */
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading {
+            display: none;
+        }
+        
+        .loading.show {
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>👻 GhostGMS Control Panel</h1>
+            <div class="version">Version 3.1</div>
+        </div>
+        
+        <div class="status-card">
+            <div class="status-header">
+                <h2>Module Status</h2>
+                <div class="status-indicator status-active" id="moduleStatus">
+                    <span class="status-dot"></span>
+                    <span id="statusText">Active</span>
+                </div>
+            </div>
+            
+            <div class="config-section">
+                <h3>🎯 Core Features</h3>
+                <div class="toggle-row">
+                    <div class="toggle-label">
+                        <span class="toggle-icon">👻</span>
+                        <div class="toggle-info">
+                            <div class="toggle-title">GMS Ghosting</div>
+                            <div class="toggle-desc">Optimize Google Play Services</div>
+                        </div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enable_ghosted">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <div class="toggle-row">
+                    <div class="toggle-label">
+                        <span class="toggle-icon">📋</span>
+                        <div class="toggle-info">
+                            <div class="toggle-title">Disable GMS Logging</div>
+                            <div class="toggle-desc">Reduce log generation and improve battery</div>
+                        </div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enable_log_disable">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <div class="toggle-row">
+                    <div class="toggle-label">
+                        <span class="toggle-icon">🔧</span>
+                        <div class="toggle-info">
+                            <div class="toggle-title">System Properties</div>
+                            <div class="toggle-desc">Apply GMS-optimized system properties</div>
+                        </div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enable_sys_props">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <div class="toggle-row">
+                    <div class="toggle-label">
+                        <span class="toggle-icon">🎨</span>
+                        <div class="toggle-info">
+                            <div class="toggle-title">Disable UI Blur</div>
+                            <div class="toggle-desc">Can improve performance on some ROMs</div>
+                        </div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enable_blur_disable">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <div class="toggle-row">
+                    <div class="toggle-label">
+                        <span class="toggle-icon">⚙️</span>
+                        <div class="toggle-info">
+                            <div class="toggle-title">Disable Intrusive Services</div>
+                            <div class="toggle-desc">Disable tracking, ads, and analytics</div>
+                        </div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enable_services_disable">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="config-section">
+                <h3>🔧 Advanced Options</h3>
+                <div class="toggle-row">
+                    <div class="toggle-label">
+                        <span class="toggle-icon">📻</span>
+                        <div class="toggle-info">
+                            <div class="toggle-title">Disable Receivers</div>
+                            <div class="toggle-desc">May affect some GMS functionality</div>
+                        </div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enable_receiver_disable">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <div class="toggle-row">
+                    <div class="toggle-label">
+                        <span class="toggle-icon">🏬</span>
+                        <div class="toggle-info">
+                            <div class="toggle-title">Disable Providers</div>
+                            <div class="toggle-desc">Advanced users only</div>
+                        </div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enable_provider_disable">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <div class="toggle-row">
+                    <div class="toggle-label">
+                        <span class="toggle-icon">🔠</span>
+                        <div class="toggle-info">
+                            <div class="toggle-title">Disable Activities</div>
+                            <div class="toggle-desc">Advanced users only</div>
+                        </div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enable_activity_disable">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="btn btn-success" onclick="saveConfig()">
+                    <span id="saveSpinner" class="spinner loading"></span>
+                    <span>💾 Save Configuration</span>
+                </button>
+                <button class="btn btn-danger" onclick="rebootDevice()">
+                    <span id="rebootSpinner" class="spinner loading"></span>
+                    <span>🔄 Save & Reboot</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="toast" id="toast">
+        <div id="toastMessage"></div>
+    </div>
+    
+    <script>
+        // Load configuration on page load
+        window.addEventListener('DOMContentLoaded', loadConfig);
+        
+        async function loadConfig() {
+            try {
+                const response = await fetch('/api/config');
+                const config = await response.json();
+                
+                // Update toggles
+                document.getElementById('enable_ghosted').checked = config.ENABLE_GHOSTED === '1';
+                document.getElementById('enable_log_disable').checked = config.ENABLE_LOG_DISABLE === '1';
+                document.getElementById('enable_sys_props').checked = config.ENABLE_SYS_PROPS === '1';
+                document.getElementById('enable_blur_disable').checked = config.ENABLE_BLUR_DISABLE === '1';
+                document.getElementById('enable_services_disable').checked = config.ENABLE_SERVICES_DISABLE === '1';
+                document.getElementById('enable_receiver_disable').checked = config.ENABLE_RECEIVER_DISABLE === '1';
+                document.getElementById('enable_provider_disable').checked = config.ENABLE_PROVIDER_DISABLE === '1';
+                document.getElementById('enable_activity_disable').checked = config.ENABLE_ACTIVITY_DISABLE === '1';
+                
+                showToast('Configuration loaded successfully', 'success');
+            } catch (error) {
+                showToast('Failed to load configuration', 'error');
+                console.error('Error loading config:', error);
+            }
+        }
+        
+        async function saveConfig() {
+            const saveSpinner = document.getElementById('saveSpinner');
+            saveSpinner.classList.add('show');
+            
+            const config = {
+                ENABLE_GHOSTED: document.getElementById('enable_ghosted').checked ? '1' : '0',
+                ENABLE_LOG_DISABLE: document.getElementById('enable_log_disable').checked ? '1' : '0',
+                ENABLE_SYS_PROPS: document.getElementById('enable_sys_props').checked ? '1' : '0',
+                ENABLE_BLUR_DISABLE: document.getElementById('enable_blur_disable').checked ? '1' : '0',
+                ENABLE_SERVICES_DISABLE: document.getElementById('enable_services_disable').checked ? '1' : '0',
+                ENABLE_RECEIVER_DISABLE: document.getElementById('enable_receiver_disable').checked ? '1' : '0',
+                ENABLE_PROVIDER_DISABLE: document.getElementById('enable_provider_disable').checked ? '1' : '0',
+                ENABLE_ACTIVITY_DISABLE: document.getElementById('enable_activity_disable').checked ? '1' : '0'
+            };
+            
+            try {
+                const response = await fetch('/api/config', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(config)
+                });
+                
+                if (response.ok) {
+                    showToast('Configuration saved! Reboot to apply changes.', 'success');
+                } else {
+                    showToast('Failed to save configuration', 'error');
+                }
+            } catch (error) {
+                showToast('Error saving configuration', 'error');
+                console.error('Error:', error);
+            } finally {
+                saveSpinner.classList.remove('show');
+            }
+        }
+        
+        async function rebootDevice() {
+            if (!confirm('This will save your configuration and reboot your device. Continue?')) {
+                return;
+            }
+            
+            const rebootSpinner = document.getElementById('rebootSpinner');
+            rebootSpinner.classList.add('show');
+            
+            await saveConfig();
+            
+            try {
+                await fetch('/api/reboot', { method: 'POST' });
+                showToast('Rebooting device...', 'info');
+                
+                setTimeout(() => {
+                    document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;color:white;"><h1>🔄 Rebooting...</h1><p>Please wait for your device to restart</p></div>';
+                }, 2000);
+            } catch (error) {
+                showToast('Failed to reboot device', 'error');
+                console.error('Error:', error);
+            } finally {
+                rebootSpinner.classList.remove('show');
+            }
+        }
+        
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            toast.className = 'toast show toast-' + type;
+            toastMessage.textContent = message;
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
