@@ -651,6 +651,47 @@ EOF
 # Make executable and Execute veloxine script
 chmod +x "$MODPATH/action.sh"
 chmod +x "$MODPATH/veloxine.sh"
+
+# Create config directory and default preferences (KernelSU Next/APatch fix)
+mkdir -p "$MODPATH/config"
+chmod 755 "$MODPATH/config"
+
+# Create default user preferences
+{
+  echo "ENABLE_GHOSTED=1"
+  echo "ENABLE_LOG_DISABLE=1"
+  echo "ENABLE_SYS_PROPS=1"
+  echo "ENABLE_BLUR_DISABLE=0"
+  echo "ENABLE_SERVICES_DISABLE=1"
+  echo "ENABLE_RECEIVER_DISABLE=0"
+  echo "ENABLE_PROVIDER_DISABLE=0"
+  echo "ENABLE_ACTIVITY_DISABLE=0"
+} > "$MODPATH/config/user_prefs"
+chmod 644 "$MODPATH/config/user_prefs"
+
+# Create default GMS categories
+{
+  echo "DISABLE_ADS=1"
+  echo "DISABLE_TRACKING=1"
+  echo "DISABLE_ANALYTICS=1"
+  echo "DISABLE_REPORTING=1"
+  echo "DISABLE_BACKGROUND=1"
+  echo "DISABLE_UPDATE=1"
+  echo "DISABLE_LOCATION=0"
+  echo "DISABLE_GEOFENCE=0"
+  echo "DISABLE_NEARBY=0"
+  echo "DISABLE_CAST=0"
+  echo "DISABLE_DISCOVERY=0"
+  echo "DISABLE_SYNC=0"
+  echo "DISABLE_CLOUD=0"
+  echo "DISABLE_AUTH=0"
+  echo "DISABLE_WALLET=0"
+  echo "DISABLE_PAYMENT=0"
+  echo "DISABLE_WEAR=0"
+  echo "DISABLE_FITNESS=0"
+} > "$MODPATH/config/gms_categories"
+chmod 644 "$MODPATH/config/gms_categories"
+
 . "$MODPATH/veloxine.sh"
 
 ui_print "- !! Note: Magisk may crash after a few seconds"

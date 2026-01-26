@@ -139,6 +139,8 @@ choose_option "Proceed with installation?" "Yes"
 
 # Save user preferences
 mkdir -p "$MODDIR/config"
+chmod 755 "$MODDIR/config"
+
 {
   echo "ENABLE_GHOSTED=$([ "$ENABLE_GHOSTED" -eq 0 ] && echo 1 || echo 0)"
   echo "ENABLE_LOG_DISABLE=$([ "$ENABLE_LOG_DISABLE" -eq 0 ] && echo 1 || echo 0)"
@@ -149,6 +151,7 @@ mkdir -p "$MODDIR/config"
   echo "ENABLE_PROVIDER_DISABLE=$([ "$ENABLE_PROVIDER_DISABLE" -eq 0 ] && echo 1 || echo 0)"
   echo "ENABLE_ACTIVITY_DISABLE=$([ "$ENABLE_ACTIVITY_DISABLE" -eq 0 ] && echo 1 || echo 0)"
 } > "$MODDIR/config/user_prefs"
+chmod 644 "$MODDIR/config/user_prefs"
 
 {
   for cat in $GMS_CATEGORIES; do
@@ -156,6 +159,14 @@ mkdir -p "$MODDIR/config"
     echo "DISABLE_${cat}=$value"
   done
 } > "$MODDIR/config/gms_categories"
+chmod 644 "$MODDIR/config/gms_categories"
+
+# Validate config files were created
+if [ ! -f "$MODDIR/config/user_prefs" ] || [ ! -f "$MODDIR/config/gms_categories" ]; then
+  ui_print "⚠️ Warning: Config files may not have been created properly"
+  ui_print "This may cause issues on first boot with KernelSU Next/APatch"
+  ui_print "If service fails, reinstall the module or create files manually"
+fi
 
 # Completion message
 print_section "✅ GhostGMS Installation Complete"
