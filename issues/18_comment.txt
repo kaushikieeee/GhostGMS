@@ -1,0 +1,7 @@
+Hi @TheMispeled,
+
+Thanks for asking! Yes, **GhostGMS is universally compatible with all root methods**, including KernelSU, Magisk, APatch, and other root solutions.
+
+The module works by disabling unnecessary Google Mobile Services background processes, which is independent of the specific root method you're using. So you can safely use it with KernelSU without any issues.
+
+Feel free to install it and let me know if you encounter any problems!
