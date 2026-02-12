@@ -1,6 +1,9 @@
 # Changelog
 
-## v3.1 (Latest) - 26 January 2026
+## v3.1.1 (Latest)
+- **Fixed:** Fix config persistence on APatch/KernelSU Next
+
+## v3.1 
 
 ### 🔧 Critical Fixes
 
