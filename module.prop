@@ -1,7 +1,7 @@
 id=ghostgms
 name=GhostGMS
-version=3.1
-versionCode=31
+version=3.1.1
+versionCode=311
 author=Kaushik
 description=Optimize Google Play Services (GMS) for better performance, battery life and privacy
 updateJson=https://raw.githubusercontent.com/kaushikieeee/GhostGMS/main/update.json
