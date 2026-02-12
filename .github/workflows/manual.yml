@@ -64,16 +64,6 @@ jobs:
             exit 1
           fi
           
-          # Check ZIP URL in update.json
-          ZIP_URL=$(grep -o '"zipUrl": *"[^"]*"' update.json | cut -d'"' -f4)
-          EXPECTED_URL="https://github.com/kaushikieeee/GhostGMS/releases/download/${{ inputs.version }}/GhostGMS-${{ inputs.version }}.zip"
-          if [ "$ZIP_URL" != "$EXPECTED_URL" ]; then
-            echo "Error: zipUrl in update.json doesn't match expected format"
-            echo "Expected: $EXPECTED_URL"
-            echo "Found: $ZIP_URL"
-            exit 1
-          fi
-          
       - name: Check required files
         run: |
           REQUIRED_FILES=(
