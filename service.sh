@@ -29,10 +29,14 @@ if [ -f "$MODDIR/config/user_prefs" ]; then
   . "$MODDIR/config/user_prefs"
 elif [ -f "$PERSISTENT_CONFIG/user_prefs" ]; then
   # Found in persistent fallback - copy back to module directory
-  echo "Info: Config found in persistent fallback, copying to module directory" >> "$BOOT_LOG"
   cp "$PERSISTENT_CONFIG/user_prefs" "$MODDIR/config/user_prefs" 2>/dev/null
-  chmod 644 "$MODDIR/config/user_prefs" 2>/dev/null
-  . "$MODDIR/config/user_prefs"
+  if [ -f "$MODDIR/config/user_prefs" ]; then
+    chmod 644 "$MODDIR/config/user_prefs" 2>/dev/null
+    echo "Info: Config found in persistent fallback and successfully copied to module directory" >> "$BOOT_LOG"
+  else
+    echo "Warning: Config found in persistent fallback but copy to module directory failed" >> "$BOOT_LOG"
+  fi
+  . "$MODDIR/config/user_prefs" 2>/dev/null || . "$PERSISTENT_CONFIG/user_prefs"
 else
   # Config file missing - create with safe defaults
   echo "Warning: User preferences not found, creating defaults" > "$ERROR_LOG"
@@ -49,6 +53,11 @@ else
     echo "ENABLE_PROVIDER_DISABLE=0"
     echo "ENABLE_ACTIVITY_DISABLE=0"
   } > "$MODDIR/config/user_prefs" 2>>"$ERROR_LOG"
+  
+  # Verify creation succeeded
+  if [ ! -f "$MODDIR/config/user_prefs" ]; then
+    echo "Error: Failed to create user_prefs at $MODDIR/config/user_prefs" >> "$ERROR_LOG"
+  fi
   
   # Set permissions
   chmod 644 "$MODDIR/config/user_prefs" 2>/dev/null
@@ -93,6 +102,11 @@ if [ ! -f "$MODDIR/config/gms_categories" ]; then
       echo "DISABLE_WEAR=0"
       echo "DISABLE_FITNESS=0"
     } > "$MODDIR/config/gms_categories" 2>>"$ERROR_LOG"
+    
+    # Verify creation succeeded
+    if [ ! -f "$MODDIR/config/gms_categories" ]; then
+      echo "Error: Failed to create gms_categories at $MODDIR/config/gms_categories" >> "$ERROR_LOG"
+    fi
     
     # Set permissions
     chmod 644 "$MODDIR/config/gms_categories" 2>/dev/null
