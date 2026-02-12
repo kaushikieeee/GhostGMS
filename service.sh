@@ -17,7 +17,7 @@ if [ -f "$MODDIR/config/user_prefs" ]; then
   . "$MODDIR/config/user_prefs"
 elif [ -f "$PERSISTENT_CONFIG/user_prefs" ]; then
   # Found in persistent fallback - copy back to module directory
-  echo "Info: Config found in persistent fallback, copying to module directory" > "$MODDIR/logs/boot_error.log"
+  echo "Info: Config found in persistent fallback, copying to module directory" >> "$MODDIR/logs/boot.log"
   cp "$PERSISTENT_CONFIG/user_prefs" "$MODDIR/config/user_prefs" 2>/dev/null
   chmod 644 "$MODDIR/config/user_prefs" 2>/dev/null
   . "$MODDIR/config/user_prefs"
@@ -51,7 +51,7 @@ else
   if [ -f "$MODDIR/config/user_prefs" ]; then
     . "$MODDIR/config/user_prefs"
   else
-    echo "Fatal: Could not create or load config" >> "$MODDIR/logs/boot_error.log"
+    echo "Fatal: Could not create or load config at $MODDIR/config/user_prefs" >> "$MODDIR/logs/boot_error.log"
     exit 1
   fi
 fi

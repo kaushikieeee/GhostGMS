@@ -180,8 +180,14 @@ if [ ! -f "$MODPATH/config/user_prefs" ] || [ ! -f "$MODPATH/config/gms_categori
   ui_print "This may cause issues on first boot with KernelSU Next/APatch"
   ui_print "If service fails, reinstall the module or create files manually"
 else
-  ui_print "✅ Config files created successfully"
-  ui_print "📁 Saved to module and persistent backup location"
+  # Verify persistent backup was also created
+  if [ -f "$PERSISTENT_CONFIG/user_prefs" ] && [ -f "$PERSISTENT_CONFIG/gms_categories" ]; then
+    ui_print "✅ Config files created successfully"
+    ui_print "📁 Saved to module and persistent backup location"
+  else
+    ui_print "✅ Config files created in module directory"
+    ui_print "⚠️ Warning: Persistent backup may not have been created"
+  fi
 fi
 
 # Completion message
