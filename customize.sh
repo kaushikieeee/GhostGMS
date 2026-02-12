@@ -11,13 +11,13 @@ OUTFD="$2"
 TIMEOUT=30
 
 # Create directory structure
-mkdir -p "$MODDIR/logs" "$MODDIR/config" "$MODDIR/system/bin"
+mkdir -p "$MODPATH/logs" "$MODPATH/config" "$MODPATH/system/bin"
 
 # Enable execution
-set_perm_recursive "$MODDIR" 0 0 0755 0644
-set_perm_recursive "$MODDIR/system/bin" 0 0 0755 0755
+set_perm_recursive "$MODPATH" 0 0 0755 0644
+set_perm_recursive "$MODPATH/system/bin" 0 0 0755 0755
 for script in customize.sh service.sh veloxine.sh post-fs-data.sh; do
-  [ -f "$MODDIR/$script" ] && set_perm "$MODDIR/$script" 0 0 0755
+  [ -f "$MODPATH/$script" ] && set_perm "$MODPATH/$script" 0 0 0755
 done
 
 # UI functions
@@ -138,8 +138,13 @@ choose_option "Proceed with installation?" "Yes"
 [ $? -ne 0 ] && { ui_print "Installation cancelled."; exit 1; }
 
 # Save user preferences
-mkdir -p "$MODDIR/config"
-chmod 755 "$MODDIR/config"
+mkdir -p "$MODPATH/config"
+chmod 755 "$MODPATH/config"
+
+# Create persistent fallback directory for APatch/KernelSU Next
+PERSISTENT_CONFIG="/data/local/tmp/ghostgms_config"
+mkdir -p "$PERSISTENT_CONFIG"
+chmod 755 "$PERSISTENT_CONFIG"
 
 {
   echo "ENABLE_GHOSTED=$([ "$ENABLE_GHOSTED" -eq 0 ] && echo 1 || echo 0)"
@@ -150,22 +155,39 @@ chmod 755 "$MODDIR/config"
   echo "ENABLE_RECEIVER_DISABLE=$([ "$ENABLE_RECEIVER_DISABLE" -eq 0 ] && echo 1 || echo 0)"
   echo "ENABLE_PROVIDER_DISABLE=$([ "$ENABLE_PROVIDER_DISABLE" -eq 0 ] && echo 1 || echo 0)"
   echo "ENABLE_ACTIVITY_DISABLE=$([ "$ENABLE_ACTIVITY_DISABLE" -eq 0 ] && echo 1 || echo 0)"
-} > "$MODDIR/config/user_prefs"
-chmod 644 "$MODDIR/config/user_prefs"
+} > "$MODPATH/config/user_prefs"
+chmod 644 "$MODPATH/config/user_prefs"
+
+# Also save to persistent fallback location
+cp "$MODPATH/config/user_prefs" "$PERSISTENT_CONFIG/user_prefs"
+chmod 644 "$PERSISTENT_CONFIG/user_prefs"
 
 {
   for cat in $GMS_CATEGORIES; do
     eval "value=\"\$DISABLE_$cat\""
     echo "DISABLE_${cat}=$value"
   done
-} > "$MODDIR/config/gms_categories"
-chmod 644 "$MODDIR/config/gms_categories"
+} > "$MODPATH/config/gms_categories"
+chmod 644 "$MODPATH/config/gms_categories"
+
+# Also save to persistent fallback location
+cp "$MODPATH/config/gms_categories" "$PERSISTENT_CONFIG/gms_categories"
+chmod 644 "$PERSISTENT_CONFIG/gms_categories"
 
 # Validate config files were created
-if [ ! -f "$MODDIR/config/user_prefs" ] || [ ! -f "$MODDIR/config/gms_categories" ]; then
+if [ ! -f "$MODPATH/config/user_prefs" ] || [ ! -f "$MODPATH/config/gms_categories" ]; then
   ui_print "⚠️ Warning: Config files may not have been created properly"
   ui_print "This may cause issues on first boot with KernelSU Next/APatch"
   ui_print "If service fails, reinstall the module or create files manually"
+else
+  # Verify persistent backup was also created
+  if [ -f "$PERSISTENT_CONFIG/user_prefs" ] && [ -f "$PERSISTENT_CONFIG/gms_categories" ]; then
+    ui_print "✅ Config files created successfully"
+    ui_print "📁 Saved to module and persistent backup location"
+  else
+    ui_print "✅ Config files created in module directory"
+    ui_print "⚠️ Warning: Persistent backup may not have been created"
+  fi
 fi
 
 # Completion message
