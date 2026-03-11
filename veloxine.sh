@@ -142,12 +142,15 @@ toggle_gms_service() {
 
   # Extract service name without package if it has package name
   local SERVICE_NAME
-  if [[ "$FULL_SERVICE_NAME" == *"/"* ]]; then
-    SERVICE_NAME=$(echo "$FULL_SERVICE_NAME" | cut -d'/' -f2)
-  else
-    SERVICE_NAME=$FULL_SERVICE_NAME
-    FULL_SERVICE_NAME="${GMS_PACKAGE}/${SERVICE_NAME}"
-  fi
+  case "$FULL_SERVICE_NAME" in
+    */*)
+      SERVICE_NAME=$(echo "$FULL_SERVICE_NAME" | cut -d'/' -f2)
+      ;;
+    *)
+      SERVICE_NAME=$FULL_SERVICE_NAME
+      FULL_SERVICE_NAME="${GMS_PACKAGE}/${SERVICE_NAME}"
+      ;;
+  esac
   
   # If action is "enable", we enable all services
   if [ "$ACTION" = "enable" ]; then
@@ -248,7 +251,9 @@ process_services() {
   
   while IFS="|" read -r SERVICE CATEGORY || [ -n "$SERVICE" ]; do
     # Skip comments and empty lines
-    [[ "$SERVICE" =~ ^#.*$ || -z "$SERVICE" ]] && continue
+    case "$SERVICE" in
+      \#*|"") continue ;;
+    esac
     
     # Process service
     toggle_gms_service "$SERVICE" "$CATEGORY" "$ACTION"
