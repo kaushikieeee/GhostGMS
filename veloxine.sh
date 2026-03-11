@@ -8,10 +8,21 @@
 # Check for command line arguments
 COMMAND=${1:-"status"}
 
+# Derive MODDIR from script location (matches service.sh behavior)
+# Avoids hardcoding path which breaks when module id case differs
+MODDIR="${0%/*}"
+
+# Persistent fallback directory (same as service.sh and customize.sh)
+PERSISTENT_CONFIG="/data/local/tmp/ghostgms_config"
+
 # Set up logging
-MODDIR="/data/adb/modules/GhostGMS"
 LOGDIR="$MODDIR/logs"
-mkdir -p $LOGDIR
+mkdir -p "$LOGDIR" 2>/dev/null
+# If module logs dir isn't writable, fall back to persistent location
+if [ ! -d "$LOGDIR" ] || [ ! -w "$LOGDIR" ]; then
+  LOGDIR="$PERSISTENT_CONFIG/logs"
+  mkdir -p "$LOGDIR" 2>/dev/null
+fi
 LOGFILE="$LOGDIR/ghostgms_service.log"
 exec >> $LOGFILE 2>&1
 
@@ -21,21 +32,61 @@ GSF_PACKAGE="com.google.android.gsf"
 
 # Log start time with command
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] GhostGMS Service started with command: $COMMAND"
+echo "[INFO] MODDIR=$MODDIR"
 
-# Load user preferences
+# Load user preferences with fallback to persistent location
 if [ -f "$MODDIR/config/user_prefs" ]; then
   . "$MODDIR/config/user_prefs"
-  echo "[INFO] User preferences loaded"
+  echo "[INFO] User preferences loaded from module directory"
+elif [ -f "$PERSISTENT_CONFIG/user_prefs" ]; then
+  echo "[INFO] User preferences found in persistent fallback, copying to module directory"
+  mkdir -p "$MODDIR/config" 2>/dev/null
+  cp "$PERSISTENT_CONFIG/user_prefs" "$MODDIR/config/user_prefs" 2>/dev/null
+  chmod 644 "$MODDIR/config/user_prefs" 2>/dev/null
+  . "$PERSISTENT_CONFIG/user_prefs"
 else
-  echo "[ERROR] User preferences file not found!"
-  exit 1
+  echo "[WARNING] User preferences not found, creating safe defaults"
+  mkdir -p "$MODDIR/config" 2>/dev/null
+  {
+    echo "ENABLE_GHOSTED=1"
+    echo "ENABLE_LOG_DISABLE=1"
+    echo "ENABLE_SYS_PROPS=1"
+    echo "ENABLE_BLUR_DISABLE=0"
+    echo "ENABLE_SERVICES_DISABLE=1"
+    echo "ENABLE_RECEIVER_DISABLE=0"
+    echo "ENABLE_PROVIDER_DISABLE=0"
+    echo "ENABLE_ACTIVITY_DISABLE=0"
+  } > "$MODDIR/config/user_prefs" 2>/dev/null
+  chmod 644 "$MODDIR/config/user_prefs" 2>/dev/null
+  # Also save to persistent fallback
+  mkdir -p "$PERSISTENT_CONFIG" 2>/dev/null
+  cp "$MODDIR/config/user_prefs" "$PERSISTENT_CONFIG/user_prefs" 2>/dev/null
+  chmod 644 "$PERSISTENT_CONFIG/user_prefs" 2>/dev/null
+  # Load the defaults
+  if [ -f "$MODDIR/config/user_prefs" ]; then
+    . "$MODDIR/config/user_prefs"
+  elif [ -f "$PERSISTENT_CONFIG/user_prefs" ]; then
+    . "$PERSISTENT_CONFIG/user_prefs"
+  else
+    # Inline defaults as last resort
+    ENABLE_GHOSTED=1; ENABLE_LOG_DISABLE=1; ENABLE_SYS_PROPS=1
+    ENABLE_BLUR_DISABLE=0; ENABLE_SERVICES_DISABLE=1
+    ENABLE_RECEIVER_DISABLE=0; ENABLE_PROVIDER_DISABLE=0; ENABLE_ACTIVITY_DISABLE=0
+    echo "[WARNING] Could not write config files, using inline defaults"
+  fi
 fi
 
-# Load GMS categories preferences
+# Load GMS categories preferences with fallback
 echo "[INFO] Loading GMS categories preferences"
 if [ -f "$MODDIR/config/gms_categories" ]; then
   . "$MODDIR/config/gms_categories"
-  echo "[INFO] GMS categories loaded successfully"
+  echo "[INFO] GMS categories loaded from module directory"
+elif [ -f "$PERSISTENT_CONFIG/gms_categories" ]; then
+  echo "[INFO] GMS categories found in persistent fallback, copying to module directory"
+  mkdir -p "$MODDIR/config" 2>/dev/null
+  cp "$PERSISTENT_CONFIG/gms_categories" "$MODDIR/config/gms_categories" 2>/dev/null
+  chmod 644 "$MODDIR/config/gms_categories" 2>/dev/null
+  . "$PERSISTENT_CONFIG/gms_categories"
 else
   echo "[WARNING] GMS categories file not found, using defaults"
   # Default values for GMS service categories

@@ -1,6 +1,21 @@
 # Changelog
 
-## v3.1.1 (Latest)
+## v3.1.2 (Latest) - 11 March 2026
+
+### 🔧 Critical Fix
+
+#### ✅ Fix veloxine.sh hardcoded MODDIR path (Issue: files disappear after boot)
+- **Fixed:** `veloxine.sh` hardcoded `MODDIR="/data/adb/modules/GhostGMS"` (mixed case) but `module.prop` defines `id=ghostgms` (lowercase). Android filesystems are case-sensitive, so the script could never find config files or gmslist.txt at the wrong-cased path
+- **Fixed:** Replaced hardcoded path with `MODDIR="${0%/*}"` (derived from script location), matching how `service.sh` already works
+- **Fixed:** Added persistent config fallback to `veloxine.sh` (checks `/data/local/tmp/ghostgms_config/`) — previously only `service.sh` had this fallback
+- **Fixed:** `veloxine.sh` no longer fatally exits (`exit 1`) when config is missing — instead creates safe defaults and continues, matching `service.sh` behavior
+- **Fixed:** Log directory creation now falls back to persistent location if module directory isn't writable
+- **Impact:** Resolves the "User preferences file not found" error that caused the optimization service to silently die after boot
+- **Symptom:** Module files appeared to vanish from `/debug_ramdisk/.magisk/modules/GhostGMS/` — users were actually seeing an orphan directory created by the wrong-cased path
+
+---
+
+## v3.1.1
 - **Fixed:** Fix config persistence on APatch/KernelSU Next
 
 ## v3.1 
