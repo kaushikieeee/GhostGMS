@@ -3,7 +3,9 @@
 MODDIR=${0%/*}
 
 # Wait for system to fully boot
-sleep 60
+# Extended delay to ensure Settings database and system services are properly initialized
+# This prevents transaction errors when modifying system settings
+sleep 90
 
 # Persistent fallback directory
 PERSISTENT_CONFIG="/data/local/tmp/ghostgms_config"

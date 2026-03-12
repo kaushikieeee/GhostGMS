@@ -228,11 +228,22 @@ toggle_gms_service() {
   # Disable service based on category preferences
   if [ "$SHOULD_DISABLE" = "1" ]; then
     echo "[INFO] Disabling service $FULL_SERVICE_NAME (category: $CATEGORY)"
-    pm disable $FULL_SERVICE_NAME >/dev/null 2>&1
+    if pm disable $FULL_SERVICE_NAME >/dev/null 2>&1; then
+      :  # Success
+    else
+      echo "[WARNING] Failed to disable service $FULL_SERVICE_NAME (may already be disabled or system lock)"
+    fi
   else
     echo "[INFO] Keeping service $FULL_SERVICE_NAME (category: $CATEGORY)"
-    pm enable $FULL_SERVICE_NAME >/dev/null 2>&1
+    if pm enable $FULL_SERVICE_NAME >/dev/null 2>&1; then
+      :  # Success
+    else
+      echo "[WARNING] Failed to enable service $FULL_SERVICE_NAME (may already be enabled or system lock)"
+    fi
   fi
+  
+  # Small delay to prevent overwhelming the system with rapid pm commands
+  sleep 0.05
 }
 
 # Process services from gmslist.txt
@@ -274,28 +285,80 @@ process_services() {
   return 0
 }
 
+# Wait for Settings database to be ready with timeout
+wait_for_settings_ready() {
+  local max_attempts=30
+  local attempt=0
+  
+  echo "[INFO] Waiting for Settings database to be ready..."
+  
+  while [ $attempt -lt $max_attempts ]; do
+    # Test if settings command works
+    if settings get global sys_usb >/dev/null 2>&1; then
+      echo "[INFO] Settings database ready after $((attempt + 1)) seconds"
+      return 0
+    fi
+    
+    attempt=$((attempt + 1))
+    sleep 1
+  done
+  
+  echo "[WARNING] Settings database not ready after $max_attempts seconds, proceeding anyway (may cause transaction errors)"
+  return 1
+}
+
+# Safely put settings with retry logic
+safe_settings_put() {
+  local key=$1
+  local value=$2
+  local max_retries=3
+  local retry=0
+  
+  while [ $retry -lt $max_retries ]; do
+    if settings put global "$key" "$value" >/dev/null 2>&1; then
+      return 0
+    fi
+    
+    retry=$((retry + 1))
+    if [ $retry -lt $max_retries ]; then
+      echo "[WARNING] Failed to set $key, retrying in 2 seconds (attempt $retry/$max_retries)"
+      sleep 2
+    fi
+  done
+  
+  echo "[ERROR] Failed to set $key after $max_retries attempts (may be read-only or system lock)"
+  return 1
+}
+
 # Function to disable GMS logs
 disable_gms_logs() {
   if [ "$ENABLE_LOG_DISABLE" = "1" ]; then
     echo "[INFO] Disabling GMS logging"
-    settings put global gmscorestat_enabled 0
-    settings put global play_store_panel_logging_enabled 0
-    settings put global clearcut_events 0
-    settings put global clearcut_gcm 0
-    settings put global phenotype__debug_bypass_phenotype 1
-    settings put global phenotype_boot_count 99
-    settings put global phenotype_flags "disable_log_upload=1,disable_log_for_missing_debug_id=1"
+    
+    # Wait for settings to be ready
+    wait_for_settings_ready
+    
+    # Use safe_settings_put to handle errors and retries
+    safe_settings_put "gmscorestat_enabled" "0"
+    safe_settings_put "play_store_panel_logging_enabled" "0"
+    safe_settings_put "clearcut_events" "0"
+    safe_settings_put "clearcut_gcm" "0"
+    safe_settings_put "phenotype__debug_bypass_phenotype" "1"
+    safe_settings_put "phenotype_boot_count" "99"
+    safe_settings_put "phenotype_flags" "disable_log_upload=1,disable_log_for_missing_debug_id=1"
     
     # Disable analytics and error reporting
-    settings put global ga_collection_enabled 0
-    settings put global clearcut_enabled 0
-    settings put global analytics_enabled 0
-    settings put global uploading_enabled 0
-    settings put global bug_report_in_power_menu 0
+    safe_settings_put "ga_collection_enabled" "0"
+    safe_settings_put "clearcut_enabled" "0"
+    safe_settings_put "analytics_enabled" "0"
+    safe_settings_put "uploading_enabled" "0"
+    safe_settings_put "bug_report_in_power_menu" "0"
     
     # Disable usage stats
-    settings put global usage_stats_enabled 0
-    settings put global usagestats_collection_enabled 0
+    safe_settings_put "usage_stats_enabled" "0"
+    safe_settings_put "usagestats_collection_enabled" "0"
+    
+    echo "[INFO] GMS logging disable operations completed"
   else
     echo "[INFO] GMS logging not disabled (user preference)"
   fi
@@ -334,6 +397,10 @@ case "$COMMAND" in
     
   "boot")
     echo "[INFO] Processing boot-time GMS configuration..."
+    
+    # Additional safety delay to ensure system is fully stable
+    sleep 10
+    
     # Apply service disabling on boot
     if [ "$ENABLE_SERVICES_DISABLE" = "1" ] && [ -f "$MODDIR/gmslist.txt" ]; then
       process_services "disable"
