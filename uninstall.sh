@@ -204,12 +204,12 @@ pm enable "com.google.android.gms/com.google.android.gms.wallet.service.PaymentS
 pm enable "com.google.android.gms/com.google.android.gms.wallet.service.WalletGcmTaskService"
 
 # Enable services related to location.
-pm enable ""com.google.android.gms/com.google.android.location.internal.GoogleLocationManagerService"
 pm enable "com.google.android.gms/com.google.android.gms.fitness.cache.DataUpdateListenerCacheService"
 pm enable "com.google.android.gms/com.google.android.gms.fitness.sensors.sample.CollectSensorService"
 pm enable "com.google.android.gms/com.google.android.gms.fitness.sync.SyncGcmTaskService"
 pm enable "com.google.android.gms/com.google.android.location.fused.FusedLocationService"
 pm enable "com.google.android.gms/com.google.android.location.internal.server.GoogleLocationService"
+pm enable ""com.google.android.gms/com.google.android.location.internal.GoogleLocationManagerService"
 pm enable "com.google.android.gms/com.google.android.location.network.NetworkLocationService"
 pm enable "com.google.android.gms/com.google.android.location.persistent.LocationPersistentService"
 pm enable "com.google.android.gms/com.google.android.location.reporting.service.LocationHistoryInjectorService"
