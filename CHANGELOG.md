@@ -3,7 +3,7 @@
 
 ## 3.1.3 (Latest) - 5 April 2026
 
-- Fixed uninstallation script for working location services
+- Fixed uninstallation script not returning location services back to original state
 
 
 ## v3.1.2 - 11 March 2026
