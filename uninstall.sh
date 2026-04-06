@@ -194,6 +194,13 @@ pm enable "com.google.android.gms/com.google.android.gms.droidguard.DroidGuardGc
 pm enable "com.google.android.gms/com.google.android.gms.pay.security.storagekey.service.StorageKeyCacheService"
 
 # Enable services related to Google Pay (formerly Android Pay) & Google Wallet.
+pm enable "com.google.android.gms/com.google.android.gms.wallet.service.PaymentsService"
+pm enable "com.google.android.gms/com.google.android.gms.pay.service.PayGrpcUiService"
+pm enable "com.google.android.gms/com.google.android.gms.wallet.notifications.WalletNotificationsService"
+pm enable "com.google.android.gms/com.google.android.gms.wallet.service.WalletGoogleServiceBroker"
+pm enable "com.google.android.gms/com.google.android.gms.tapandpay.hce.service.TpHceService"
+pm enable "com.google.android.gms/com.google.android.gms.tapandpay.wear.WearProxyService"
+pm enable "com.google.android.gms/com.google.android.gms.pay.security.storagekey.service.StorageKeyCacheService"
 pm enable "com.google.android.gms/com.google.android.gms.tapandpay.gcmtask.TapAndPayGcmTaskService"
 pm enable "com.google.android.gms/com.google.android.gms.tapandpay.globalactions.QuickAccessWalletService"
 pm enable "com.google.android.gms/com.google.android.gms.tapandpay.globalactions.WalletQuickAccessWalletService"
