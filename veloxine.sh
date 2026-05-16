@@ -285,6 +285,44 @@ process_services() {
   return 0
 }
 
+# Always re-enable core/essential services regardless of user preference.
+# This ensures previously disabled core services (e.g. from a prior install)
+# are restored even when ENABLE_SERVICES_DISABLE=0.
+ensure_core_services() {
+  echo "[INFO] Ensuring core/essential services are enabled"
+
+  if [ ! -f "$MODDIR/gmslist.txt" ]; then
+    echo "[WARNING] gmslist.txt not found, skipping core service check"
+    return
+  fi
+
+  local FULL_SERVICE_NAME
+  while IFS="|" read -r SERVICE CATEGORY || [ -n "$SERVICE" ]; do
+    # Skip comments and empty lines
+    case "$SERVICE" in
+      \#*|"") continue ;;
+    esac
+
+    case "$CATEGORY" in
+      "core"|"essential")
+        # Build fully-qualified service name
+        case "$SERVICE" in
+          */*)
+            FULL_SERVICE_NAME="$SERVICE"
+            ;;
+          *)
+            FULL_SERVICE_NAME="${GMS_PACKAGE}/${SERVICE}"
+            ;;
+        esac
+        echo "[INFO] Ensuring core service is enabled: $FULL_SERVICE_NAME"
+        pm enable "$FULL_SERVICE_NAME" >/dev/null 2>&1
+        ;;
+    esac
+  done < "$MODDIR/gmslist.txt"
+
+  echo "[INFO] Core/essential service check complete"
+}
+
 # Wait for Settings database to be ready with timeout
 wait_for_settings_ready() {
   local max_attempts=30
@@ -400,6 +438,11 @@ case "$COMMAND" in
     
     # Additional safety delay to ensure system is fully stable
     sleep 10
+    
+    # Always re-enable core/essential services (e.g. location, chimera infrastructure)
+    # even when service disabling is turned off, to recover from a previous install
+    # that may have disabled them.
+    ensure_core_services
     
     # Apply service disabling on boot
     if [ "$ENABLE_SERVICES_DISABLE" = "1" ] && [ -f "$MODDIR/gmslist.txt" ]; then
