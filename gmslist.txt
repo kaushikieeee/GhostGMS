@@ -309,12 +309,14 @@ com.google.android.gms/com.google.android.gms.common.config.PhenotypeCheckinServ
 com.google.android.gms/com.google.android.gms.romanesco.ContactsLoggerUploadService|analytics
 
 # Background and Update Services
-com.google.android.gms/com.google.android.gms.chimera.PersistentBoundBrokerService|background
-com.google.android.gms/com.google.android.gms.chimera.GmsApiService|background
-com.google.android.gms/com.google.android.gms.chimera.GmsIntentOperationService|background
+# NOTE: PersistentBoundBrokerService, GmsApiService, GmsIntentOperationService are core GMS IPC
+# infrastructure — disabling them breaks Quick Share, Bluetooth and all GMS API calls.
+com.google.android.gms/com.google.android.gms.chimera.PersistentBoundBrokerService|core
+com.google.android.gms/com.google.android.gms.chimera.GmsApiService|core
+com.google.android.gms/com.google.android.gms.chimera.GmsIntentOperationService|core
 com.google.android.gms/com.google.android.gms.measurement.AppMeasurementService|background
 com.google.android.gms/com.google.android.gms.gmscompliance.service.GmsComplianceService|background
-com.google.android.gms/com.google.android.gms.common.stats.GmsCoreStatsService|background
+com.google.android.gms/com.google.android.gms.common.stats.GmsCoreStatsService|analytics
 com.google.android.gms/com.google.android.gms.mdm.services.MdmPhoneWearableListenerService|update
 com.google.android.gms/com.google.android.gms.update.OtaSuggestionSummaryProvider|update
 com.google.android.gms/com.google.android.gms.update.SystemUpdateService|update
@@ -326,10 +328,12 @@ com.google.android.gms/com.google.android.gms.mobiledataplan.service.PeriodicUpd
 com.google.android.gms/com.google.android.gms.phenotype.service.sync.PackageUpdateTaskService|update
 com.google.android.gms/com.google.android.gms.update.SystemUpdateGcmTaskService|update
 com.google.android.gms/com.google.android.gms.update.UpdateFromSdCardService|update
-com.google.android.gms/com.google.android.gms.chimera.GmsIntentOperationService_AuthAccountIsolated|background
-com.google.android.gms/com.google.android.gms.chimera.GmsIntentOperationService_AuthAccountIsolate|background
-com.google.android.gms/com.google.android.gms.chimera.PersistentApiService_AuthAccountIsolated|background
-com.google.android.gms/com.google.android.gms.chimera.PersistentIntentOperationService_AuthAccountIsolated|background
+# NOTE: The _AuthAccountIsolated variants are already listed under the auth section above.
+# Listing them again as background would re-disable them even when DISABLE_AUTH=0.
+com.google.android.gms/com.google.android.gms.chimera.GmsIntentOperationService_AuthAccountIsolated|core
+com.google.android.gms/com.google.android.gms.chimera.GmsIntentOperationService_AuthAccountIsolate|core
+com.google.android.gms/com.google.android.gms.chimera.PersistentApiService_AuthAccountIsolated|core
+com.google.android.gms/com.google.android.gms.chimera.PersistentIntentOperationService_AuthAccountIsolated|core
 com.google.android.gms/com.google.android.gms.magictether.logging.DailyMetricsLoggerService|background
 
 # Location and Geofence Services
