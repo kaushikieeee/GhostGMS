@@ -339,6 +339,11 @@ pm enable "com.google.android.gms/com.google.android.gms.auth.api.phone.service.
 pm enable "com.google.android.gms/com.google.android.gms.auth.api.signin.RevocationService"
 pm enable "com.google.android.gms/com.google.android.gms.chimera.PersistentBoundBrokerService"
 pm enable "com.google.android.gms/com.google.android.gms.chimera.GmsApiService"
+pm enable "com.google.android.gms/com.google.android.gms.chimera.GmsIntentOperationService"
+pm enable "com.google.android.gms/com.google.android.gms.chimera.GmsIntentOperationService_AuthAccountIsolated"
+pm enable "com.google.android.gms/com.google.android.gms.chimera.GmsIntentOperationService_AuthAccountIsolate"
+pm enable "com.google.android.gms/com.google.android.gms.chimera.PersistentApiService_AuthAccountIsolated"
+pm enable "com.google.android.gms/com.google.android.gms.chimera.PersistentIntentOperationService_AuthAccountIsolated"
 pm enable "com.google.android.gms/com.google.android.gms.measurement.AppMeasurementJobService"
 
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] GhostGMS Uninstall completed successfully" >> /data/local/tmp/ghostgms_uninstall.log
