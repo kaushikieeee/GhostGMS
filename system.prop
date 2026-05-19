@@ -57,9 +57,6 @@ ro.config.nocheckin=1
 # Disables debugging capabilities for the device.
 ro.debuggable=0
 
-# Sets the log buffer size to zero, effectively disabling the log system.
-ro.logd.size=0
-
 # Disables JNI checks and QEMU-related logging.
 ro.kernel.android.checkjni=0
 ro.kernel.qemu.gles=0
@@ -115,7 +112,6 @@ debug.atrace.tags.enableflags=0
 # Disables logging for specific services.
 persist.service.pcsync.enable=0
 persist.service.lgospd.enable=0
-persist.service.logging.disable=true
 
 # Disables redirecting standard input/output to the log system.
 log.redirect-stdio=false
