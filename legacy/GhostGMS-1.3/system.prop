@@ -69,9 +69,6 @@ ro.config.nocheckin=1
 # Disables debugging capabilities for the device.
 ro.debuggable=0
 
-# Sets the log buffer size to zero, effectively disabling the log system.
-ro.logd.size=0
-
 # Disables the default compression cache.
 ro.compcache.default=0
 
@@ -184,7 +181,6 @@ debug.kill_allocating_task=0
 # Disables logging for specific services.
 persist.service.pcsync.enable=0
 persist.service.lgospd.enable=0
-persist.service.logging.disable=true
 
 # Disables redirecting standard input/output to the log system.
 log.redirect-stdio=false
