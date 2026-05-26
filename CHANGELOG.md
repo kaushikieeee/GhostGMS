@@ -1,6 +1,19 @@
 # Changelog
 
-## v3.1.2 (Latest) - 11 March 2026
+## v3.1.3 (Latest)
+
+### 🔧 Critical Fix
+
+#### ✅ Fix Quick Share crashing and Bluetooth breakage (Issue: Quick Share closes immediately)
+- **Root Cause:** Core GMS Chimera IPC broker services (`PersistentBoundBrokerService`, `GmsApiService`, `GmsIntentOperationService`) were incorrectly categorised as `background` in `gmslist.txt`. Since `DISABLE_BACKGROUND=1` is the default, these services were disabled on every boot.
+- **Impact:** These services are the IPC backbone for **all** GMS API calls. Disabling them causes Quick Share to crash on launch and breaks any GMS feature that relies on Bluetooth or Nearby Connections (Fast Pair, Nearby Share, etc.).
+- **Fixed:** Changed category of `PersistentBoundBrokerService`, `GmsApiService`, and `GmsIntentOperationService` from `background` to `core` so they are never disabled.
+- **Also Fixed:** Four `_AuthAccountIsolated` Chimera variants were listed twice — once correctly under `auth` (kept enabled) and again under `background` (disabled). The duplicate `background` entry was winning last, causing them to be disabled even though `DISABLE_AUTH=0`. Changed their category to `core` to prevent the conflict.
+- **Also Fixed:** `GmsCoreStatsService` was duplicated between the `background` and `analytics` sections; removed the `background` entry to keep only the `analytics` one.
+
+---
+
+## v3.1.2 - 11 March 2026
 
 ### 🔧 Critical Fix
 

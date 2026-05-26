@@ -311,7 +311,7 @@ com.google.android.gms/com.google.android.gms.romanesco.ContactsLoggerUploadServ
 # Background and Update Services
 com.google.android.gms/com.google.android.gms.measurement.AppMeasurementService|background
 com.google.android.gms/com.google.android.gms.gmscompliance.service.GmsComplianceService|background
-com.google.android.gms/com.google.android.gms.common.stats.GmsCoreStatsService|background
+com.google.android.gms/com.google.android.gms.common.stats.GmsCoreStatsService|analytics
 com.google.android.gms/com.google.android.gms.mdm.services.MdmPhoneWearableListenerService|update
 com.google.android.gms/com.google.android.gms.update.OtaSuggestionSummaryProvider|update
 com.google.android.gms/com.google.android.gms.update.SystemUpdateService|update

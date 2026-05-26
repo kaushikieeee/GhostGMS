@@ -558,7 +558,8 @@ pm disable "com.google.android.gms/.backup.stats.BackupStatsService"
 
 # Google Check-in and Event Logging Services
 pm disable "com.google.android.gms/.checkin.EventLogService"
-pm disable "com.google.android.gms/.chimera.GmsIntentOperationService"
+# NOTE: GmsIntentOperationService is a core GMS IPC service — disabling it breaks Quick Share,
+# Bluetooth and all GMS API calls. Do NOT disable it.
 pm disable "com.google.android.gms/.chimera.container.logger.ExternalDebugLoggerService"
 pm disable "com.google.android.gms/.common.appdoctor.LocalAppDoctorReceiver"
 pm disable "com.google.android.gms/.common.stats.GmsCoreStatsService"
