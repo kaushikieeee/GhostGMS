@@ -5,4 +5,4 @@ versionCode=2
 author=Kaushik (@kaushikieeee)
 description=Disables unnecessary GMS background processes to optimize performance and battery life. Fixed comprehensive uninstall.
 support=N/A
-updateJson=N/A
+updateJson=https://raw.githubusercontent.com/kaushikieeee/GhostGMS/main/legacy/GhostGMS-1.3/update.json
