@@ -4,7 +4,7 @@
 
 ### Make Google Play Services lighter, quieter, and smarter.
 
-<img src="https://capsule-render.vercel.app/api?type=waving&height=130&color=0:6a11cb,100:2575fc&text=GhostGMS&fontColor=ffffff&fontSize=48&fontAlignY=35&animation=fadeIn" alt="GhostGMS decorative header banner with project name and blue gradient wave background" />
+<img src="https://capsule-render.vercel.app/api?type=waving&height=130&color=0:6a11cb,100:2575fc&text=GhostGMS&fontColor=ffffff&fontSize=48&fontAlignY=35&animation=fadeIn" alt="GhostGMS banner" />
 
 [![Core Version](https://img.shields.io/badge/Core-v3.1.3-00C853?style=for-the-badge)](https://github.com/kaushikieeee/GhostGMS/releases)
 [![Legacy Version](https://img.shields.io/badge/Legacy-v1.3.1-7C4DFF?style=for-the-badge)](https://github.com/kaushikieeee/GhostGMS/releases)
