@@ -52,14 +52,14 @@ GhostGMS is a Magisk module that optimizes Google Mobile Services (GMS) for:
 <details>
 <summary>📊 Categories</summary>
 
-- 🛑 Ads & tracking  
-- 📈 Analytics & reporting  
-- 🔄 Background/update behavior  
-- 📍 Location/geofence components  
-- 📡 Nearby/discovery services  
-- ☁️ Sync/cloud extras  
-- 💳 Wallet/payment-related services  
-- ⌚ Wear/fitness integrations  
+- 🛑 Ads & tracking: Reduces ad ID usage and background tracking hooks  
+- 📈 Analytics & reporting: Limits telemetry and passive reporting behavior  
+- 🔄 Background/update behavior: Cuts unnecessary background churn and update checks  
+- 📍 Location/geofence components: Restricts extra location polling and geofence overhead  
+- 📡 Nearby/discovery services: Trims nearby device discovery/casting activity  
+- ☁️ Sync/cloud extras: Keeps core sync while reducing non-essential cloud operations  
+- 💳 Wallet/payment-related services: Disables payment components if you do not use them  
+- ⌚ Wear/fitness integrations: Reduces wearable and fitness service wakeups  
 
 </details>
 
