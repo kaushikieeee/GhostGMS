@@ -84,7 +84,7 @@ That is expected; battery results usually improve after the settling phase.
 
 ## 🚫 What It Does *Not* Do
 
-- ❌ Core module does not apply kernel-level modification  
+- ❌ Core module does not apply kernel-level modifications  
 - ❌ Does not remove Google apps outright  
 - ❌ Does not intentionally break OTA flow  
 - ❌ Does not disable all Google functionality blindly  
@@ -113,7 +113,7 @@ That is expected; battery results usually improve after the settling phase.
 
 <details>
 <summary>Google Play Services warning appears in some apps</summary>
-If notifications, Play Store installs/updates, account sync, and app sign-in are still working, it is usually safe to ignore.
+If notifications, Play Store installs/updates, account sync, and app sign-in are working normally, this warning is usually safe to ignore.
 </details>
 
 <details>
