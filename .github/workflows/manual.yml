@@ -63,6 +63,52 @@ jobs:
             echo "Error: Version in update.json ($JSON_VERSION) doesn't match input version (${{ inputs.version }})"
             exit 1
           fi
+
+      - name: Verify Core update zipUrl
+        run: |
+          CORE_ZIP_URL=$(grep -o '"zipUrl": *"[^"]*"' update.json | cut -d'"' -f4)
+          EXPECTED_CORE_URL="https://github.com/${{ github.repository }}/releases/download/${{ inputs.version }}/GhostGMS-Core-${{ inputs.version }}.zip"
+          if [ "$CORE_ZIP_URL" != "$EXPECTED_CORE_URL" ]; then
+            echo "Error: update.json zipUrl ($CORE_ZIP_URL) doesn't match expected Core URL ($EXPECTED_CORE_URL)"
+            exit 1
+          fi
+
+      - name: Verify Legacy update metadata
+        if: ${{ inputs.include_legacy }}
+        run: |
+          LEGACY_MODULE_PROP="legacy/GhostGMS-1.3/module.prop"
+          LEGACY_UPDATE_JSON="legacy/GhostGMS-1.3/update.json"
+          EXPECTED_LEGACY_UPDATE_JSON_URL="https://raw.githubusercontent.com/${{ github.repository }}/main/legacy/GhostGMS-1.3/update.json"
+          EXPECTED_LEGACY_ZIP_URL="https://github.com/${{ github.repository }}/releases/download/${{ inputs.version }}/GhostGMS-Legacy-1.3.zip"
+
+          if [ ! -f "$LEGACY_MODULE_PROP" ]; then
+            echo "Error: $LEGACY_MODULE_PROP not found"
+            exit 1
+          fi
+
+          if [ ! -f "$LEGACY_UPDATE_JSON" ]; then
+            echo "Error: $LEGACY_UPDATE_JSON not found"
+            exit 1
+          fi
+
+          LEGACY_UPDATE_JSON_URL=$(grep '^updateJson=' "$LEGACY_MODULE_PROP" | cut -d'=' -f2-)
+          if [ "$LEGACY_UPDATE_JSON_URL" != "$EXPECTED_LEGACY_UPDATE_JSON_URL" ]; then
+            echo "Error: Legacy module updateJson ($LEGACY_UPDATE_JSON_URL) doesn't match expected URL ($EXPECTED_LEGACY_UPDATE_JSON_URL)"
+            exit 1
+          fi
+
+          LEGACY_MODULE_VERSION=$(grep '^version=' "$LEGACY_MODULE_PROP" | cut -d'=' -f2-)
+          LEGACY_JSON_VERSION=$(grep -o '"version": *"[^"]*"' "$LEGACY_UPDATE_JSON" | cut -d'"' -f4)
+          if [ "$LEGACY_MODULE_VERSION" != "$LEGACY_JSON_VERSION" ]; then
+            echo "Error: Legacy version mismatch: module.prop ($LEGACY_MODULE_VERSION) vs update.json ($LEGACY_JSON_VERSION)"
+            exit 1
+          fi
+
+          LEGACY_ZIP_URL=$(grep -o '"zipUrl": *"[^"]*"' "$LEGACY_UPDATE_JSON" | cut -d'"' -f4)
+          if [ "$LEGACY_ZIP_URL" != "$EXPECTED_LEGACY_ZIP_URL" ]; then
+            echo "Error: Legacy update.json zipUrl ($LEGACY_ZIP_URL) doesn't match expected release URL ($EXPECTED_LEGACY_ZIP_URL)"
+            exit 1
+          fi
           
       - name: Check required files
         run: |
