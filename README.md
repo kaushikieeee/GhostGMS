@@ -4,7 +4,7 @@
 
 ### Make Google Play Services lighter, quieter, and smarter.
 
-<img src="https://capsule-render.vercel.app/api?type=waving&height=130&color=0:6a11cb,100:2575fc&text=GhostGMS&fontColor=ffffff&fontSize=48&fontAlignY=35&animation=fadeIn" alt="GhostGMS banner" />
+<img src="https://capsule-render.vercel.app/api?type=waving&height=130&color=0:6a11cb,100:2575fc&text=GhostGMS&fontColor=ffffff&fontSize=48&fontAlignY=35&animation=fadeIn" alt="GhostGMS decorative header banner with project name and blue gradient wave background" />
 
 [![Core Version](https://img.shields.io/badge/Core-v3.1.3-00C853?style=for-the-badge)](https://github.com/kaushikieeee/GhostGMS/releases)
 [![Legacy Version](https://img.shields.io/badge/Legacy-v1.3.1-7C4DFF?style=for-the-badge)](https://github.com/kaushikieeee/GhostGMS/releases)
@@ -113,7 +113,7 @@ That is expected; battery results usually improve after the settling phase.
 
 <details>
 <summary>Google Play Services warning appears in some apps</summary>
-Usually safe to ignore if your core services still work.
+If notifications, Play Store installs/updates, account sync, and app sign-in are still working, it is usually safe to ignore.
 </details>
 
 <details>
