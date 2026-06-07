@@ -165,7 +165,8 @@ chmod 644 "$PERSISTENT_CONFIG/user_prefs"
 {
   for cat in $GMS_CATEGORIES; do
     eval "value=\"\$DISABLE_$cat\""
-    echo "DISABLE_${cat}=$value"
+    disable_value=$([ "$value" -eq 0 ] && echo 1 || echo 0)
+    echo "DISABLE_${cat}=$disable_value"
   done
 } > "$MODPATH/config/gms_categories"
 chmod 644 "$MODPATH/config/gms_categories"
